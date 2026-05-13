@@ -1,0 +1,18 @@
+{
+  "name": "babysleep",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx src/lib/server/db/migrate.ts",
+    "reset-password": "tsx scripts/reset-password.ts",
+    "start": "node build/index.js"
+  }
+}
