@@ -53,4 +53,19 @@ describe('sleep-entries', () => {
     const s = summariesForBaby(tdb.db, babyId, '2025-07-15', '2025-07-31');
     expect(s.meanBedtimeHHMM).toBe('00:00');
   });
+
+  it('summariesForBaby computes mean day-sleep duration from start/end pairs', () => {
+    const { babyId } = setup(tdb);
+    upsertEntry(tdb.db, babyId, '2026-05-12', {
+      nap1Start: '09:00', nap1End: '10:00',
+      nap2Start: '13:00', nap2End: '14:30'
+    });
+    upsertEntry(tdb.db, babyId, '2026-05-13', {
+      nap1Start: '09:15', nap1End: '10:15',
+      nap2Start: '13:15', nap2End: '14:15'
+    });
+    const s = summariesForBaby(tdb.db, babyId, '2026-05-01', '2026-05-31');
+    // Day 1: 1h + 1h30 = 2h30 = 150 min. Day 2: 1h + 1h = 120 min. Mean = 135 min = 02:15.
+    expect(s.meanDaySleepHHMM).toBe('02:15');
+  });
 });

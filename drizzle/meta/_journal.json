@@ -15,6 +15,13 @@
       "when": 1778730189178,
       "tag": "0001_clammy_puff_adder",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1778764705471,
+      "tag": "0002_light_proudstar",
+      "breakpoints": true
     }
   ]
 }

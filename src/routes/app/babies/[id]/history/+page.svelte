@@ -31,6 +31,7 @@
   <div>🌙 Coucher moyen : {data.summary.meanBedtimeHHMM || '—'}</div>
   <div>🛏️ Nuit moyenne : {data.summary.meanPrevNightHHMM || '—'}</div>
   <div>💤 Siestes / jour : {data.summary.meanNaps}</div>
+  <div>☀️ Jour moyen : {data.summary.meanDaySleepHHMM || '—'}</div>
 </section>
 
 <table>

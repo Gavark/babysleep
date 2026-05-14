@@ -7,9 +7,13 @@ type DB = ReturnType<typeof drizzle<typeof schema>>;
 
 export type EntryPatch = Partial<{
   wakeTime: string | null;
+  nap1Start: string | null;
   nap1End: string | null;
+  nap2Start: string | null;
   nap2End: string | null;
+  nap3Start: string | null;
   nap3End: string | null;
+  nap4Start: string | null;
   nap4End: string | null;
   bedtime: string | null;
   notes: string | null;
@@ -22,9 +26,13 @@ export function upsertEntry(db: DB, babyId: number, date: string, patch: EntryPa
     db.insert(schema.sleepEntries).values({
       babyId, date,
       wakeTime: patch.wakeTime ?? null,
+      nap1Start: patch.nap1Start ?? null,
       nap1End: patch.nap1End ?? null,
+      nap2Start: patch.nap2Start ?? null,
       nap2End: patch.nap2End ?? null,
+      nap3Start: patch.nap3Start ?? null,
       nap3End: patch.nap3End ?? null,
+      nap4Start: patch.nap4Start ?? null,
       nap4End: patch.nap4End ?? null,
       bedtime: patch.bedtime ?? null,
       notes: patch.notes ?? null,
@@ -101,6 +109,33 @@ export function summariesForBaby(db: DB, babyId: number, from: string, to: strin
     }
   }
 
+  let totalDaySleepMin = 0;
+  let daysWithDaySleep = 0;
+  for (const r of rows) {
+    let dayTotal = 0;
+    let hasAny = false;
+    const pairs: [string | null, string | null][] = [
+      [r.nap1Start, r.nap1End],
+      [r.nap2Start, r.nap2End],
+      [r.nap3Start, r.nap3End],
+      [r.nap4Start, r.nap4End]
+    ];
+    for (const [s, e] of pairs) {
+      if (s && e && /^\d{2}:\d{2}$/.test(s) && /^\d{2}:\d{2}$/.test(e)) {
+        const dur = ((parseHHMM(e) - parseHHMM(s)) % 1440 + 1440) % 1440;
+        dayTotal += dur;
+        hasAny = true;
+      }
+    }
+    if (hasAny) {
+      totalDaySleepMin += dayTotal;
+      daysWithDaySleep += 1;
+    }
+  }
+  const meanDaySleepHHMM = daysWithDaySleep
+    ? formatHHMM(Math.round(totalDaySleepMin / daysWithDaySleep))
+    : '';
+
   return {
     entryCount: rows.length,
     meanWakeHHMM: mean(wakes),
@@ -108,6 +143,7 @@ export function summariesForBaby(db: DB, babyId: number, from: string, to: strin
     meanNaps: napCounts.length
       ? Math.round((napCounts.reduce((a, b) => a + b, 0) / napCounts.length) * 10) / 10
       : 0,
-    meanPrevNightHHMM: prevNightCount ? formatHHMM(Math.round(totalPrevNightMin / prevNightCount)) : ''
+    meanPrevNightHHMM: prevNightCount ? formatHHMM(Math.round(totalPrevNightMin / prevNightCount)) : '',
+    meanDaySleepHHMM
   };
 }

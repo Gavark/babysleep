@@ -41,7 +41,12 @@ export const actions: Actions = {
     const baby = getBabyForUser(db, locals.user.id, id);
     if (!baby) throw error(404);
     const form = await request.formData();
-    const fields = ['wake_time', 'nap1_end', 'nap2_end', 'nap3_end', 'nap4_end', 'bedtime'] as const;
+    const fields = ['wake_time',
+      'nap1_start', 'nap1_end',
+      'nap2_start', 'nap2_end',
+      'nap3_start', 'nap3_end',
+      'nap4_start', 'nap4_end',
+      'bedtime'] as const;
     const patch: Record<string, string | null> = {};
     for (const f of fields) {
       const v = String(form.get(f) ?? '').trim();
