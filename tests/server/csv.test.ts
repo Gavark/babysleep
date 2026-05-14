@@ -41,4 +41,14 @@ describe('buildSleepCsv', () => {
     expect(lines[1].split(';')[8]).toBe('11:00');
     expect(lines[2].split(';')[8]).toBe('');
   });
+
+  it('uses priorEntry to compute prev-night for the oldest range row', () => {
+    const rows = [
+      { date: '2025-07-16', wakeTime: '07:00', nap1End: null, nap2End: null, nap3End: null, nap4End: null, bedtime: '20:30', notes: null }
+    ];
+    const prior = { date: '2025-07-15', wakeTime: '06:30', nap1End: null, nap2End: null, nap3End: null, nap4End: null, bedtime: '20:00', notes: null };
+    const out = buildSleepCsv(rows, 'X', { priorEntry: prior });
+    const lines = out.split('\r\n').filter(Boolean);
+    expect(lines[1].split(';')[8]).toBe('11:00');
+  });
 });

@@ -2,7 +2,7 @@ import { error, redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getDb } from '$lib/server/db';
 import { getBabyForUser } from '$lib/server/babies';
-import { listEntriesInRange } from '$lib/server/sleep-entries';
+import { listEntriesInRange, getMostRecentEntryBefore } from '$lib/server/sleep-entries';
 import { buildSleepCsv } from '$lib/server/csv';
 
 function isISODate(s: string | null): boolean {
@@ -23,7 +23,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
   const to = url.searchParams.get('to');
   if (!isISODate(from) || !isISODate(to)) throw error(400, 'from/to required as YYYY-MM-DD');
   const rows = listEntriesInRange(db, baby.id, from!, to!);
-  const csv = buildSleepCsv(rows, baby.name);
+  const priorEntry = getMostRecentEntryBefore(db, baby.id, from!);
+  const csv = buildSleepCsv(rows, baby.name, { priorEntry });
   const filename = `babysleep_${slug(baby.name)}_${from}_${to}.csv`;
   return new Response(csv, {
     headers: {

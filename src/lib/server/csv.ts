@@ -31,7 +31,7 @@ function durationPrevNight(curr: Row, prev: Row | null): string {
   return formatHHMM(dur);
 }
 
-export function buildSleepCsv(rows: Row[], _babyName: string): string {
+export function buildSleepCsv(rows: Row[], _babyName: string, opts: { priorEntry?: Row | null } = {}): string {
   const sortedDesc = [...rows].sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
   const lines: string[] = [];
   lines.push([
@@ -40,7 +40,7 @@ export function buildSleepCsv(rows: Row[], _babyName: string): string {
   ].join(';'));
   for (let i = 0; i < sortedDesc.length; i++) {
     const cur = sortedDesc[i];
-    const prev = sortedDesc[i + 1] ?? null; // older date
+    const prev = sortedDesc[i + 1] ?? opts.priorEntry ?? null; // older date
     lines.push([
       escape(cur.date),
       escape(cur.wakeTime),

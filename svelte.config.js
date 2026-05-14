@@ -6,7 +6,6 @@ const config = {
   preprocess: vitePreprocess(),
   kit: {
     adapter: adapter({ out: 'build' }),
-    csrf: { checkOrigin: true },
     alias: {
       $lib: 'src/lib'
     }

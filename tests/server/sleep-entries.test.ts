@@ -45,4 +45,12 @@ describe('sleep-entries', () => {
     expect(s.meanWakeHHMM).toBe('07:15');
     expect(s.meanBedtimeHHMM).toBe('20:15');
   });
+
+  it('handles bedtimes that cross midnight (circular mean)', () => {
+    const { babyId } = setup(tdb);
+    upsertEntry(tdb.db, babyId, '2025-07-15', { wakeTime: '07:00', bedtime: '23:30' });
+    upsertEntry(tdb.db, babyId, '2025-07-16', { wakeTime: '07:00', bedtime: '00:30' });
+    const s = summariesForBaby(tdb.db, babyId, '2025-07-15', '2025-07-31');
+    expect(s.meanBedtimeHHMM).toBe('00:00');
+  });
 });

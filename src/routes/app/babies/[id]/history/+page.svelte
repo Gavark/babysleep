@@ -55,10 +55,19 @@
   </tbody>
 </table>
 
+{#if data.totalPages > 1}
+  <nav class="pager">
+    {#if data.page > 1}<a href="?from={data.from}&to={data.to}&page={data.page - 1}">‹ Précédent</a>{/if}
+    <span>Page {data.page} / {data.totalPages}</span>
+    {#if data.page < data.totalPages}<a href="?from={data.from}&to={data.to}&page={data.page + 1}">Suivant ›</a>{/if}
+  </nav>
+{/if}
+
 <style>
   form { display: flex; gap: 0.5rem; align-items: end; flex-wrap: wrap; margin-bottom: 1rem; }
   .summary { display: flex; gap: 1rem; flex-wrap: wrap; background: #DDEBF7; padding: 0.5rem; margin-bottom: 1rem; }
   table { border-collapse: collapse; width: 100%; }
   th, td { padding: 0.35rem; border-bottom: 1px solid #e5e7eb; text-align: left; }
   .btn { padding: 0.4rem 0.6rem; background: #1F4E78; color: white; text-decoration: none; border-radius: 4px; }
+  .pager { display: flex; gap: 1rem; align-items: center; margin-top: 1rem; }
 </style>

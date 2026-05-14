@@ -25,5 +25,10 @@ export const load: PageServerLoad = ({ locals, params, url }) => {
   const from = url.searchParams.get('from') ?? addDaysISO(to, -29);
   const entries = listEntriesInRange(db, baby.id, from, to);
   const summary = summariesForBaby(db, baby.id, from, to);
-  return { baby, from, to, entries, summary };
+  const pageSize = 50;
+  const rawPage = Number(url.searchParams.get('page') ?? '1');
+  const page = Number.isFinite(rawPage) && rawPage >= 1 ? Math.floor(rawPage) : 1;
+  const totalPages = Math.max(1, Math.ceil(entries.length / pageSize));
+  const paged = entries.slice((page - 1) * pageSize, page * pageSize);
+  return { baby, from, to, entries: paged, summary, page, totalPages };
 };

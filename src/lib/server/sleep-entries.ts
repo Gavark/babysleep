@@ -1,4 +1,4 @@
-import { and, eq, gte, lte, desc } from 'drizzle-orm';
+import { and, eq, gte, lte, lt, desc } from 'drizzle-orm';
 import type { drizzle } from 'drizzle-orm/better-sqlite3';
 import * as schema from './db/schema';
 import { parseHHMM, formatHHMM } from '$lib/time';
@@ -42,6 +42,14 @@ export function getEntryForBabyDate(db: DB, babyId: number, date: string) {
     .all()[0] ?? null;
 }
 
+export function getMostRecentEntryBefore(db: DB, babyId: number, date: string) {
+  return db.select().from(schema.sleepEntries)
+    .where(and(eq(schema.sleepEntries.babyId, babyId), lt(schema.sleepEntries.date, date)))
+    .orderBy(desc(schema.sleepEntries.date))
+    .limit(1)
+    .all()[0] ?? null;
+}
+
 export function listEntriesInRange(db: DB, babyId: number, from: string, to: string) {
   return db.select().from(schema.sleepEntries)
     .where(and(
@@ -59,8 +67,18 @@ export function summariesForBaby(db: DB, babyId: number, from: string, to: strin
   const beds = rows.map((r) => r.bedtime).filter((s): s is string => !!s);
   const napCounts = rows.map((r) => [r.nap1End, r.nap2End, r.nap3End, r.nap4End].filter(Boolean).length);
 
-  const mean = (arr: string[]) =>
-    arr.length ? formatHHMM(Math.round(arr.map(parseHHMM).reduce((a, b) => a + b, 0) / arr.length)) : '';
+  const mean = (arr: string[]) => {
+    if (arr.length === 0) return '';
+    let sx = 0, sy = 0;
+    for (const t of arr) {
+      const ang = (parseHHMM(t) / 1440) * 2 * Math.PI;
+      sx += Math.cos(ang);
+      sy += Math.sin(ang);
+    }
+    let a = Math.atan2(sy / arr.length, sx / arr.length);
+    if (a < 0) a += 2 * Math.PI;
+    return formatHHMM(Math.round((a / (2 * Math.PI)) * 1440));
+  };
 
   let totalPrevNightMin = 0;
   let prevNightCount = 0;
