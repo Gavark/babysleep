@@ -45,12 +45,7 @@ export const handle: Handle = async ({ event, resolve }) => {
       event.cookies.delete('session', { path: '/' });
     }
   }
-  const response = await resolve(event);
-  response.headers.set(
-    'Content-Security-Policy',
-    "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"
-  );
-  return response;
+  return resolve(event);
 };
 
 export function setSessionCookie(cookies: import('@sveltejs/kit').Cookies, sessionId: string) {

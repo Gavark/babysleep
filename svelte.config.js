@@ -6,6 +6,20 @@ const config = {
   preprocess: vitePreprocess(),
   kit: {
     adapter: adapter({ out: 'build' }),
+    csp: {
+      directives: {
+        'default-src': ['self'],
+        'script-src': ['self'],
+        'style-src': ['self', 'unsafe-inline'],
+        'img-src': ['self', 'data:', 'blob:'],
+        'connect-src': ['self'],
+        'manifest-src': ['self'],
+        'worker-src': ['self'],
+        'object-src': ['none'],
+        'base-uri': ['self'],
+        'form-action': ['self']
+      }
+    },
     alias: {
       $lib: 'src/lib'
     }
