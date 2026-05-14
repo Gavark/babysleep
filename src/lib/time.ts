@@ -16,3 +16,13 @@ export function formatHHMM(minutes: number): string {
   const r = m % 60;
   return `${String(h).padStart(2, '0')}:${String(r).padStart(2, '0')}`;
 }
+
+export function diffMinutesMod(from: string, to: string): number {
+  const a = parseHHMM(from);
+  const b = parseHHMM(to);
+  return ((b - a) % 1440 + 1440) % 1440;
+}
+
+export function addMinutesMod(time: string, deltaMin: number): string {
+  return formatHHMM(parseHHMM(time) + deltaMin);
+}

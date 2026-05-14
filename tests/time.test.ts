@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseHHMM, formatHHMM, isValidHHMM } from '$lib/time';
+import { parseHHMM, formatHHMM, isValidHHMM, diffMinutesMod, addMinutesMod } from '$lib/time';
 
 describe('parseHHMM', () => {
   it('parses 07:00 to 420 minutes', () => {
@@ -46,5 +46,32 @@ describe('isValidHHMM', () => {
     expect(isValidHHMM('07:60')).toBe(false);
     expect(isValidHHMM('abc')).toBe(false);
     expect(isValidHHMM('')).toBe(false);
+  });
+});
+
+describe('diffMinutesMod', () => {
+  it('returns 360 between 19:00 (prev) and 01:00 (next) crossing midnight', () => {
+    expect(diffMinutesMod('19:00', '01:00')).toBe(6 * 60);
+  });
+  it('returns 60 within the same day', () => {
+    expect(diffMinutesMod('07:00', '08:00')).toBe(60);
+  });
+  it('returns 0 when equal', () => {
+    expect(diffMinutesMod('12:00', '12:00')).toBe(0);
+  });
+  it('returns positive duration always', () => {
+    expect(diffMinutesMod('22:00', '21:00')).toBe(23 * 60);
+  });
+});
+
+describe('addMinutesMod', () => {
+  it('adds minutes within a day', () => {
+    expect(addMinutesMod('07:00', 90)).toBe('08:30');
+  });
+  it('wraps past midnight', () => {
+    expect(addMinutesMod('23:00', 90)).toBe('00:30');
+  });
+  it('subtracts (negative minutes) past midnight', () => {
+    expect(addMinutesMod('00:30', -60)).toBe('23:30');
   });
 });
