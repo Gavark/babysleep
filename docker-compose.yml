@@ -4,6 +4,9 @@ services:
     image: babysleep:latest
     container_name: babysleep
     restart: unless-stopped
+    expose:
+      - "3000"
+    # Local debug port (optional — remove if you want the app reachable only via Caddy)
     ports:
       - "3000:3000"
     environment:
@@ -19,6 +22,30 @@ services:
       - HOST_HEADER=x-forwarded-host
     volumes:
       - babysleep_data:/data
+    networks:
+      - internal
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: babysleep-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"  # HTTP/3
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+    networks:
+      - internal
 
 volumes:
   babysleep_data:
+  caddy_data:
+  caddy_config:
+
+networks:
+  internal:
