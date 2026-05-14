@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { ageInMonths } from '$lib/sleep-calc';
+import { ageInMonths, idealBedtime } from '$lib/sleep-calc';
 
 describe('ageInMonths', () => {
   it('returns whole months between two dates', () => {
@@ -19,5 +19,20 @@ describe('ageInMonths', () => {
   });
   it('clamps very old to a reasonable max (no upper throw)', () => {
     expect(ageInMonths('2020-01-15', undefined, new Date('2025-07-15T12:00:00Z'))).toBe(66);
+  });
+});
+
+describe('idealBedtime', () => {
+  it('07:00 wake with 11h night → 20:00', () => {
+    expect(idealBedtime('07:00', 11)).toBe('20:00');
+  });
+  it('handles wrap before midnight: 06:00 wake with 9h → 21:00', () => {
+    expect(idealBedtime('06:00', 9)).toBe('21:00');
+  });
+  it('06:30 wake with 10.5h → 20:00', () => {
+    expect(idealBedtime('06:30', 10.5)).toBe('20:00');
+  });
+  it('rounds to nearest minute', () => {
+    expect(idealBedtime('07:00', 11.25)).toBe('19:45');
   });
 });
