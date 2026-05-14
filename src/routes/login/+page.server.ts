@@ -1,11 +1,10 @@
 import { fail, redirect } from '@sveltejs/kit';
-import type { Actions } from './$types';
-import type { ServerLoadEvent } from '@sveltejs/kit';
+import type { Actions, PageServerLoad } from './$types';
 import { getDb } from '$lib/server/db';
 import { attemptLogin } from './_logic';
 import { setSessionCookie } from '../../hooks.server';
 
-export function load({ locals }: ServerLoadEvent) {
+export const load: PageServerLoad = ({ locals }) => {
   if (locals.user) throw redirect(303, '/app');
   return {};
 };
