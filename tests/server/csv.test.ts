@@ -38,7 +38,7 @@ describe('buildSleepCsv', () => {
     ];
     const out = buildSleepCsv(rows, 'X');
     const lines = out.split('\r\n').filter(Boolean);
-    expect(lines[1].split(';')[8]).toBe('10:30');
+    expect(lines[1].split(';')[8]).toBe('11:00');
     expect(lines[2].split(';')[8]).toBe('');
   });
 });

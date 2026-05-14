@@ -22,12 +22,12 @@ function napCount(r: Row): number {
 }
 
 function durationPrevNight(curr: Row, prev: Row | null): string {
-  if (!prev || !curr.wakeTime || !curr.bedtime) return '';
+  if (!prev || !curr.wakeTime || !prev.bedtime) return '';
   const [y1, m1, d1] = curr.date.split('-').map(Number);
   const [y2, m2, d2] = prev.date.split('-').map(Number);
   const dayDiff = (Date.UTC(y1, m1 - 1, d1) - Date.UTC(y2, m2 - 1, d2)) / 86400000;
   if (dayDiff !== 1) return '';
-  const dur = ((parseHHMM(curr.wakeTime) - parseHHMM(curr.bedtime)) % 1440 + 1440) % 1440;
+  const dur = ((parseHHMM(curr.wakeTime) - parseHHMM(prev.bedtime)) % 1440 + 1440) % 1440;
   return formatHHMM(dur);
 }
 
