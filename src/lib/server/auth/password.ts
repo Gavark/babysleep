@@ -1,10 +1,10 @@
-import { hash, verify, Algorithm } from '@node-rs/argon2';
+import { hash, verify } from '@node-rs/argon2';
 
 const ARGON_OPTS = {
   memoryCost: 19456,
   timeCost: 2,
   parallelism: 1,
-  algorithm: Algorithm.Argon2id
+  algorithm: 2 as const  // Argon2id = 2
 };
 
 export async function hashPassword(plain: string): Promise<string> {
