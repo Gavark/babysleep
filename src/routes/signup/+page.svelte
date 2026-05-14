@@ -5,7 +5,9 @@
 
 <h1>Inscription</h1>
 
-{#if !data.tokenValid}
+{#if data.disabled}
+  <p>Inscription désactivée par l'administrateur.</p>
+{:else if !data.tokenValid}
   <p>Inscription sur invitation uniquement. Demande un lien à l'administrateur.</p>
 {:else}
   {#if form?.error}<p class="error" role="alert">{form.error}</p>{/if}

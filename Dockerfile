@@ -41,6 +41,8 @@ RUN chmod +x /app/start.sh
 # Pre-create /data with correct ownership so 'node' user can write to it at runtime
 RUN mkdir -p /data && chown node:node /data
 
+RUN apk add --no-cache sqlite
+
 USER node
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 \

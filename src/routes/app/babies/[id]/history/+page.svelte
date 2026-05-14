@@ -1,8 +1,18 @@
 <script lang="ts">
+  import { parseHHMM, formatHHMM } from '$lib/time';
+
   let { data } = $props();
 
   function napCount(r: any) {
     return [r.nap1End, r.nap2End, r.nap3End, r.nap4End].filter(Boolean).length;
+  }
+
+  function prevNight(curr: any, prev: any): string {
+    if (!prev || !curr.wakeTime || !prev.bedtime) return '';
+    const dayDiff = (new Date(curr.date).getTime() - new Date(prev.date).getTime()) / 86400000;
+    if (Math.round(dayDiff) !== 1) return '';
+    const dur = ((parseHHMM(curr.wakeTime) - parseHHMM(prev.bedtime)) % 1440 + 1440) % 1440;
+    return formatHHMM(dur);
   }
 </script>
 
@@ -25,10 +35,10 @@
 
 <table>
   <thead>
-    <tr><th>Date</th><th>Réveil</th><th>S1</th><th>S2</th><th>S3</th><th>S4</th><th>Coucher</th><th>Nb</th><th>Notes</th></tr>
+    <tr><th>Date</th><th>Réveil</th><th>S1</th><th>S2</th><th>S3</th><th>S4</th><th>Coucher</th><th>Nuit préc.</th><th>Nb</th><th>Notes</th></tr>
   </thead>
   <tbody>
-    {#each data.entries as r}
+    {#each data.entries as r, i}
       <tr>
         <td>{r.date}</td>
         <td>{r.wakeTime ?? ''}</td>
@@ -37,6 +47,7 @@
         <td>{r.nap3End ?? ''}</td>
         <td>{r.nap4End ?? ''}</td>
         <td>{r.bedtime ?? ''}</td>
+        <td>{prevNight(r, data.entries[i + 1])}</td>
         <td>{napCount(r)}</td>
         <td>{r.notes ?? ''}</td>
       </tr>

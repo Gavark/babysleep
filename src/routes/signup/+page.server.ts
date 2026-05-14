@@ -6,6 +6,9 @@ import { signupWithToken } from './_logic';
 
 export const load: PageServerLoad = ({ url, locals }) => {
   if (locals.user) throw redirect(303, '/app');
+  if (process.env.DISABLE_SIGNUP === 'true') {
+    return { tokenValid: false, token: '', disabled: true };
+  }
   const token = url.searchParams.get('token') ?? '';
   const { db } = getDb();
   const inv = findUsableInvitation(db, token);
@@ -14,6 +17,9 @@ export const load: PageServerLoad = ({ url, locals }) => {
 
 export const actions: Actions = {
   default: async ({ request, url }) => {
+    if (process.env.DISABLE_SIGNUP === 'true') {
+      return fail(403, { error: 'L\'inscription est désactivée.', email: '' });
+    }
     const form = await request.formData();
     const token = String(form.get('token') ?? url.searchParams.get('token') ?? '');
     const email = String(form.get('email') ?? '');
