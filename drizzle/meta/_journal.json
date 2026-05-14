@@ -8,6 +8,13 @@
       "when": 1778718591611,
       "tag": "0000_real_mordo",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1778730189178,
+      "tag": "0001_clammy_puff_adder",
+      "breakpoints": true
     }
   ]
 }
