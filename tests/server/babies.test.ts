@@ -56,4 +56,15 @@ describe('babies', () => {
     const n = (tdb.sqlite.prepare('SELECT COUNT(*) AS n FROM sleep_entries WHERE baby_id = ?').get(b.id) as any).n;
     expect(n).toBe(0);
   });
+
+  it('accepts and stores desiredWakeTime', () => {
+    const u = mkUser(tdb);
+    const b = createBaby(tdb.db, u, { name: 'X', birthDate: '2025-01-15', ageOverrideMonths: null, desiredWakeTime: '07:00' });
+    expect(b.desiredWakeTime).toBe('07:00');
+  });
+
+  it('rejects invalid desiredWakeTime', () => {
+    const u = mkUser(tdb);
+    expect(() => createBaby(tdb.db, u, { name: 'X', birthDate: '2025-01-15', ageOverrideMonths: null, desiredWakeTime: '25:99' })).toThrow();
+  });
 });

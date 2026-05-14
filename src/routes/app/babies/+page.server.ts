@@ -17,12 +17,14 @@ export const actions: Actions = {
     const birthDate = String(form.get('birth_date') ?? '');
     const overrideStr = String(form.get('age_override') ?? '').trim();
     const override = overrideStr === '' ? null : Math.max(0, Math.floor(Number(overrideStr)));
+    const desiredWakeRaw = String(form.get('desired_wake') ?? '').trim();
+    const desiredWakeTime = desiredWakeRaw === '' ? null : desiredWakeRaw;
     if (!name || !/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) {
       return fail(400, { error: 'Nom et date de naissance requis (YYYY-MM-DD).' });
     }
     try {
       const { db } = getDb();
-      const baby = createBaby(db, locals.user.id, { name, birthDate, ageOverrideMonths: override });
+      const baby = createBaby(db, locals.user.id, { name, birthDate, ageOverrideMonths: override, desiredWakeTime });
       throw redirect(303, `/app/babies/${baby.id}/today`);
     } catch (e) {
       if ((e as any)?.status === 303) throw e;

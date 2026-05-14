@@ -5,18 +5,27 @@ import * as schema from './db/schema';
 type DB = ReturnType<typeof drizzle<typeof schema>>;
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+const HH_MM = /^([01]\d|2[0-3]):([0-5]\d)$/;
+
+function validateDesiredWakeTime(v: string | null | undefined): string | null {
+  if (v == null || v === '') return null;
+  if (!HH_MM.test(v)) throw new Error('desiredWakeTime must be HH:MM');
+  return v;
+}
 
 export function createBaby(
   db: DB,
   userId: number,
-  input: { name: string; birthDate: string; ageOverrideMonths: number | null }
+  input: { name: string; birthDate: string; ageOverrideMonths: number | null; desiredWakeTime?: string | null }
 ) {
   const name = String(input.name ?? '').trim();
   if (!name) throw new Error('name required');
   if (!ISO_DATE.test(input.birthDate)) throw new Error('birthDate must be YYYY-MM-DD');
+  const desiredWakeTime = validateDesiredWakeTime(input.desiredWakeTime);
   const t = Math.floor(Date.now() / 1000);
   return db.insert(schema.babies).values({
     userId, name, birthDate: input.birthDate, ageOverrideMonths: input.ageOverrideMonths,
+    desiredWakeTime,
     createdAt: t, updatedAt: t
   }).returning().all()[0];
 }
@@ -35,11 +44,14 @@ export function updateBaby(
   db: DB,
   userId: number,
   babyId: number,
-  patch: Partial<{ name: string; birthDate: string; ageOverrideMonths: number | null }>
+  patch: Partial<{ name: string; birthDate: string; ageOverrideMonths: number | null; desiredWakeTime: string | null }>
 ): boolean {
   const owned = getBabyForUser(db, userId, babyId);
   if (!owned) return false;
   if (patch.birthDate && !ISO_DATE.test(patch.birthDate)) throw new Error('birthDate must be YYYY-MM-DD');
+  if ('desiredWakeTime' in patch) {
+    patch = { ...patch, desiredWakeTime: validateDesiredWakeTime(patch.desiredWakeTime) };
+  }
   const t = Math.floor(Date.now() / 1000);
   db.update(schema.babies).set({ ...patch, updatedAt: t }).where(eq(schema.babies.id, babyId)).run();
   return true;

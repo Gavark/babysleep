@@ -21,8 +21,10 @@ export const actions: Actions = {
     const birthDate = String(form.get('birth_date') ?? '');
     const overrideStr = String(form.get('age_override') ?? '').trim();
     const override = overrideStr === '' ? null : Math.max(0, Math.floor(Number(overrideStr)));
+    const desiredWakeRaw = String(form.get('desired_wake') ?? '').trim();
+    const desiredWakeTime = desiredWakeRaw === '' ? null : desiredWakeRaw;
     const { db } = getDb();
-    const ok = updateBaby(db, locals.user.id, id, { name, birthDate, ageOverrideMonths: override });
+    const ok = updateBaby(db, locals.user.id, id, { name, birthDate, ageOverrideMonths: override, desiredWakeTime });
     if (!ok) return fail(404, { error: 'Bébé introuvable.' });
     return { success: 'Modifications enregistrées.' };
   },

@@ -44,6 +44,7 @@ export const babies = sqliteTable(
     name: text('name').notNull(),
     birthDate: text('birth_date').notNull(),
     ageOverrideMonths: integer('age_override_months'),
+    desiredWakeTime: text('desired_wake_time'),
     createdAt: integer('created_at').notNull().default(sql`(unixepoch())`),
     updatedAt: integer('updated_at').notNull().default(sql`(unixepoch())`)
   },

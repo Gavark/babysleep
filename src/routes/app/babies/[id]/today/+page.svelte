@@ -11,7 +11,11 @@
   let bedtime = $state(data.entry?.bedtime ?? '');
   let notes = $state(data.entry?.notes ?? '');
 
-  const ideal = $derived(wake ? idealBedtime(wake, data.ageParams.nightSleepH) : '');
+  const ideal = $derived(
+    data.baby.desiredWakeTime
+      ? idealBedtime(data.baby.desiredWakeTime, data.ageParams.nightSleepH)
+      : (wake ? idealBedtime(wake, data.ageParams.nightSleepH) : '')
+  );
   const sugg1 = $derived(wake ? suggestNextNap(wake, data.ageParams.awakeWindowMin) : '');
   const sugg2 = $derived(nap1 ? suggestNextNap(nap1, data.ageParams.awakeWindowMin) : '');
   const sugg3 = $derived(nap2 ? suggestNextNap(nap2, data.ageParams.awakeWindowMin) : '');

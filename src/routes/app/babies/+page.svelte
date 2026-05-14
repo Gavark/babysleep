@@ -20,6 +20,7 @@
   <label>Prénom<input name="name" required /></label>
   <label>Date de naissance<input type="date" name="birth_date" required /></label>
   <label>Âge corrigé (mois, facultatif)<input type="number" name="age_override" min="0" max="60" /></label>
+  <label>Heure de réveil souhaitée (facultatif)<input type="time" name="desired_wake" /></label>
   <button type="submit">Créer</button>
 </form>
 

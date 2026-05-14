@@ -12,6 +12,7 @@
   <label>Prénom<input name="name" value={data.baby.name} required /></label>
   <label>Date de naissance<input type="date" name="birth_date" value={data.baby.birthDate} required /></label>
   <label>Âge corrigé (mois)<input type="number" name="age_override" min="0" max="60" value={data.baby.ageOverrideMonths ?? ''} /></label>
+  <label>Heure de réveil souhaitée<input type="time" name="desired_wake" value={data.baby.desiredWakeTime ?? ''} /></label>
   <button type="submit">Enregistrer</button>
 </form>
 
