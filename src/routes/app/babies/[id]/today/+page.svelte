@@ -5,9 +5,6 @@
 
   let { data, form } = $props();
 
-  // Stable initial values from the loaded entry — read once per entry-id.
-  // The {#key} wrapper below re-mounts the form when the entry id changes,
-  // so these initializers are correct without needing $effect-based syncing.
   let wake    = $state(data.entry?.wakeTime ?? '');
   let nap1    = $state(data.entry?.nap1End  ?? '');
   let nap2    = $state(data.entry?.nap2End  ?? '');
@@ -15,6 +12,25 @@
   let nap4    = $state(data.entry?.nap4End  ?? '');
   let bedtime = $state(data.entry?.bedtime  ?? '');
   let notes   = $state(data.entry?.notes    ?? '');
+
+  // DOM refs to catch values the browser injected without firing events
+  let wakeEl    = $state<HTMLInputElement | null>(null);
+  let nap1El    = $state<HTMLInputElement | null>(null);
+  let nap2El    = $state<HTMLInputElement | null>(null);
+  let nap3El    = $state<HTMLInputElement | null>(null);
+  let nap4El    = $state<HTMLInputElement | null>(null);
+  let bedtimeEl = $state<HTMLInputElement | null>(null);
+
+  // After mount, read whatever the browser put into the inputs (autofill / session memory)
+  // and sync to state. Re-runs whenever the form re-mounts via the {#key} below.
+  $effect(() => {
+    if (wakeEl    && wakeEl.value    !== wake)    wake    = wakeEl.value;
+    if (nap1El    && nap1El.value    !== nap1)    nap1    = nap1El.value;
+    if (nap2El    && nap2El.value    !== nap2)    nap2    = nap2El.value;
+    if (nap3El    && nap3El.value    !== nap3)    nap3    = nap3El.value;
+    if (nap4El    && nap4El.value    !== nap4)    nap4    = nap4El.value;
+    if (bedtimeEl && bedtimeEl.value !== bedtime) bedtime = bedtimeEl.value;
+  });
 
   function safeNextNap(t: string) {
     return isValidHHMM(t) ? suggestNextNap(t, data.ageParams.awakeWindowMin) : '';
@@ -39,7 +55,6 @@
       : ''
   );
 
-  // Read currentTarget value on multiple events for maximum reliability across browsers/autofill
   function read(e: Event) {
     return (e.currentTarget as HTMLInputElement | HTMLTextAreaElement).value;
   }
@@ -52,11 +67,12 @@
 {#if form?.error}<p class="error">{form.error}</p>{/if}
 {#if form?.success}<p class="ok">{form.success}</p>{/if}
 
-<form method="POST" action="?/save" use:enhance>
+<form method="POST" action="?/save" use:enhance autocomplete="off">
   <input type="hidden" name="date" value={data.today} />
 
   <label>Réveil
-    <input type="time" name="wake_time"
+    <input type="time" name="wake_time" autocomplete="off"
+      bind:this={wakeEl}
       value={wake}
       oninput={(e) => wake = read(e)}
       onchange={(e) => wake = read(e)}
@@ -65,7 +81,8 @@
 
   <div class="hint">💤 Sieste 1 suggérée vers <strong>{sugg1 || '—'}</strong></div>
   <label>Fin sieste 1
-    <input type="time" name="nap1_end"
+    <input type="time" name="nap1_end" autocomplete="off"
+      bind:this={nap1El}
       value={nap1}
       oninput={(e) => nap1 = read(e)}
       onchange={(e) => nap1 = read(e)}
@@ -74,7 +91,8 @@
 
   <div class="hint">💤 Sieste 2 suggérée vers <strong>{sugg2 || '—'}</strong></div>
   <label>Fin sieste 2
-    <input type="time" name="nap2_end"
+    <input type="time" name="nap2_end" autocomplete="off"
+      bind:this={nap2El}
       value={nap2}
       oninput={(e) => nap2 = read(e)}
       onchange={(e) => nap2 = read(e)}
@@ -83,7 +101,8 @@
 
   <div class="hint">💤 Sieste 3 suggérée vers <strong>{sugg3 || '—'}</strong></div>
   <label>Fin sieste 3
-    <input type="time" name="nap3_end"
+    <input type="time" name="nap3_end" autocomplete="off"
+      bind:this={nap3El}
       value={nap3}
       oninput={(e) => nap3 = read(e)}
       onchange={(e) => nap3 = read(e)}
@@ -92,7 +111,8 @@
 
   <div class="hint">💤 Sieste 4 suggérée vers <strong>{sugg4 || '—'}</strong></div>
   <label>Fin sieste 4
-    <input type="time" name="nap4_end"
+    <input type="time" name="nap4_end" autocomplete="off"
+      bind:this={nap4El}
       value={nap4}
       oninput={(e) => nap4 = read(e)}
       onchange={(e) => nap4 = read(e)}
@@ -102,14 +122,15 @@
   <div class="key">⭐ Coucher idéal : <strong>{ideal || '—'}</strong></div>
   <div class="key">⭐ Coucher suggéré : <strong>{suggBed || '—'}</strong></div>
   <label>Coucher effectif
-    <input type="time" name="bedtime"
+    <input type="time" name="bedtime" autocomplete="off"
+      bind:this={bedtimeEl}
       value={bedtime}
       oninput={(e) => bedtime = read(e)}
       onchange={(e) => bedtime = read(e)}
       onblur={(e) => bedtime = read(e)} />
   </label>
 
-  <label>Notes <textarea name="notes" value={notes} oninput={(e) => notes = read(e)} rows="2"></textarea></label>
+  <label>Notes <textarea name="notes" autocomplete="off" value={notes} oninput={(e) => notes = read(e)} rows="2"></textarea></label>
 
   <button type="submit">Enregistrer la journée</button>
 </form>
