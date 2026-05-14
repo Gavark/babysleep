@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { AGE_PARAMS } from '$lib/age-params';
+import { AGE_PARAMS, paramsForAge } from '$lib/age-params';
 
 describe('AGE_PARAMS', () => {
   it('has 8 tiers', () => {
@@ -25,5 +25,28 @@ describe('AGE_PARAMS', () => {
       expect(typeof t.nightSleepH).toBe('number');
       expect(typeof t.daySleepH).toBe('number');
     }
+  });
+});
+
+describe('paramsForAge', () => {
+  it('returns 0-3 mois for 0', () => {
+    expect(paramsForAge(0).label).toBe('0-3 mois');
+  });
+  it('returns 6-9 mois for 6', () => {
+    expect(paramsForAge(6).label).toBe('6-9 mois');
+  });
+  it('returns 6-9 mois for 8 (within tier)', () => {
+    expect(paramsForAge(8).label).toBe('6-9 mois');
+  });
+  it('clamps to first tier for negative input', () => {
+    expect(paramsForAge(-3).label).toBe('0-3 mois');
+  });
+  it('clamps to last tier for input >= 36', () => {
+    expect(paramsForAge(36).label).toBe('2-3 ans');
+    expect(paramsForAge(60).label).toBe('2-3 ans');
+  });
+  it('returns the right tier at the boundary (Sheets parity: ascending match-≤)', () => {
+    // 12 should match 12-18 (boundary inclusive on min, like VLOOKUP TRUE)
+    expect(paramsForAge(12).label).toBe('12-18 mois');
   });
 });

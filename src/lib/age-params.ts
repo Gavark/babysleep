@@ -19,3 +19,14 @@ export const AGE_PARAMS: readonly AgeParams[] = [
   { label: '18-24 mois', ageMinMonths: 18, ageMaxMonths: 24, naps: 1, awakeWindowMin: 330, beforeBedWindowMin: 330, nightSleepH: 11, daySleepH: 2   },
   { label: '2-3 ans',    ageMinMonths: 24, ageMaxMonths: 36, naps: 1, awakeWindowMin: 360, beforeBedWindowMin: 360, nightSleepH: 11, daySleepH: 1.5 }
 ] as const;
+
+export function paramsForAge(months: number): AgeParams {
+  if (!Number.isFinite(months)) return AGE_PARAMS[0];
+  if (months < AGE_PARAMS[0].ageMinMonths) return AGE_PARAMS[0];
+  let chosen = AGE_PARAMS[0];
+  for (const t of AGE_PARAMS) {
+    if (t.ageMinMonths <= months) chosen = t;
+    else break;
+  }
+  return chosen;
+}
