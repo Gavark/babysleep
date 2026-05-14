@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { ageInMonths, idealBedtime } from '$lib/sleep-calc';
+import { ageInMonths, idealBedtime, suggestNextNap, suggestedBedtime } from '$lib/sleep-calc';
 
 describe('ageInMonths', () => {
   it('returns whole months between two dates', () => {
@@ -34,5 +34,32 @@ describe('idealBedtime', () => {
   });
   it('rounds to nearest minute', () => {
     expect(idealBedtime('07:00', 11.25)).toBe('19:45');
+  });
+});
+
+describe('suggestNextNap', () => {
+  it('adds awakeWindowMin to last end time', () => {
+    expect(suggestNextNap('07:00', 90)).toBe('08:30');
+  });
+  it('wraps past midnight', () => {
+    expect(suggestNextNap('23:00', 120)).toBe('01:00');
+  });
+});
+
+describe('suggestedBedtime', () => {
+  const params = { beforeBedWindowMin: 180, nightSleepH: 11 } as const;
+
+  it('returns idealBedtime when no nap end provided', () => {
+    expect(suggestedBedtime({ wake: '07:00', napEnds: [] }, params)).toBe('20:00');
+  });
+  it('returns lastNap + beforeBedWindowMin when at least one nap', () => {
+    expect(suggestedBedtime({ wake: '07:00', napEnds: ['10:00', '15:00'] }, params)).toBe('18:00');
+  });
+  it('uses the max of (wake, napEnds) — order-independent', () => {
+    expect(suggestedBedtime({ wake: '07:00', napEnds: ['16:00', '10:00'] }, params)).toBe('19:00');
+  });
+  it('ignores empty/undefined nap ends', () => {
+    expect(suggestedBedtime({ wake: '07:00', napEnds: ['', undefined, '15:00'] as (string|undefined)[] }, params))
+      .toBe('18:00');
   });
 });

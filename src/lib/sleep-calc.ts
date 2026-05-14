@@ -20,3 +20,30 @@ export function idealBedtime(wakeHHMM: string, nightSleepHours: number): string 
   const totalMin = wakeMin - Math.round(nightSleepHours * 60);
   return formatHHMM(totalMin);
 }
+
+export function suggestNextNap(lastEndHHMM: string, awakeWindowMin: number): string {
+  return formatHHMM(parseHHMM(lastEndHHMM) + awakeWindowMin);
+}
+
+export type DayEvents = {
+  wake?: string | null;
+  napEnds: (string | null | undefined)[];
+};
+
+export function suggestedBedtime(
+  events: DayEvents,
+  params: { beforeBedWindowMin: number; nightSleepH: number }
+): string | null {
+  const valid = events.napEnds.filter((s): s is string => !!s && /^\d{2}:\d{2}$/.test(s));
+  if (valid.length === 0) {
+    if (!events.wake) return null;
+    return idealBedtime(events.wake, params.nightSleepH);
+  }
+  const candidates = events.wake ? [events.wake, ...valid] : valid;
+  let bestMin = -1;
+  for (const t of candidates) {
+    const m = parseHHMM(t);
+    if (m > bestMin) bestMin = m;
+  }
+  return formatHHMM(bestMin + params.beforeBedWindowMin);
+}
