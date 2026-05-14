@@ -1,5 +1,6 @@
 import type { Handle } from '@sveltejs/kit';
 import { getDb } from '$lib/server/db';
+import { rateLimit } from '$lib/server/rate-limit';
 import {
   getSessionWithUser,
   refreshSessionIfStale,
@@ -21,6 +22,16 @@ setInterval(() => purgeExpiredSessions(db), 3600 * 1000);
 
 export const handle: Handle = async ({ event, resolve }) => {
   await maybeBootstrap();
+  const path = event.url.pathname;
+  if ((path === '/login' || path === '/signup') && event.request.method === 'POST') {
+    const ip = event.getClientAddress();
+    if (!rateLimit(`${path}:${ip}`, 5, 15 * 60)) {
+      return new Response('Trop de tentatives, réessaie dans 15 minutes.', {
+        status: 429,
+        headers: { 'Retry-After': '900' }
+      });
+    }
+  }
   const sessionId = event.cookies.get('session');
   event.locals.user = null;
   event.locals.session = null;
