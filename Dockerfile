@@ -9,7 +9,8 @@ FROM node:22-alpine AS build
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN npm run build
+# Create /data so SvelteKit post-build analysis can open the DB during analyse phase
+RUN mkdir -p /data && DATABASE_PATH=/data/build-probe.sqlite npm run build && rm -f /data/build-probe.sqlite
 
 FROM node:22-alpine AS runtime
 WORKDIR /app
@@ -24,18 +25,21 @@ RUN npm ci --omit=dev && npm cache clean --force
 # Built app + migrations
 COPY --from=build /app/build ./build
 COPY drizzle ./drizzle
-COPY src/lib/server/db/migrate.ts ./migrate.ts
+# Copy the whole db directory so migrate.ts relative imports (./index, ./schema) resolve correctly
+COPY src/lib/server/db ./src/lib/server/db
 COPY scripts ./scripts
 
 # Migrate at startup then run
 COPY <<'EOF' /app/start.sh
 #!/bin/sh
 set -e
-mkdir -p /data
-node --import tsx /app/migrate.ts
+node --import tsx /app/src/lib/server/db/migrate.ts
 exec node /app/build/index.js
 EOF
 RUN chmod +x /app/start.sh
+
+# Pre-create /data with correct ownership so 'node' user can write to it at runtime
+RUN mkdir -p /data && chown node:node /data
 
 USER node
 EXPOSE 3000
