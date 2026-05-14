@@ -2,33 +2,20 @@
   import { enhance } from '$app/forms';
   import { idealBedtime, suggestNextNap, suggestedBedtime } from '$lib/sleep-calc';
   import { isValidHHMM } from '$lib/time';
+
   let { data, form } = $props();
 
-  let wake    = $state('');
-  let nap1    = $state('');
-  let nap2    = $state('');
-  let nap3    = $state('');
-  let nap4    = $state('');
-  let bedtime = $state('');
-  let notes   = $state('');
+  // Stable initial values from the loaded entry — read once per entry-id.
+  // The {#key} wrapper below re-mounts the form when the entry id changes,
+  // so these initializers are correct without needing $effect-based syncing.
+  let wake    = $state(data.entry?.wakeTime ?? '');
+  let nap1    = $state(data.entry?.nap1End  ?? '');
+  let nap2    = $state(data.entry?.nap2End  ?? '');
+  let nap3    = $state(data.entry?.nap3End  ?? '');
+  let nap4    = $state(data.entry?.nap4End  ?? '');
+  let bedtime = $state(data.entry?.bedtime  ?? '');
+  let notes   = $state(data.entry?.notes    ?? '');
 
-  // Sync form state from the saved entry whenever the loaded entry changes (e.g. SvelteKit re-runs load after a successful save)
-  let lastEntryId = $state<number | null>(null);
-  $effect(() => {
-    const id = data.entry?.id ?? null;
-    if (id !== lastEntryId) {
-      lastEntryId = id;
-      wake    = data.entry?.wakeTime ?? '';
-      nap1    = data.entry?.nap1End  ?? '';
-      nap2    = data.entry?.nap2End  ?? '';
-      nap3    = data.entry?.nap3End  ?? '';
-      nap4    = data.entry?.nap4End  ?? '';
-      bedtime = data.entry?.bedtime  ?? '';
-      notes   = data.entry?.notes    ?? '';
-    }
-  });
-
-  // Helpers that NEVER throw — return '' if input is not a valid HH:MM
   function safeNextNap(t: string) {
     return isValidHHMM(t) ? suggestNextNap(t, data.ageParams.awakeWindowMin) : '';
   }
@@ -51,8 +38,14 @@
         ) ?? '')
       : ''
   );
+
+  // Read currentTarget value on multiple events for maximum reliability across browsers/autofill
+  function read(e: Event) {
+    return (e.currentTarget as HTMLInputElement | HTMLTextAreaElement).value;
+  }
 </script>
 
+{#key data.entry?.id ?? 'new'}
 <h1>{data.baby.name} — {data.today}</h1>
 <p>Âge : <strong>{data.ageMonths} mois</strong> ({data.ageParams.label}). Recommandé : {data.ageParams.naps} sieste(s), fenêtre {data.ageParams.awakeWindowMin} min, nuit {data.ageParams.nightSleepH}h.</p>
 
@@ -62,25 +55,61 @@
 <form method="POST" action="?/save" use:enhance>
   <input type="hidden" name="date" value={data.today} />
 
-  <label>Réveil <input type="time" name="wake_time" bind:value={wake} /></label>
+  <label>Réveil
+    <input type="time" name="wake_time"
+      value={wake}
+      oninput={(e) => wake = read(e)}
+      onchange={(e) => wake = read(e)}
+      onblur={(e) => wake = read(e)} />
+  </label>
 
   <div class="hint">💤 Sieste 1 suggérée vers <strong>{sugg1 || '—'}</strong></div>
-  <label>Fin sieste 1 <input type="time" name="nap1_end" bind:value={nap1} /></label>
+  <label>Fin sieste 1
+    <input type="time" name="nap1_end"
+      value={nap1}
+      oninput={(e) => nap1 = read(e)}
+      onchange={(e) => nap1 = read(e)}
+      onblur={(e) => nap1 = read(e)} />
+  </label>
 
   <div class="hint">💤 Sieste 2 suggérée vers <strong>{sugg2 || '—'}</strong></div>
-  <label>Fin sieste 2 <input type="time" name="nap2_end" bind:value={nap2} /></label>
+  <label>Fin sieste 2
+    <input type="time" name="nap2_end"
+      value={nap2}
+      oninput={(e) => nap2 = read(e)}
+      onchange={(e) => nap2 = read(e)}
+      onblur={(e) => nap2 = read(e)} />
+  </label>
 
   <div class="hint">💤 Sieste 3 suggérée vers <strong>{sugg3 || '—'}</strong></div>
-  <label>Fin sieste 3 <input type="time" name="nap3_end" bind:value={nap3} /></label>
+  <label>Fin sieste 3
+    <input type="time" name="nap3_end"
+      value={nap3}
+      oninput={(e) => nap3 = read(e)}
+      onchange={(e) => nap3 = read(e)}
+      onblur={(e) => nap3 = read(e)} />
+  </label>
 
   <div class="hint">💤 Sieste 4 suggérée vers <strong>{sugg4 || '—'}</strong></div>
-  <label>Fin sieste 4 <input type="time" name="nap4_end" bind:value={nap4} /></label>
+  <label>Fin sieste 4
+    <input type="time" name="nap4_end"
+      value={nap4}
+      oninput={(e) => nap4 = read(e)}
+      onchange={(e) => nap4 = read(e)}
+      onblur={(e) => nap4 = read(e)} />
+  </label>
 
   <div class="key">⭐ Coucher idéal : <strong>{ideal || '—'}</strong></div>
   <div class="key">⭐ Coucher suggéré : <strong>{suggBed || '—'}</strong></div>
-  <label>Coucher effectif <input type="time" name="bedtime" bind:value={bedtime} /></label>
+  <label>Coucher effectif
+    <input type="time" name="bedtime"
+      value={bedtime}
+      oninput={(e) => bedtime = read(e)}
+      onchange={(e) => bedtime = read(e)}
+      onblur={(e) => bedtime = read(e)} />
+  </label>
 
-  <label>Notes <textarea name="notes" bind:value={notes} rows="2"></textarea></label>
+  <label>Notes <textarea name="notes" value={notes} oninput={(e) => notes = read(e)} rows="2"></textarea></label>
 
   <button type="submit">Enregistrer la journée</button>
 </form>
@@ -91,6 +120,7 @@
     <li>{r.date} — réveil {r.wakeTime ?? '?'} / coucher {r.bedtime ?? '?'}</li>
   {/each}
 </ul>
+{/key}
 
 <style>
   form { display: grid; gap: 0.5rem; max-width: 360px; }
