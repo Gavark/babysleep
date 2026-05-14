@@ -20,8 +20,6 @@
   <button class="danger" type="submit">Supprimer ce bébé</button>
 </form>
 
-<p><a href="/app/babies/{data.baby.id}/today">→ Calculateur du jour</a></p>
-<p><a href="/app/babies/{data.baby.id}/history">→ Historique</a></p>
 
 <style>
   form { display: grid; gap: 0.5rem; max-width: 320px; margin: 1rem 0; }
