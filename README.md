@@ -33,11 +33,26 @@ docker compose exec app sh -c "node --import tsx /app/scripts/reset-password.ts 
 
 ## Backup
 
+Un container `backup` tourne en sidecar et copie `babysleep.sqlite` dans `./backups/` tous les jours à 3h (heure locale `TZ`). Rétention par défaut : 30 jours. Configurable via `.env` :
+
 ```bash
-docker compose exec app /app/scripts/backup.sh /data/backups
+BACKUP_RETENTION=30
+BACKUP_SCHEDULE=0 3 * * *   # cron format
 ```
 
-ou copie le fichier `/data/babysleep.sqlite` depuis le volume Docker.
+Manuellement à tout moment :
+
+```bash
+docker compose exec backup sh /usr/local/bin/run-backup
+```
+
+Voir les logs :
+
+```bash
+docker compose logs -f backup
+```
+
+Restauration : arrêter l'app, copier le `.sqlite` voulu depuis `./backups/` vers le volume Docker, redémarrer.
 
 ## Développement local
 
