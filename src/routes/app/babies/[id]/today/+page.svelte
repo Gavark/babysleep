@@ -1,28 +1,54 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
   import { idealBedtime, suggestNextNap, suggestedBedtime } from '$lib/sleep-calc';
+  import { isValidHHMM } from '$lib/time';
   let { data, form } = $props();
 
-  let wake = $state(data.entry?.wakeTime ?? '');
-  let nap1 = $state(data.entry?.nap1End ?? '');
-  let nap2 = $state(data.entry?.nap2End ?? '');
-  let nap3 = $state(data.entry?.nap3End ?? '');
-  let nap4 = $state(data.entry?.nap4End ?? '');
-  let bedtime = $state(data.entry?.bedtime ?? '');
-  let notes = $state(data.entry?.notes ?? '');
+  let wake    = $state('');
+  let nap1    = $state('');
+  let nap2    = $state('');
+  let nap3    = $state('');
+  let nap4    = $state('');
+  let bedtime = $state('');
+  let notes   = $state('');
+
+  // Sync form state from the saved entry whenever the loaded entry changes (e.g. SvelteKit re-runs load after a successful save)
+  let lastEntryId = $state<number | null>(null);
+  $effect(() => {
+    const id = data.entry?.id ?? null;
+    if (id !== lastEntryId) {
+      lastEntryId = id;
+      wake    = data.entry?.wakeTime ?? '';
+      nap1    = data.entry?.nap1End  ?? '';
+      nap2    = data.entry?.nap2End  ?? '';
+      nap3    = data.entry?.nap3End  ?? '';
+      nap4    = data.entry?.nap4End  ?? '';
+      bedtime = data.entry?.bedtime  ?? '';
+      notes   = data.entry?.notes    ?? '';
+    }
+  });
+
+  // Helpers that NEVER throw — return '' if input is not a valid HH:MM
+  function safeNextNap(t: string) {
+    return isValidHHMM(t) ? suggestNextNap(t, data.ageParams.awakeWindowMin) : '';
+  }
+  function safeIdeal(t: string) {
+    return isValidHHMM(t) ? idealBedtime(t, data.ageParams.nightSleepH) : '';
+  }
 
   const ideal = $derived(
-    data.baby.desiredWakeTime
-      ? idealBedtime(data.baby.desiredWakeTime, data.ageParams.nightSleepH)
-      : (wake ? idealBedtime(wake, data.ageParams.nightSleepH) : '')
+    safeIdeal(data.baby.desiredWakeTime ?? '') || safeIdeal(wake)
   );
-  const sugg1 = $derived(wake ? suggestNextNap(wake, data.ageParams.awakeWindowMin) : '');
-  const sugg2 = $derived(nap1 ? suggestNextNap(nap1, data.ageParams.awakeWindowMin) : '');
-  const sugg3 = $derived(nap2 ? suggestNextNap(nap2, data.ageParams.awakeWindowMin) : '');
-  const sugg4 = $derived(nap3 ? suggestNextNap(nap3, data.ageParams.awakeWindowMin) : '');
+  const sugg1 = $derived(safeNextNap(wake));
+  const sugg2 = $derived(safeNextNap(nap1));
+  const sugg3 = $derived(safeNextNap(nap2));
+  const sugg4 = $derived(safeNextNap(nap3));
   const suggBed = $derived(
-    wake
-      ? suggestedBedtime({ wake, napEnds: [nap1, nap2, nap3, nap4] }, data.ageParams) ?? ''
+    isValidHHMM(wake)
+      ? (suggestedBedtime(
+          { wake, napEnds: [nap1, nap2, nap3, nap4].filter(isValidHHMM) },
+          data.ageParams
+        ) ?? '')
       : ''
   );
 </script>
