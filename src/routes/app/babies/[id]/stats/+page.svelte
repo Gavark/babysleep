@@ -1,6 +1,11 @@
 <script lang="ts">
   import ChartCanvas from '$lib/components/ChartCanvas.svelte';
   import { parseHHMM } from '$lib/time';
+  import Sun from 'phosphor-svelte/lib/Sun';
+  import Moon from 'phosphor-svelte/lib/Moon';
+  import Bed from 'phosphor-svelte/lib/Bed';
+  import Cloud from 'phosphor-svelte/lib/Cloud';
+  import Coffee from 'phosphor-svelte/lib/Coffee';
 
   let { data } = $props();
 
@@ -117,36 +122,36 @@
 {#if data.entries.length === 0}
   <p class="empty">Pas de données sur cette période.</p>
 {:else}
-  <section class="chart-card">
-    <h2>🌅 Heure de réveil</h2>
+  <section class="card chart-section">
+    <h2><Sun size={18} /> Heure de réveil</h2>
     <ChartCanvas type="line"
       data={{ labels, datasets: [{ label: 'Réveil', data: wakeData, borderColor: 'rgba(201,122,93,1)', backgroundColor: 'rgba(201,122,93,0.18)', tension: 0.2, spanGaps: true }] }}
       options={timeOfDayOpts} />
   </section>
 
-  <section class="chart-card">
-    <h2>🌙 Heure de coucher</h2>
+  <section class="card chart-section">
+    <h2><Moon size={18} /> Heure de coucher</h2>
     <ChartCanvas type="line"
       data={{ labels, datasets: [{ label: 'Coucher', data: bedtimeData, borderColor: 'rgba(184,81,74,1)', backgroundColor: 'rgba(184,81,74,0.18)', tension: 0.2, spanGaps: true }] }}
       options={timeOfDayOpts} />
   </section>
 
-  <section class="chart-card">
-    <h2>🛏️ Durée nuit précédente</h2>
+  <section class="card chart-section">
+    <h2><Bed size={18} /> Durée nuit précédente</h2>
     <ChartCanvas type="line"
       data={{ labels, datasets: [{ label: 'Nuit (h)', data: prevNightData, borderColor: 'rgba(122,154,135,1)', backgroundColor: 'rgba(122,154,135,0.18)', tension: 0.2, spanGaps: true }] }}
       options={hourOpts} />
   </section>
 
-  <section class="chart-card">
-    <h2>☀️ Sommeil total de jour</h2>
+  <section class="card chart-section">
+    <h2><Cloud size={18} /> Sommeil total de jour</h2>
     <ChartCanvas type="line"
       data={{ labels, datasets: [{ label: 'Jour (h)', data: napTotalData, borderColor: 'rgba(232,184,110,1)', backgroundColor: 'rgba(232,184,110,0.18)', tension: 0.2, spanGaps: true }] }}
       options={hourOpts} />
   </section>
 
-  <section class="chart-card">
-    <h2>💤 Nombre de siestes</h2>
+  <section class="card chart-section">
+    <h2><Coffee size={18} /> Nombre de siestes</h2>
     <ChartCanvas type="bar"
       data={{ labels, datasets: [{ label: 'Siestes', data: napCountData, backgroundColor: 'rgba(232,184,110,0.7)' }] }}
       options={countOpts} />
@@ -158,6 +163,6 @@
   .presets { display: flex; gap: var(--s-2); flex-wrap: wrap; }
   .custom { display: flex; gap: var(--s-3); align-items: end; flex-wrap: wrap; }
   .custom .field { min-width: 140px; }
-  .chart-card { background: var(--c-bg-card); border-radius: var(--r-lg); padding: var(--s-4); box-shadow: var(--shadow-sm); margin-bottom: var(--s-4); }
-  .chart-card h2 { font-size: var(--fs-base); margin-bottom: var(--s-3); display: flex; align-items: center; gap: var(--s-2); }
+  .chart-section { margin-bottom: var(--s-4); }
+  .chart-section h2 { font-size: var(--fs-base); margin-bottom: var(--s-3); display: flex; align-items: center; gap: var(--s-2); }
 </style>

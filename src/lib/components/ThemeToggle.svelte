@@ -6,6 +6,7 @@
   type ThemeValue = 'auto' | 'light' | 'dark';
 
   let { initial }: { initial: ThemeValue } = $props();
+  // svelte-ignore state_referenced_locally — `initial` is a one-time seed, theme is then user-controlled
   let theme = $state<ThemeValue>(initial);
 
   const order: ThemeValue[] = ['auto', 'light', 'dark'];

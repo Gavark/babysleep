@@ -2,6 +2,12 @@
   import { parseHHMM, formatHHMM } from '$lib/time';
   import Download from 'phosphor-svelte/lib/Download';
   import Calendar from 'phosphor-svelte/lib/Calendar';
+  import CalendarBlank from 'phosphor-svelte/lib/CalendarBlank';
+  import Sun from 'phosphor-svelte/lib/Sun';
+  import Moon from 'phosphor-svelte/lib/Moon';
+  import Bed from 'phosphor-svelte/lib/Bed';
+  import Cloud from 'phosphor-svelte/lib/Cloud';
+  import Coffee from 'phosphor-svelte/lib/Coffee';
   let { data } = $props();
 
   function napCount(r: any) {
@@ -35,12 +41,12 @@
 </form>
 
 <section class="summary-strip">
-  <div>📅 <strong>{data.summary.entryCount}</strong> jour(s)</div>
-  <div>🌅 Réveil moyen <strong>{data.summary.meanWakeHHMM || '—'}</strong></div>
-  <div>🌙 Coucher moyen <strong>{data.summary.meanBedtimeHHMM || '—'}</strong></div>
-  <div>🛏️ Nuit moyenne <strong>{data.summary.meanPrevNightHHMM || '—'}</strong></div>
-  <div>☀️ Jour moyen <strong>{data.summary.meanDaySleepHHMM || '—'}</strong></div>
-  <div>💤 Siestes/jour <strong>{data.summary.meanNaps}</strong></div>
+  <div><CalendarBlank size={16} /> <strong>{data.summary.entryCount}</strong> jour(s)</div>
+  <div><Sun size={16} /> Réveil moyen <strong>{data.summary.meanWakeHHMM || '—'}</strong></div>
+  <div><Moon size={16} /> Coucher moyen <strong>{data.summary.meanBedtimeHHMM || '—'}</strong></div>
+  <div><Bed size={16} /> Nuit moyenne <strong>{data.summary.meanPrevNightHHMM || '—'}</strong></div>
+  <div><Cloud size={16} /> Jour moyen <strong>{data.summary.meanDaySleepHHMM || '—'}</strong></div>
+  <div><Coffee size={16} /> Siestes/jour <strong>{data.summary.meanNaps}</strong></div>
 </section>
 
 {#if data.entries.length === 0}

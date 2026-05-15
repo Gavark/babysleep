@@ -8,7 +8,7 @@
 
 <h1>Bébé : {data.baby.name}</h1>
 
-{#if form?.error}<p class="error">{form.error}</p>{/if}
+{#if form?.error}<p class="error" role="alert">{form.error}</p>{/if}
 {#if form?.success}<p class="ok">{form.success}</p>{/if}
 
 <form method="POST" action="?/update" use:enhance class="card edit-form">

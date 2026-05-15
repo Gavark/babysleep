@@ -23,7 +23,7 @@
 </ul>
 
 <h2>Ajouter un bébé</h2>
-{#if form?.error}<p class="error">{form.error}</p>{/if}
+{#if form?.error}<p class="error" role="alert">{form.error}</p>{/if}
 <form method="POST" action="?/create" use:enhance class="card create-form">
   <label class="field"><span class="field-label">Prénom</span>
     <input class="field-input" name="name" required />

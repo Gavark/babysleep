@@ -79,7 +79,7 @@
 </p>
 <p class="tz-info"><Globe size={12} /> Fuseau actif : <strong>{data.effectiveTz}</strong></p>
 
-{#if form?.error}<p class="error">{form.error}</p>{/if}
+{#if form?.error}<p class="error" role="alert">{form.error}</p>{/if}
 {#if form?.success}<p class="ok">{form.success}</p>{/if}
 
 <form

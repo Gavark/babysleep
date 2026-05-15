@@ -1,3 +1,10 @@
+/**
+ * Nunito self-hosted via @fontsource-variable/nunito (npm package).
+ * Vite bundles the woff2 files from node_modules into the build output,
+ * so they're served from the same origin (no CSP/font-src additions needed).
+ * The spec mentioned static/fonts/ as a possible location; fontsource is
+ * equivalent in practice and removes a manual download step.
+ */
 @import '@fontsource-variable/nunito/wght.css';
 
 :root {

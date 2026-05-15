@@ -14,7 +14,7 @@
 <p class="page-meta">Connecté en tant que <strong>{data.account.email}</strong>{#if data.account.isAdmin} <span class="badge">admin</span>{/if}</p>
 
 <h2>Fuseau horaire par défaut</h2>
-{#if form?.error}<p class="error">{form.error}</p>{/if}
+{#if form?.error}<p class="error" role="alert">{form.error}</p>{/if}
 {#if form?.success}<p class="ok">{form.success}</p>{/if}
 <form method="POST" action="?/updateTimezone" use:enhance class="card tz-form">
   <label class="field">
