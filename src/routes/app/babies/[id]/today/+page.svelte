@@ -74,7 +74,7 @@
 {#if form?.error}<p class="error">{form.error}</p>{/if}
 {#if form?.success}<p class="ok">{form.success}</p>{/if}
 
-<form method="POST" action="?/save" use:enhance autocomplete="off">
+<form method="POST" action="?/save" use:enhance={() => async ({ update }) => update({ reset: false })} autocomplete="off">
   <input type="hidden" name="date" value={data.today} />
 
   <label>Réveil
