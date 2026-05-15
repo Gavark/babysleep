@@ -1,6 +1,6 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
-  import { idealBedtime, suggestNextNap, suggestedBedtime, suggestNapEnd, type NapPair } from '$lib/sleep-calc';
+  import { idealBedtime, suggestNextNap, suggestedBedtime, suggestNapEnd, computeDaySleepBudget, formatDuration, type NapPair } from '$lib/sleep-calc';
   import { isValidHHMM } from '$lib/time';
   import { COMMON_TIMEZONES } from '$lib/tz';
   import Clock from 'phosphor-svelte/lib/Clock';
@@ -9,6 +9,7 @@
   import Star from 'phosphor-svelte/lib/Star';
   import Globe from 'phosphor-svelte/lib/Globe';
   import FloppyDisk from 'phosphor-svelte/lib/FloppyDisk';
+  import Cloud from 'phosphor-svelte/lib/Cloud';
 
   let { data, form } = $props();
 
@@ -70,6 +71,8 @@
   const napEndSugg3 = $derived(suggestNapEnd(2, nap3Start, napsArr, data.ageParams) ?? '');
   const napEndSugg4 = $derived(suggestNapEnd(3, nap4Start, napsArr, data.ageParams) ?? '');
 
+  const dayBudget = $derived(computeDaySleepBudget(napsArr, data.ageParams));
+
   const suggBed = $derived(
     isValidHHMM(wake)
       ? (suggestedBedtime(
@@ -128,6 +131,24 @@
         oninput={(e) => wake = read(e)} onchange={(e) => wake = read(e)} onblur={(e) => wake = read(e)} />
     </label>
   </div>
+
+  <section class="day-budget">
+    <div class="day-budget-header">
+      <Cloud size={18} weight="duotone" />
+      <strong>Sommeil de jour</strong>
+    </div>
+    <div class="day-budget-stats">
+      <div><span class="day-budget-label">Budget</span><span class="day-budget-value">{formatDuration(dayBudget.totalMin)}</span></div>
+      <div><span class="day-budget-label">Effectué</span><span class="day-budget-value">{formatDuration(dayBudget.completedMin)}</span></div>
+      <div><span class="day-budget-label">Restant</span><span class="day-budget-value">{formatDuration(dayBudget.remainingMin)}</span></div>
+    </div>
+    <div class="day-budget-bar" role="progressbar" aria-valuemin="0" aria-valuemax={dayBudget.totalMin} aria-valuenow={dayBudget.completedMin}>
+      <div class="day-budget-fill" style="width: {Math.min(100, dayBudget.ratio * 100)}%; background: {dayBudget.ratio > 1 ? 'var(--c-danger)' : 'var(--c-accent-honey)'};"></div>
+    </div>
+    {#if dayBudget.ratio > 1}
+      <p class="day-budget-warn">Budget dépassé de {formatDuration(dayBudget.completedMin - dayBudget.totalMin)}.</p>
+    {/if}
+  </section>
 
   {#each [
     { idx: 1, suggValue: sugg1, endSuggValue: napEndSugg1, startVal: nap1Start, endVal: nap1End, setStart: (v: string) => nap1Start = v, setEnd: (v: string) => nap1End = v },
@@ -208,4 +229,58 @@
   .recent { padding-left: var(--s-4); }
   .recent li { color: var(--c-text-muted); }
   .recent strong { color: var(--c-text); }
+
+  .day-budget {
+    background: var(--c-bg-card);
+    border-radius: var(--r-lg);
+    padding: var(--s-3) var(--s-4);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: var(--s-3);
+    display: grid;
+    gap: var(--s-2);
+  }
+  .day-budget-header {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    font-size: var(--fs-base);
+  }
+  .day-budget-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--s-2);
+  }
+  .day-budget-stats > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .day-budget-label {
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--c-text-muted);
+  }
+  .day-budget-value {
+    font-size: var(--fs-lg);
+    font-weight: 700;
+    color: var(--c-primary);
+    font-feature-settings: "tnum" 1;
+  }
+  .day-budget-bar {
+    height: 8px;
+    background: var(--c-bg-soft);
+    border-radius: var(--r-sm);
+    overflow: hidden;
+  }
+  .day-budget-fill {
+    height: 100%;
+    transition: width 0.25s ease, background 0.25s ease;
+  }
+  .day-budget-warn {
+    color: var(--c-danger);
+    font-size: var(--fs-sm);
+    margin: 0;
+  }
 </style>

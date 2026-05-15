@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { ageInMonths, idealBedtime, suggestNextNap, suggestedBedtime, NAP_WEIGHTS, suggestNapEnd } from '$lib/sleep-calc';
+import { ageInMonths, idealBedtime, suggestNextNap, suggestedBedtime, NAP_WEIGHTS, suggestNapEnd, computeDaySleepBudget, formatDuration } from '$lib/sleep-calc';
 import type { NapPair } from '$lib/sleep-calc';
 
 describe('ageInMonths', () => {
@@ -129,5 +129,49 @@ describe('suggestNapEnd', () => {
   it('returns null when napIndex out of range', () => {
     expect(suggestNapEnd(5, '09:00', [], params3)).toBeNull();
     expect(suggestNapEnd(-1, '09:00', [], params3)).toBeNull();
+  });
+});
+
+describe('computeDaySleepBudget', () => {
+  it('returns total budget when no naps completed', () => {
+    const r = computeDaySleepBudget([], { daySleepH: 3 });
+    expect(r.totalMin).toBe(180);
+    expect(r.completedMin).toBe(0);
+    expect(r.remainingMin).toBe(180);
+    expect(r.ratio).toBe(0);
+  });
+  it('counts only naps with both valid start and end', () => {
+    const r = computeDaySleepBudget(
+      [
+        { start: '09:00', end: '10:00' },           // 60 min
+        { start: '13:00', end: undefined },         // ignored (no end)
+        { start: '15:00', end: '15:45' },           // 45 min
+        { start: 'garbage', end: '16:00' }          // ignored (invalid start)
+      ],
+      { daySleepH: 3 }
+    );
+    expect(r.completedMin).toBe(105);
+    expect(r.remainingMin).toBe(75);
+    expect(r.ratio).toBeCloseTo(105 / 180);
+  });
+  it('caps remainingMin at 0 even when over budget', () => {
+    const r = computeDaySleepBudget(
+      [{ start: '09:00', end: '13:00' }],   // 240 min, well over a 180 budget
+      { daySleepH: 3 }
+    );
+    expect(r.completedMin).toBe(240);
+    expect(r.remainingMin).toBe(0);
+    expect(r.ratio).toBeGreaterThan(1);
+  });
+});
+
+describe('formatDuration', () => {
+  it('formats minutes', () => {
+    expect(formatDuration(0)).toBe('0 min');
+    expect(formatDuration(45)).toBe('45 min');
+    expect(formatDuration(60)).toBe('1h');
+    expect(formatDuration(90)).toBe('1h30');
+    expect(formatDuration(180)).toBe('3h');
+    expect(formatDuration(125)).toBe('2h05');
   });
 });

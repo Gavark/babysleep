@@ -109,3 +109,36 @@ export function suggestNapEnd(
 
   return formatHHMM(parseHHMM(napStart) + suggestedMin);
 }
+
+export type DaySleepBudget = {
+  totalMin: number;       // recommended budget
+  completedMin: number;   // sum of valid start/end pairs
+  remainingMin: number;   // max(0, total - completed)
+  ratio: number;          // 0..1 (or >1 if over budget)
+};
+
+export function computeDaySleepBudget(
+  naps: NapPair[],
+  ageParams: { daySleepH: number }
+): DaySleepBudget {
+  const totalMin = Math.round(ageParams.daySleepH * 60);
+  let completedMin = 0;
+  for (const n of naps) {
+    if (n.start && n.end && isValidHHMM(n.start) && isValidHHMM(n.end)) {
+      completedMin += ((parseHHMM(n.end) - parseHHMM(n.start)) % 1440 + 1440) % 1440;
+    }
+  }
+  const remainingMin = Math.max(0, totalMin - completedMin);
+  const ratio = totalMin > 0 ? completedMin / totalMin : 0;
+  return { totalMin, completedMin, remainingMin, ratio };
+}
+
+/** Formats minutes as "Xh YY min" or "YY min" if < 60. */
+export function formatDuration(min: number): string {
+  if (min <= 0) return '0 min';
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  if (h === 0) return `${m} min`;
+  if (m === 0) return `${h}h`;
+  return `${h}h${String(m).padStart(2, '0')}`;
+}
