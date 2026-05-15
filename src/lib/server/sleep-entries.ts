@@ -17,6 +17,7 @@ export type EntryPatch = Partial<{
   nap4End: string | null;
   bedtime: string | null;
   notes: string | null;
+  timezone: string | null;
 }>;
 
 export function upsertEntry(db: DB, babyId: number, date: string, patch: EntryPatch) {
@@ -36,6 +37,7 @@ export function upsertEntry(db: DB, babyId: number, date: string, patch: EntryPa
       nap4End: patch.nap4End ?? null,
       bedtime: patch.bedtime ?? null,
       notes: patch.notes ?? null,
+      timezone: patch.timezone ?? null,
       createdAt: t, updatedAt: t
     }).run();
   } else {

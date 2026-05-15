@@ -2,6 +2,7 @@
   import { enhance } from '$app/forms';
   import { idealBedtime, suggestNextNap, suggestedBedtime } from '$lib/sleep-calc';
   import { isValidHHMM } from '$lib/time';
+  import { COMMON_TIMEZONES } from '$lib/tz';
 
   let { data, form } = $props();
 
@@ -17,6 +18,7 @@
   let nap4End    = $state('');
   let bedtime    = $state('');
   let notes      = $state('');
+  let entryTz    = $state('');
 
   // Track which entry we last synced from; trigger resync when the loaded entry changes.
   // Using `undefined` initially (vs null) lets us distinguish "never synced" from "synced from no-entry".
@@ -37,6 +39,7 @@
       nap4End   = data.entry?.nap4End   ?? '';
       bedtime   = data.entry?.bedtime   ?? '';
       notes     = data.entry?.notes     ?? '';
+      entryTz   = data.entry?.timezone  ?? '';
     }
   });
 
@@ -64,18 +67,31 @@
   );
 
   function read(e: Event) {
-    return (e.currentTarget as HTMLInputElement | HTMLTextAreaElement).value;
+    return (e.currentTarget as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement).value;
   }
 </script>
 
 <h1>{data.baby.name} — {data.today}</h1>
 <p>Âge : <strong>{data.ageMonths} mois</strong> ({data.ageParams.label}). Recommandé : {data.ageParams.naps} sieste(s), fenêtre {data.ageParams.awakeWindowMin} min, nuit {data.ageParams.nightSleepH}h.</p>
+<p class="tz-info">Fuseau actif : <strong>{data.effectiveTz}</strong></p>
 
 {#if form?.error}<p class="error">{form.error}</p>{/if}
 {#if form?.success}<p class="ok">{form.success}</p>{/if}
 
 <form method="POST" action="?/save" use:enhance={() => async ({ update }) => update({ reset: false })} autocomplete="off">
   <input type="hidden" name="date" value={data.today} />
+
+  <label>Fuseau horaire (cette journée)
+    <select name="timezone" autocomplete="off"
+      value={entryTz}
+      oninput={(e) => entryTz = read(e)}
+      onchange={(e) => entryTz = read(e)}>
+      <option value="">Hériter ({data.effectiveTz})</option>
+      {#each COMMON_TIMEZONES as tz}
+        <option value={tz} selected={entryTz === tz}>{tz}</option>
+      {/each}
+    </select>
+  </label>
 
   <label>Réveil
     <input type="time" name="wake_time" autocomplete="off"
@@ -176,5 +192,6 @@
   .hint { color: #475569; font-size: 0.9rem; }
   .key { background: #C6E0B4; padding: 0.25rem 0.5rem; border-radius: 4px; color: #1F4E78; font-weight: 600; }
   .error { color: #b91c1c; } .ok { color: #047857; }
+  .tz-info { color: #475569; font-size: 0.85rem; }
   button { padding: 0.5rem 1rem; background: #1F4E78; color: white; border: 0; border-radius: 4px; }
 </style>

@@ -2,6 +2,7 @@ import { error, fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { getDb } from '$lib/server/db';
 import { getBabyForUser, updateBaby, deleteBaby } from '$lib/server/babies';
+import { isValidTimezone } from '$lib/tz';
 
 export const load: PageServerLoad = ({ locals, params }) => {
   if (!locals.user) throw redirect(303, '/login');
@@ -9,7 +10,7 @@ export const load: PageServerLoad = ({ locals, params }) => {
   const { db } = getDb();
   const baby = getBabyForUser(db, locals.user.id, id);
   if (!baby) throw error(404, 'Bébé introuvable');
-  return { baby };
+  return { baby, userTimezone: locals.user.timezone ?? 'Europe/Paris' };
 };
 
 export const actions: Actions = {
@@ -23,8 +24,10 @@ export const actions: Actions = {
     const override = overrideStr === '' ? null : Math.max(0, Math.floor(Number(overrideStr)));
     const desiredWakeRaw = String(form.get('desired_wake') ?? '').trim();
     const desiredWakeTime = desiredWakeRaw === '' ? null : desiredWakeRaw;
+    const tzRaw = String(form.get('timezone') ?? '').trim();
+    const timezone = tzRaw === '' ? null : (isValidTimezone(tzRaw) ? tzRaw : null);
     const { db } = getDb();
-    const ok = updateBaby(db, locals.user.id, id, { name, birthDate, ageOverrideMonths: override, desiredWakeTime });
+    const ok = updateBaby(db, locals.user.id, id, { name, birthDate, ageOverrideMonths: override, desiredWakeTime, timezone });
     if (!ok) return fail(404, { error: 'Bébé introuvable.' });
     return { success: 'Modifications enregistrées.' };
   },

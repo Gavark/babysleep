@@ -1,6 +1,9 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
+  import { COMMON_TIMEZONES } from '$lib/tz';
   let { data, form } = $props();
+
+  let userTz = $state(data.userTimezone);
 </script>
 
 <h1>Mon compte</h1>
@@ -14,6 +17,23 @@
   <label>Nouveau (≥ 10 car.)<input type="password" name="new_password" required minlength="10" autocomplete="new-password" /></label>
   <label>Confirmer<input type="password" name="confirm" required minlength="10" autocomplete="new-password" /></label>
   <button type="submit">Modifier</button>
+</form>
+
+<h2>Fuseau horaire par défaut</h2>
+{#if form?.tzError}<p class="error" role="alert">{form.tzError}</p>{/if}
+{#if form?.tzSuccess}<p class="ok">{form.tzSuccess}</p>{/if}
+<form method="POST" action="?/updateTimezone" use:enhance>
+  <label>Fuseau horaire
+    <select name="timezone" autocomplete="off"
+      value={userTz}
+      oninput={(e) => userTz = (e.currentTarget as HTMLSelectElement).value}
+      onchange={(e) => userTz = (e.currentTarget as HTMLSelectElement).value}>
+      {#each COMMON_TIMEZONES as tz}
+        <option value={tz} selected={userTz === tz}>{tz}</option>
+      {/each}
+    </select>
+  </label>
+  <button type="submit">Enregistrer le fuseau</button>
 </form>
 
 <h2>Sessions actives</h2>

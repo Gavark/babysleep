@@ -6,11 +6,7 @@ import { getEntryForBabyDate, listEntriesInRange, upsertEntry } from '$lib/serve
 import { ageInMonths } from '$lib/sleep-calc';
 import { paramsForAge } from '$lib/age-params';
 import { isValidHHMM } from '$lib/time';
-
-function todayISO(): string {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-}
+import { todayISOInTZ, resolveTimezone, isValidTimezone } from '$lib/tz';
 
 function addDays(iso: string, n: number): string {
   const [y, m, d] = iso.split('-').map(Number);
@@ -25,12 +21,14 @@ export const load: PageServerLoad = ({ locals, params }) => {
   const { db } = getDb();
   const baby = getBabyForUser(db, locals.user.id, id);
   if (!baby) throw error(404);
-  const today = todayISO();
+  const userTimezone = locals.user.timezone ?? 'Europe/Paris';
+  const effectiveTz = resolveTimezone(null, baby.timezone, userTimezone);
+  const today = todayISOInTZ(effectiveTz);
   const entry = getEntryForBabyDate(db, baby.id, today);
   const months = ageInMonths(baby.birthDate, baby.ageOverrideMonths ?? undefined);
   const params_ = paramsForAge(months);
   const recent = listEntriesInRange(db, baby.id, addDays(today, -7), today);
-  return { baby, today, entry, ageMonths: months, ageParams: params_, recent };
+  return { baby, today, entry, ageMonths: months, ageParams: params_, recent, effectiveTz, userTimezone };
 };
 
 export const actions: Actions = {
@@ -56,7 +54,15 @@ export const actions: Actions = {
     }
     const notes = String(form.get('notes') ?? '').trim();
     patch.notes = notes || null;
-    const date = String(form.get('date') ?? todayISO());
+
+    // Timezone: read from form, validate, compute effective TZ for date
+    const tzRaw = String(form.get('timezone') ?? '').trim();
+    const entryTz = tzRaw && isValidTimezone(tzRaw) ? tzRaw : null;
+    patch.timezone = entryTz;
+
+    const userTimezone = locals.user.timezone ?? 'Europe/Paris';
+    const effectiveTz = resolveTimezone(entryTz, baby.timezone, userTimezone);
+    const date = String(form.get('date') ?? todayISOInTZ(effectiveTz));
     upsertEntry(db, baby.id, date, patch as any);
     return { success: 'Journée enregistrée.' };
   }

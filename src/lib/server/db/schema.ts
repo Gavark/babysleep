@@ -6,6 +6,7 @@ export const users = sqliteTable('users', {
   email: text('email').notNull().unique(),
   passwordHash: text('password_hash').notNull(),
   isAdmin: integer('is_admin').notNull().default(0),
+  timezone: text('timezone').notNull().default('Europe/Paris'),
   createdAt: integer('created_at').notNull().default(sql`(unixepoch())`),
   updatedAt: integer('updated_at').notNull().default(sql`(unixepoch())`)
 });
@@ -45,6 +46,7 @@ export const babies = sqliteTable(
     birthDate: text('birth_date').notNull(),
     ageOverrideMonths: integer('age_override_months'),
     desiredWakeTime: text('desired_wake_time'),
+    timezone: text('timezone'),
     createdAt: integer('created_at').notNull().default(sql`(unixepoch())`),
     updatedAt: integer('updated_at').notNull().default(sql`(unixepoch())`)
   },
@@ -68,6 +70,7 @@ export const sleepEntries = sqliteTable(
     nap4Start: text('nap4_start'),
     bedtime: text('bedtime'),
     notes: text('notes'),
+    timezone: text('timezone'),
     createdAt: integer('created_at').notNull().default(sql`(unixepoch())`),
     updatedAt: integer('updated_at').notNull().default(sql`(unixepoch())`)
   },
