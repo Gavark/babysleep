@@ -1,53 +1,82 @@
 <script lang="ts">
   import { page } from '$app/state';
-  let { children, data } = $props();
+  import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+  import Bed from 'phosphor-svelte/lib/Bed';
+  import UserCircle from 'phosphor-svelte/lib/UserCircle';
+  import Envelope from 'phosphor-svelte/lib/Envelope';
+  import ArrowLeft from 'phosphor-svelte/lib/ArrowLeft';
 
-  function tabClass(id: number) {
-    return id === data.currentBabyId ? 'tab active' : 'tab';
-  }
+  let { children, data } = $props();
 
   function subActive(suffix: string): string {
     const p = page.url.pathname;
     if (suffix === 'edit') return /\/babies\/\d+$/.test(p) ? 'sub-tab active' : 'sub-tab';
     return p.endsWith('/' + suffix) ? 'sub-tab active' : 'sub-tab';
   }
+
+  function tabClass(id: number): string {
+    return id === data.currentBabyId ? 'tab active' : 'tab';
+  }
 </script>
 
-<header>
-  <nav>
-    <a href="/app/babies">Bébés</a>
-    {#if data.isAdmin}<a href="/admin/invitations">Invitations</a>{/if}
-    <a href="/account">Compte</a>
-  </nav>
-  <div class="switcher">
-    {#each data.babies as b}
-      <a class={tabClass(b.id)} href="/app/babies/{b.id}/today">{b.name}</a>
-    {/each}
-  </div>
-
-  {#if data.currentBabyId}
-    <p class="back"><a href="/app/babies">← Tous les bébés</a></p>
-    <nav class="sub">
-      <a class={subActive('today')}   href="/app/babies/{data.currentBabyId}/today">Aujourd'hui</a>
-      <a class={subActive('history')} href="/app/babies/{data.currentBabyId}/history">Historique</a>
-      <a class={subActive('stats')}   href="/app/babies/{data.currentBabyId}/stats">Stats</a>
-      <a class={subActive('edit')}    href="/app/babies/{data.currentBabyId}">Éditer</a>
+<header class="app-header">
+  <a class="brand" href="/app">
+    <Bed size={22} weight="duotone" />
+    BabySleep
+  </a>
+  <div class="header-right">
+    <nav class="nav-row">
+      <a class="nav-pill" href="/app/babies">Bébés</a>
+      {#if data.isAdmin}
+        <a class="nav-pill" href="/admin/invitations">
+          <Envelope size={14} /> Invitations
+        </a>
+      {/if}
+      <a class="nav-pill" href="/account">
+        <UserCircle size={14} /> Compte
+      </a>
     </nav>
-  {/if}
+    <ThemeToggle initial={data.theme ?? 'auto'} />
+  </div>
 </header>
+
+<div class="baby-tabs">
+  {#each data.babies as b}
+    <a class={tabClass(b.id)} href="/app/babies/{b.id}/today">{b.name}</a>
+  {/each}
+</div>
+
+{#if data.currentBabyId}
+  <p class="back"><a href="/app/babies"><ArrowLeft size={14} /> Tous les bébés</a></p>
+  <nav class="sub-nav">
+    <a class={subActive('today')}   href="/app/babies/{data.currentBabyId}/today">Aujourd'hui</a>
+    <a class={subActive('history')} href="/app/babies/{data.currentBabyId}/history">Historique</a>
+    <a class={subActive('stats')}   href="/app/babies/{data.currentBabyId}/stats">Stats</a>
+    <a class={subActive('edit')}    href="/app/babies/{data.currentBabyId}">Éditer</a>
+  </nav>
+{/if}
 
 {@render children()}
 
 <style>
-  header { display: grid; gap: 0.5rem; margin-bottom: 1rem; }
-  nav { display: flex; gap: 1rem; }
-  .switcher { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-  .tab { padding: 0.25rem 0.5rem; border: 1px solid #cbd5e1; border-radius: 4px; text-decoration: none; }
-  .tab.active { background: #1F4E78; color: white; border-color: #1F4E78; }
-  .sub { display: flex; gap: 1rem; font-size: 0.95rem; border-bottom: 1px solid #e5e7eb; padding-bottom: 0.5rem; }
-  .sub-tab { text-decoration: none; color: #475569; padding: 0.25rem 0.5rem; border-radius: 4px 4px 0 0; }
-  .sub-tab.active { color: #1F4E78; font-weight: 600; border-bottom: 2px solid #1F4E78; }
-  .back { margin: 0 0 0.5rem; font-size: 0.9rem; }
-  .back a { color: #475569; text-decoration: none; }
-  .back a:hover { color: #1F4E78; text-decoration: underline; }
+  .app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--s-3);
+    gap: var(--s-3);
+    flex-wrap: wrap;
+  }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    flex-wrap: wrap;
+  }
+  .baby-tabs {
+    display: flex;
+    gap: var(--s-2);
+    flex-wrap: wrap;
+    margin-bottom: var(--s-3);
+  }
 </style>
