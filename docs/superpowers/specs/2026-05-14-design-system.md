@@ -16,7 +16,7 @@ Construire un design system cohérent pour BabySleep — palette, typographie, t
 | Palette | Terracotta & Miel sur crème | Chaud, cocoon, accent sage froid pour équilibre |
 | Typographie | Nunito (400 / 600 / 700) seule famille | Sans-serif arrondi humaniste, lisible, vibe câline sans tomber dans le "kids" |
 | Icônes | Phosphor (style Regular) | Cohérent, open-source, ~10-15 icônes nécessaires |
-| Dark mode | Auto via `prefers-color-scheme` | Pas de toggle dans l'app pour v1, suit l'OS |
+| Dark mode | Auto via `prefers-color-scheme` + toggle manuel dans l'app | Override OS via bouton soleil/lune dans le header, préférence persistée |
 | Layout | Mobile-first conservé, max-width ~720px desktop | Pas de refonte structurelle, juste polish |
 
 ## 3. Tokens
@@ -57,8 +57,20 @@ Construire un design system cohérent pour BabySleep — palette, typographie, t
 
 ### 3.3 Typographie
 
-- Famille : **Nunito** (Google Fonts), self-hosted ou chargé via Google Fonts avec `display=swap`.
-- Poids utilisés : **400** (corps), **500** (labels), **600** (medium / titres secondaires), **700** (titres principaux, valeurs-clés)
+- Famille : **Nunito**, **self-hosted** dans `static/fonts/`. Pas de dépendance Google Fonts (perf + privacy + pas de CSP à ajouter).
+- Format : **woff2 variable font** (un seul fichier `nunito-variable.woff2`, ~50 KB, couvre toutes les graisses). Fallback `system-ui, sans-serif`.
+- Poids utilisés : **400** (corps), **500** (labels), **600** (medium / titres secondaires), **700** (titres principaux, valeurs-clés).
+- Source : fonts.google.com → "Get embed code" → "Download family" → extraire le fichier variable. Ou via https://gwfh.mranftl.com/fonts (génère des subsets latin uniquement, encore plus léger).
+- Déclaration `@font-face` dans `tokens.css` :
+  ```css
+  @font-face {
+    font-family: 'Nunito';
+    src: url('/fonts/nunito-variable.woff2') format('woff2-variations');
+    font-weight: 200 1000;
+    font-style: normal;
+    font-display: swap;
+  }
+  ```
 - Tabular nums : `font-feature-settings: "tnum"` sur les chiffres (heures, durées) pour qu'ils s'alignent.
 
 Échelle (rem, base 16px) :
@@ -211,13 +223,68 @@ Lib : **`phosphor-svelte`** (paquet officiel). Tree-shakeable, on importe au cas
 ### 6.2 Modification du layout racine
 
 `src/routes/+layout.svelte` :
-- Importe `tokens.css` et `base.css` en `<svelte:head>` (ou via Vite via `+layout.svelte` script tag direct).
-- Charge Nunito : préférer Google Fonts avec `display=swap` pour v1 (zero setup). Document un upgrade futur vers self-hosted woff2 pour la perf.
+- Importe `tokens.css` et `base.css` (directement dans le script Svelte ou via `<style global>`).
+- La déclaration `@font-face` dans `tokens.css` charge `/fonts/nunito-variable.woff2` (servi en static depuis `static/fonts/`).
 - Définit le `<body>` avec `background: var(--c-bg-app); color: var(--c-text); font-family: Nunito, system-ui, sans-serif;`.
+- Lit la préférence `theme` (voir §6.6) depuis un cookie côté serveur (load) et l'applique en `data-theme="..."` sur `<html>` pour éviter le flash de thème au chargement.
 
-### 6.3 Migration page par page
+### 6.3 Toggle dark mode manuel
 
-1. **`+layout.svelte` racine** : import des CSS + Nunito + meta theme-color terracotta
+**3 états :** `auto` (par défaut, suit OS via `prefers-color-scheme`) / `light` / `dark`.
+
+**Persistance :** cookie `theme` (lisible côté serveur ET côté client, donc `httpOnly: false`, `SameSite=Lax`, `Max-Age` 1 an).
+
+**Application côté HTML :**
+- Attribut `data-theme="light|dark"` sur `<html>` quand override actif. Absent quand `auto`.
+- CSS structure :
+  ```css
+  /* Tokens light par défaut */
+  :root { --c-bg-app: #FBF8F3; ... }
+
+  /* Dark : soit OS prefers dark ET pas d'override, soit override explicite "dark" */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --c-bg-app: #1F1814; ... }
+  }
+  :root[data-theme="dark"] { --c-bg-app: #1F1814; ... }
+  ```
+
+**Hooks serveur (`hooks.server.ts`) :** dans le `handle`, lire `event.cookies.get('theme')` et stocker dans `event.locals.theme` pour que le `+layout.server.ts` racine le passe au client.
+
+**Layout racine (`+layout.svelte`) :** SSR injecte `<html data-theme="...">` au render pour éviter tout flash entre light et dark au boot.
+
+**UI du toggle :** petite icône cyclant entre 3 états dans le header de droite.
+- État auto : icône `CircleHalf` (Phosphor) — moitié claire moitié foncée
+- État light : icône `Sun`
+- État dark : icône `Moon`
+- Click cycle `auto → light → dark → auto`
+- Pas de form action : un endpoint `POST /api/theme` qui prend `?value=auto|light|dark`, set le cookie, retourne 204. Ou pour faire encore plus simple, un form caché submitted via JS avec `use:enhance`. Le plus propre : endpoint API minimal.
+
+**Endpoint `src/routes/api/theme/+server.ts`** :
+```ts
+import type { RequestHandler } from './$types';
+
+export const POST: RequestHandler = async ({ request, cookies }) => {
+  const form = await request.formData();
+  const value = String(form.get('value') ?? 'auto');
+  if (!['auto', 'light', 'dark'].includes(value)) {
+    return new Response('invalid', { status: 400 });
+  }
+  cookies.set('theme', value, {
+    path: '/',
+    httpOnly: false,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 60 * 60 * 24 * 365
+  });
+  return new Response(null, { status: 204 });
+};
+```
+
+Le composant toggle utilise `fetch('/api/theme', { method: 'POST', body: ... })` puis met à jour `<html>.dataset.theme` côté client pour réagir immédiatement sans reload.
+
+### 6.4 Migration page par page
+
+1. **`+layout.svelte` racine** : import des CSS + Nunito self-hosted + meta theme-color terracotta + injection `data-theme` SSR
 2. **`/login` et `/signup`** : refonte simple (form centré, card, btn-primary)
 3. **`/app/+layout.svelte`** : nouveau header (brand + nav-pill), baby-tabs stylés, sub-nav avec underline
 4. **`/app/babies/[id]/today`** : application des nap-blocks, key-boxes, replace emojis par Phosphor là où pertinent
@@ -228,13 +295,13 @@ Lib : **`phosphor-svelte`** (paquet officiel). Tree-shakeable, on importe au cas
 9. **`/admin/invitations`** : table polished, btn-primary pour générer
 10. **`/+error`** : page d'erreur avec illustration éventuelle (out of scope v1) ou simple card centrée
 
-### 6.4 Stratégie d'écrasement progressive
+### 6.5 Stratégie d'écrasement progressive
 
 - Ne **pas** réécrire toutes les pages d'un coup — risque de régressions UX.
 - Ordre proposé : tokens + base + components.css en premier (impact global mais subtil), puis layout racine, puis pages dans l'ordre listé.
 - Chaque page = un commit séparé pour debug facile.
 
-### 6.5 Tests
+### 6.6 Tests
 
 Pas de tests automatisés visuels pour v1 (pas de Playwright + screenshot diff). Vérification manuelle après chaque page migrée :
 - Rendu light + dark
@@ -245,13 +312,12 @@ Les **tests Vitest existants doivent rester verts** — aucun test ne dépend du
 
 ## 7. Compatibilité avec le code existant
 
-- `svelte.config.js` CSP : `style-src 'self' 'unsafe-inline'` est déjà OK pour les styles Svelte scopés. Si on charge Google Fonts, il faudra ajouter `'fonts.googleapis.com' 'fonts.gstatic.com'` à `style-src` et `font-src`. **Action requise** dans la migration.
+- `svelte.config.js` CSP : `style-src 'self' 'unsafe-inline'` est déjà OK pour les styles Svelte scopés. Avec Nunito self-hosted, **aucun changement CSP nécessaire** (la font est servie depuis `/fonts/` même origine).
 - PWA : le manifest theme-color passe de `#1F4E78` à `#C97A5D` (terracotta). Background `#FBF8F3` (crème).
 - L'icône PWA actuelle (1×1 placeholder) reste à remplacer un jour par une vraie image, hors scope v1 du redesign.
 
 ## 8. Hors scope (notes pour plus tard)
 
-- Toggle dark mode manuel dans l'app (env. 1h de travail)
 - Animations / transitions (subtiles transitions sur les hovers et le `prefers-reduced-motion` à respecter)
 - Vraies icônes PWA 192/512 dessinées
 - Page d'erreur 404 avec illustration custom
@@ -262,10 +328,10 @@ Les **tests Vitest existants doivent rester verts** — aucun test ne dépend du
 
 L'implémentation est livrable quand :
 - [ ] Tokens chargés et application du `body` au minimum
-- [ ] Nunito visible partout (test rapide : la page de login)
+- [ ] Nunito self-hosted visible partout, fichier woff2 dans `static/fonts/` (test rapide : la page de login)
 - [ ] Light mode et dark mode passables sur tous les écrans existants
+- [ ] Toggle dark mode dans le header fonctionnel (3 états : auto / light / dark, persistance cookie, SSR-safe sans flash)
 - [ ] Au moins l'icône Phosphor `bed` dans le header (preuve d'intégration)
-- [ ] CSP mise à jour si Google Fonts utilisé
 - [ ] Tous les tests Vitest existants restent verts
-- [ ] Manifest PWA color cohérent
+- [ ] Manifest PWA color cohérent (terracotta + crème)
 - [ ] Pas de régression fonctionnelle dans les form actions (login, save journée, change mdp, etc.)
