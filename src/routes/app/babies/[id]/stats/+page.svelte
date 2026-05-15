@@ -92,19 +92,23 @@
 
 <h1>Statistiques — {data.baby.name}</h1>
 
-<form method="GET" class="filters">
+<form method="GET" class="period-selector">
   <div class="presets">
-    <a class:active={data.preset === '7'} href="?preset=7">7 jours</a>
-    <a class:active={data.preset === '14'} href="?preset=14">14 jours</a>
-    <a class:active={data.preset === '30'} href="?preset=30">30 jours</a>
-    <a class:active={data.preset === '90'} href="?preset=90">90 jours</a>
-    <a class:active={data.preset === 'all'} href="?preset=all">Tout</a>
+    <a class="tab" class:active={data.preset === '7'} href="?preset=7">7 jours</a>
+    <a class="tab" class:active={data.preset === '14'} href="?preset=14">14 jours</a>
+    <a class="tab" class:active={data.preset === '30'} href="?preset=30">30 jours</a>
+    <a class="tab" class:active={data.preset === '90'} href="?preset=90">90 jours</a>
+    <a class="tab" class:active={data.preset === 'all'} href="?preset=all">Tout</a>
   </div>
   <div class="custom">
-    <label>De <input type="date" name="from" value={data.from} /></label>
-    <label>À <input type="date" name="to" value={data.to} /></label>
+    <label class="field"><span class="field-label">De</span>
+      <input class="field-input" type="date" name="from" value={data.from} />
+    </label>
+    <label class="field"><span class="field-label">À</span>
+      <input class="field-input" type="date" name="to" value={data.to} />
+    </label>
     <input type="hidden" name="preset" value="custom" />
-    <button type="submit">Filtrer</button>
+    <button type="submit" class="btn btn-secondary">Filtrer</button>
   </div>
 </form>
 
@@ -113,57 +117,47 @@
 {#if data.entries.length === 0}
   <p class="empty">Pas de données sur cette période.</p>
 {:else}
-  <section>
-    <h2>Heure de réveil</h2>
-    <ChartCanvas
-      type="line"
-      data={{ labels, datasets: [{ label: 'Réveil', data: wakeData, borderColor: '#1F4E78', backgroundColor: '#1F4E7833', tension: 0.2, spanGaps: true }] }}
+  <section class="chart-card">
+    <h2>🌅 Heure de réveil</h2>
+    <ChartCanvas type="line"
+      data={{ labels, datasets: [{ label: 'Réveil', data: wakeData, borderColor: 'rgba(201,122,93,1)', backgroundColor: 'rgba(201,122,93,0.18)', tension: 0.2, spanGaps: true }] }}
       options={timeOfDayOpts} />
   </section>
 
-  <section>
-    <h2>Heure de coucher</h2>
-    <ChartCanvas
-      type="line"
-      data={{ labels, datasets: [{ label: 'Coucher', data: bedtimeData, borderColor: '#7C3AED', backgroundColor: '#7C3AED33', tension: 0.2, spanGaps: true }] }}
+  <section class="chart-card">
+    <h2>🌙 Heure de coucher</h2>
+    <ChartCanvas type="line"
+      data={{ labels, datasets: [{ label: 'Coucher', data: bedtimeData, borderColor: 'rgba(184,81,74,1)', backgroundColor: 'rgba(184,81,74,0.18)', tension: 0.2, spanGaps: true }] }}
       options={timeOfDayOpts} />
   </section>
 
-  <section>
-    <h2>Durée de la nuit précédente</h2>
-    <ChartCanvas
-      type="line"
-      data={{ labels, datasets: [{ label: 'Nuit (h)', data: prevNightData, borderColor: '#0EA5E9', backgroundColor: '#0EA5E933', tension: 0.2, spanGaps: true }] }}
+  <section class="chart-card">
+    <h2>🛏️ Durée nuit précédente</h2>
+    <ChartCanvas type="line"
+      data={{ labels, datasets: [{ label: 'Nuit (h)', data: prevNightData, borderColor: 'rgba(122,154,135,1)', backgroundColor: 'rgba(122,154,135,0.18)', tension: 0.2, spanGaps: true }] }}
       options={hourOpts} />
   </section>
 
-  <section>
-    <h2>Sommeil total de jour</h2>
-    <ChartCanvas
-      type="line"
-      data={{ labels, datasets: [{ label: 'Jour (h)', data: napTotalData, borderColor: '#F59E0B', backgroundColor: '#F59E0B33', tension: 0.2, spanGaps: true }] }}
+  <section class="chart-card">
+    <h2>☀️ Sommeil total de jour</h2>
+    <ChartCanvas type="line"
+      data={{ labels, datasets: [{ label: 'Jour (h)', data: napTotalData, borderColor: 'rgba(232,184,110,1)', backgroundColor: 'rgba(232,184,110,0.18)', tension: 0.2, spanGaps: true }] }}
       options={hourOpts} />
   </section>
 
-  <section>
-    <h2>Nombre de siestes</h2>
-    <ChartCanvas
-      type="bar"
-      data={{ labels, datasets: [{ label: 'Siestes', data: napCountData, backgroundColor: '#10B981' }] }}
+  <section class="chart-card">
+    <h2>💤 Nombre de siestes</h2>
+    <ChartCanvas type="bar"
+      data={{ labels, datasets: [{ label: 'Siestes', data: napCountData, backgroundColor: 'rgba(232,184,110,0.7)' }] }}
       options={countOpts} />
   </section>
 {/if}
 
 <style>
-  .filters { display: flex; gap: 1rem; flex-wrap: wrap; align-items: end; margin-bottom: 0.5rem; }
-  .presets { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-  .presets a { padding: 0.25rem 0.6rem; border: 1px solid #cbd5e1; border-radius: 4px; text-decoration: none; color: #475569; font-size: 0.9rem; }
-  .presets a.active { background: #1F4E78; color: white; border-color: #1F4E78; }
-  .custom { display: flex; gap: 0.4rem; align-items: end; }
-  .custom input[type="date"] { padding: 0.2rem; }
-  .custom button { padding: 0.25rem 0.6rem; background: #1F4E78; color: white; border: 0; border-radius: 4px; cursor: pointer; }
-  .tz-info { color: #475569; font-size: 0.85rem; margin: 0.5rem 0 1rem; }
-  .empty { color: #475569; font-style: italic; }
-  section { margin-bottom: 1.5rem; }
-  h2 { font-size: 1.05rem; margin: 0 0 0.5rem; }
+  .period-selector { display: flex; flex-direction: column; gap: var(--s-3); margin-bottom: var(--s-3); }
+  .presets { display: flex; gap: var(--s-2); flex-wrap: wrap; }
+  .custom { display: flex; gap: var(--s-3); align-items: end; flex-wrap: wrap; }
+  .custom .field { min-width: 140px; }
+  .chart-card { background: var(--c-bg-card); border-radius: var(--r-lg); padding: var(--s-4); box-shadow: var(--shadow-sm); margin-bottom: var(--s-4); }
+  .chart-card h2 { font-size: var(--fs-base); margin-bottom: var(--s-3); display: flex; align-items: center; gap: var(--s-2); }
 </style>
