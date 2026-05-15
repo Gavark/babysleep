@@ -22,6 +22,8 @@ setInterval(() => purgeExpiredSessions(db), 3600 * 1000);
 
 export const handle: Handle = async ({ event, resolve }) => {
   await maybeBootstrap();
+  const rawTheme = event.cookies.get('theme');
+  event.locals.theme = rawTheme === 'light' || rawTheme === 'dark' ? rawTheme : 'auto';
   const path = event.url.pathname;
   if ((path === '/login' || path === '/signup') && event.request.method === 'POST') {
     const ip = event.getClientAddress();
@@ -45,7 +47,13 @@ export const handle: Handle = async ({ event, resolve }) => {
       event.cookies.delete('session', { path: '/' });
     }
   }
-  return resolve(event);
+  const dataTheme = event.locals.theme === 'auto' ? '' : event.locals.theme;
+  return resolve(event, {
+    transformPageChunk: ({ html }) => {
+      if (!dataTheme) return html;
+      return html.replace('<html', `<html data-theme="${dataTheme}"`);
+    }
+  });
 };
 
 export function setSessionCookie(cookies: import('@sveltejs/kit').Cookies, sessionId: string) {
