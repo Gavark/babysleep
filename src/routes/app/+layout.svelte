@@ -29,6 +29,7 @@
     <nav class="sub">
       <a class={subActive('today')}   href="/app/babies/{data.currentBabyId}/today">Aujourd'hui</a>
       <a class={subActive('history')} href="/app/babies/{data.currentBabyId}/history">Historique</a>
+      <a class={subActive('stats')}   href="/app/babies/{data.currentBabyId}/stats">Stats</a>
       <a class={subActive('edit')}    href="/app/babies/{data.currentBabyId}">Éditer</a>
     </nav>
   {/if}
