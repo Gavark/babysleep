@@ -1,71 +1,70 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
   import { COMMON_TIMEZONES } from '$lib/tz';
+  import ArrowLeft from 'phosphor-svelte/lib/ArrowLeft';
+  import SignOut from 'phosphor-svelte/lib/SignOut';
+  import FloppyDisk from 'phosphor-svelte/lib/FloppyDisk';
+  import Trash from 'phosphor-svelte/lib/Trash';
   let { data, form } = $props();
-
-  let userTz = $state(data.userTimezone);
 </script>
 
-<p class="back"><a href="/app">← Application</a></p>
-<h1>Mon compte</h1>
-<p>Connecté en tant que <strong>{data.account.email}</strong>{#if data.account.isAdmin} (admin){/if}.</p>
+<p class="back"><a href="/app"><ArrowLeft size={14} /> Application</a></p>
 
-<h2>Changer mon mot de passe</h2>
-{#if form?.error}<p class="error" role="alert">{form.error}</p>{/if}
-{#if form?.success}<p class="ok">{form.success}</p>{/if}
-<form method="POST" action="?/changePassword" use:enhance>
-  <label>Mot de passe actuel<input type="password" name="current_password" required autocomplete="current-password" /></label>
-  <label>Nouveau (≥ 10 car.)<input type="password" name="new_password" required minlength="10" autocomplete="new-password" /></label>
-  <label>Confirmer<input type="password" name="confirm" required minlength="10" autocomplete="new-password" /></label>
-  <button type="submit">Modifier</button>
-</form>
+<h1>Mon compte</h1>
+<p class="page-meta">Connecté en tant que <strong>{data.account.email}</strong>{#if data.account.isAdmin} <span class="badge">admin</span>{/if}</p>
 
 <h2>Fuseau horaire par défaut</h2>
-{#if form?.tzError}<p class="error" role="alert">{form.tzError}</p>{/if}
-{#if form?.tzSuccess}<p class="ok">{form.tzSuccess}</p>{/if}
-<form method="POST" action="?/updateTimezone" use:enhance>
-  <label>Fuseau horaire
-    <select name="timezone" autocomplete="off"
-      value={userTz}
-      oninput={(e) => userTz = (e.currentTarget as HTMLSelectElement).value}
-      onchange={(e) => userTz = (e.currentTarget as HTMLSelectElement).value}>
+{#if form?.error}<p class="error">{form.error}</p>{/if}
+{#if form?.success}<p class="ok">{form.success}</p>{/if}
+<form method="POST" action="?/updateTimezone" use:enhance class="card tz-form">
+  <label class="field">
+    <span class="field-label">Fuseau</span>
+    <select class="field-select" name="timezone">
       {#each COMMON_TIMEZONES as tz}
-        <option value={tz} selected={userTz === tz}>{tz}</option>
+        <option value={tz} selected={data.userTimezone === tz}>{tz}</option>
       {/each}
     </select>
   </label>
-  <button type="submit">Enregistrer le fuseau</button>
+  <button type="submit" class="btn btn-primary"><FloppyDisk size={16} /> Enregistrer</button>
+</form>
+
+<h2>Changer mon mot de passe</h2>
+<form method="POST" action="?/changePassword" use:enhance class="card pw-form">
+  <label class="field"><span class="field-label">Mot de passe actuel</span>
+    <input class="field-input" type="password" name="current_password" required autocomplete="current-password" />
+  </label>
+  <label class="field"><span class="field-label">Nouveau (≥ 10 caractères)</span>
+    <input class="field-input" type="password" name="new_password" required minlength="10" autocomplete="new-password" />
+  </label>
+  <label class="field"><span class="field-label">Confirmer</span>
+    <input class="field-input" type="password" name="confirm" required minlength="10" autocomplete="new-password" />
+  </label>
+  <button type="submit" class="btn btn-primary"><FloppyDisk size={16} /> Modifier le mot de passe</button>
 </form>
 
 <h2>Sessions actives</h2>
-<table>
-  <thead><tr><th>Appareil</th><th>Dernière activité</th><th>Expire</th><th></th></tr></thead>
-  <tbody>
-    {#each data.sessions as s}
-      <tr>
-        <td>{s.userAgent}{#if s.isCurrent}<em> — cet appareil</em>{/if}</td>
-        <td>{new Date(s.lastUsedAt * 1000).toLocaleString('fr-FR')}</td>
-        <td>{new Date(s.expiresAt * 1000).toLocaleDateString('fr-FR')}</td>
-        <td>
-          {#if !s.isCurrent}
-            <form method="POST" action="/account/sessions/{s.id}" use:enhance>
-              <button type="submit">Révoquer</button>
-            </form>
-          {/if}
-        </td>
-      </tr>
-    {/each}
-  </tbody>
-</table>
+<ul class="sessions">
+  {#each data.sessions as s}
+    <li class="card session-row">
+      <div>
+        <strong>{s.userAgent}</strong>{#if s.isCurrent} <span class="badge badge-success">cet appareil</span>{/if}
+        <p class="page-meta" style="margin:0;">Dernière activité : {new Date(s.lastUsedAt * 1000).toLocaleString('fr-FR')} · expire le {new Date(s.expiresAt * 1000).toLocaleDateString('fr-FR')}</p>
+      </div>
+      {#if !s.isCurrent}
+        <form method="POST" action="/account/sessions/{s.id}" use:enhance>
+          <button type="submit" class="btn btn-ghost btn-sm"><Trash size={14} /> Révoquer</button>
+        </form>
+      {/if}
+    </li>
+  {/each}
+</ul>
 
-<form method="POST" action="/logout"><button type="submit">Se déconnecter</button></form>
+<form method="POST" action="/logout" style="margin-top: var(--s-4);">
+  <button type="submit" class="btn btn-secondary"><SignOut size={16} /> Se déconnecter</button>
+</form>
 
 <style>
-  form { display: grid; gap: 1rem; max-width: 360px; margin: 1rem 0; }
-  table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
-  th, td { padding: 0.5rem; border-bottom: 1px solid #e5e7eb; text-align: left; }
-  .error { color: #b91c1c; } .ok { color: #047857; }
-  .back { margin: 0 0 0.5rem; font-size: 0.9rem; }
-  .back a { color: #475569; text-decoration: none; }
-  .back a:hover { color: #1F4E78; text-decoration: underline; }
+  .tz-form, .pw-form { display: grid; gap: var(--s-3); max-width: 480px; }
+  .sessions { list-style: none; padding: 0; margin: 0 0 var(--s-3); display: grid; gap: var(--s-2); }
+  .session-row { display: flex; justify-content: space-between; align-items: center; gap: var(--s-3); }
 </style>
