@@ -6,6 +6,7 @@
   let userTz = $state(data.userTimezone);
 </script>
 
+<p class="back"><a href="/app">← Application</a></p>
 <h1>Mon compte</h1>
 <p>Connecté en tant que <strong>{data.account.email}</strong>{#if data.account.isAdmin} (admin){/if}.</p>
 
@@ -64,4 +65,7 @@
   table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
   th, td { padding: 0.5rem; border-bottom: 1px solid #e5e7eb; text-align: left; }
   .error { color: #b91c1c; } .ok { color: #047857; }
+  .back { margin: 0 0 0.5rem; font-size: 0.9rem; }
+  .back a { color: #475569; text-decoration: none; }
+  .back a:hover { color: #1F4E78; text-decoration: underline; }
 </style>

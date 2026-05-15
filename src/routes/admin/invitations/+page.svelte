@@ -14,6 +14,7 @@
   }
 </script>
 
+<p class="back"><a href="/app">← Application</a></p>
 <h1>Invitations</h1>
 <form method="POST" action="?/create" use:enhance>
   <button type="submit">Générer une invitation</button>
@@ -40,4 +41,7 @@
 <style>
   table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
   th, td { padding: 0.5rem; border-bottom: 1px solid #e5e7eb; text-align: left; }
+  .back { margin: 0 0 0.5rem; font-size: 0.9rem; }
+  .back a { color: #475569; text-decoration: none; }
+  .back a:hover { color: #1F4E78; text-decoration: underline; }
 </style>

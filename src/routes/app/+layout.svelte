@@ -26,6 +26,7 @@
   </div>
 
   {#if data.currentBabyId}
+    <p class="back"><a href="/app/babies">← Tous les bébés</a></p>
     <nav class="sub">
       <a class={subActive('today')}   href="/app/babies/{data.currentBabyId}/today">Aujourd'hui</a>
       <a class={subActive('history')} href="/app/babies/{data.currentBabyId}/history">Historique</a>
@@ -46,4 +47,7 @@
   .sub { display: flex; gap: 1rem; font-size: 0.95rem; border-bottom: 1px solid #e5e7eb; padding-bottom: 0.5rem; }
   .sub-tab { text-decoration: none; color: #475569; padding: 0.25rem 0.5rem; border-radius: 4px 4px 0 0; }
   .sub-tab.active { color: #1F4E78; font-weight: 600; border-bottom: 2px solid #1F4E78; }
+  .back { margin: 0 0 0.5rem; font-size: 0.9rem; }
+  .back a { color: #475569; text-decoration: none; }
+  .back a:hover { color: #1F4E78; text-decoration: underline; }
 </style>
