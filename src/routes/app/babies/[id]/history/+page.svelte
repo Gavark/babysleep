@@ -1,13 +1,14 @@
 <script lang="ts">
   import { parseHHMM, formatHHMM } from '$lib/time';
-
+  import Download from 'phosphor-svelte/lib/Download';
+  import Calendar from 'phosphor-svelte/lib/Calendar';
   let { data } = $props();
 
   function napCount(r: any) {
     return [r.nap1End, r.nap2End, r.nap3End, r.nap4End].filter(Boolean).length;
   }
 
-  function prevNight(curr: any, prev: any): string {
+  function prevNight(curr: any, prev: any | undefined): string {
     if (!prev || !curr.wakeTime || !prev.bedtime) return '';
     const dayDiff = (new Date(curr.date).getTime() - new Date(prev.date).getTime()) / 86400000;
     if (Math.round(dayDiff) !== 1) return '';
@@ -18,57 +19,88 @@
 
 <h1>Historique — {data.baby.name}</h1>
 
-<form method="GET">
-  <label>De <input type="date" name="from" value={data.from} /></label>
-  <label>À <input type="date" name="to" value={data.to} /></label>
-  <button type="submit">Filtrer</button>
-  <a class="btn" href="/api/babies/{data.baby.id}/export.csv?from={data.from}&to={data.to}">Télécharger CSV</a>
+<form method="GET" class="filter-row">
+  <label class="field">
+    <span class="field-label"><Calendar size={12} /> De</span>
+    <input class="field-input" type="date" name="from" value={data.from} />
+  </label>
+  <label class="field">
+    <span class="field-label"><Calendar size={12} /> À</span>
+    <input class="field-input" type="date" name="to" value={data.to} />
+  </label>
+  <button type="submit" class="btn btn-secondary">Filtrer</button>
+  <a class="btn btn-primary" href="/api/babies/{data.baby.id}/export.csv?from={data.from}&to={data.to}">
+    <Download size={16} /> CSV
+  </a>
 </form>
 
-<section class="summary">
-  <div>📅 {data.summary.entryCount} jour(s)</div>
-  <div>🌅 Réveil moyen : {data.summary.meanWakeHHMM || '—'}</div>
-  <div>🌙 Coucher moyen : {data.summary.meanBedtimeHHMM || '—'}</div>
-  <div>🛏️ Nuit moyenne : {data.summary.meanPrevNightHHMM || '—'}</div>
-  <div>💤 Siestes / jour : {data.summary.meanNaps}</div>
-  <div>☀️ Jour moyen : {data.summary.meanDaySleepHHMM || '—'}</div>
+<section class="summary-strip">
+  <div>📅 <strong>{data.summary.entryCount}</strong> jour(s)</div>
+  <div>🌅 Réveil moyen <strong>{data.summary.meanWakeHHMM || '—'}</strong></div>
+  <div>🌙 Coucher moyen <strong>{data.summary.meanBedtimeHHMM || '—'}</strong></div>
+  <div>🛏️ Nuit moyenne <strong>{data.summary.meanPrevNightHHMM || '—'}</strong></div>
+  <div>☀️ Jour moyen <strong>{data.summary.meanDaySleepHHMM || '—'}</strong></div>
+  <div>💤 Siestes/jour <strong>{data.summary.meanNaps}</strong></div>
 </section>
 
-<table>
-  <thead>
-    <tr><th>Date</th><th>Réveil</th><th>S1</th><th>S2</th><th>S3</th><th>S4</th><th>Coucher</th><th>Nuit préc.</th><th>Nb</th><th>Notes</th></tr>
-  </thead>
-  <tbody>
-    {#each data.entries as r, i}
-      <tr>
-        <td>{r.date}</td>
-        <td>{r.wakeTime ?? ''}</td>
-        <td>{r.nap1End ?? ''}</td>
-        <td>{r.nap2End ?? ''}</td>
-        <td>{r.nap3End ?? ''}</td>
-        <td>{r.nap4End ?? ''}</td>
-        <td>{r.bedtime ?? ''}</td>
-        <td>{prevNight(r, data.entries[i + 1])}</td>
-        <td>{napCount(r)}</td>
-        <td>{r.notes ?? ''}</td>
-      </tr>
-    {/each}
-  </tbody>
-</table>
+{#if data.entries.length === 0}
+  <p class="empty">Aucune entrée sur cette période.</p>
+{:else}
+  <div class="card" style="padding: 0; overflow-x: auto;">
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th><th>Réveil</th>
+          <th>S1</th><th>S2</th><th>S3</th><th>S4</th>
+          <th>Coucher</th><th>Nuit préc.</th><th>Nb</th><th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        {#each data.entries as r, i}
+          <tr>
+            <td><strong>{r.date}</strong></td>
+            <td>{r.wakeTime ?? ''}</td>
+            <td>{r.nap1End ?? ''}</td>
+            <td>{r.nap2End ?? ''}</td>
+            <td>{r.nap3End ?? ''}</td>
+            <td>{r.nap4End ?? ''}</td>
+            <td>{r.bedtime ?? ''}</td>
+            <td>{prevNight(r, data.entries[i + 1])}</td>
+            <td>{napCount(r)}</td>
+            <td>{r.notes ?? ''}</td>
+          </tr>
+        {/each}
+      </tbody>
+    </table>
+  </div>
 
-{#if data.totalPages > 1}
-  <nav class="pager">
-    {#if data.page > 1}<a href="?from={data.from}&to={data.to}&page={data.page - 1}">‹ Précédent</a>{/if}
-    <span>Page {data.page} / {data.totalPages}</span>
-    {#if data.page < data.totalPages}<a href="?from={data.from}&to={data.to}&page={data.page + 1}">Suivant ›</a>{/if}
-  </nav>
+  {#if data.totalPages > 1}
+    <nav class="pager">
+      {#if data.page > 1}
+        <a class="btn btn-ghost btn-sm" href="?from={data.from}&to={data.to}&page={data.page - 1}">‹ Précédent</a>
+      {/if}
+      <span class="tz-info">Page {data.page} / {data.totalPages}</span>
+      {#if data.page < data.totalPages}
+        <a class="btn btn-ghost btn-sm" href="?from={data.from}&to={data.to}&page={data.page + 1}">Suivant ›</a>
+      {/if}
+    </nav>
+  {/if}
 {/if}
 
 <style>
-  form { display: flex; gap: 0.5rem; align-items: end; flex-wrap: wrap; margin-bottom: 1rem; }
-  .summary { display: flex; gap: 1rem; flex-wrap: wrap; background: #DDEBF7; padding: 0.5rem; margin-bottom: 1rem; }
-  table { border-collapse: collapse; width: 100%; }
-  th, td { padding: 0.35rem; border-bottom: 1px solid #e5e7eb; text-align: left; }
-  .btn { padding: 0.4rem 0.6rem; background: #1F4E78; color: white; text-decoration: none; border-radius: 4px; }
-  .pager { display: flex; gap: 1rem; align-items: center; margin-top: 1rem; }
+  .filter-row {
+    display: flex;
+    gap: var(--s-3);
+    align-items: end;
+    flex-wrap: wrap;
+    margin-bottom: var(--s-4);
+  }
+  .filter-row .field { min-width: 140px; }
+  .pager {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--s-4);
+    margin-top: var(--s-4);
+  }
 </style>
