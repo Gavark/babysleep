@@ -5,43 +5,39 @@
 
   let { data, form } = $props();
 
-  let wake      = $state(data.entry?.wakeTime  ?? '');
-  let nap1Start = $state(data.entry?.nap1Start ?? '');
-  let nap1End   = $state(data.entry?.nap1End   ?? '');
-  let nap2Start = $state(data.entry?.nap2Start ?? '');
-  let nap2End   = $state(data.entry?.nap2End   ?? '');
-  let nap3Start = $state(data.entry?.nap3Start ?? '');
-  let nap3End   = $state(data.entry?.nap3End   ?? '');
-  let nap4Start = $state(data.entry?.nap4Start ?? '');
-  let nap4End   = $state(data.entry?.nap4End   ?? '');
-  let bedtime   = $state(data.entry?.bedtime   ?? '');
-  let notes     = $state(data.entry?.notes     ?? '');
+  // All form state initialized empty — synced from data.entry via $effect below
+  let wake       = $state('');
+  let nap1Start  = $state('');
+  let nap1End    = $state('');
+  let nap2Start  = $state('');
+  let nap2End    = $state('');
+  let nap3Start  = $state('');
+  let nap3End    = $state('');
+  let nap4Start  = $state('');
+  let nap4End    = $state('');
+  let bedtime    = $state('');
+  let notes      = $state('');
 
-  // DOM refs to catch values the browser injected without firing events
-  let wakeEl      = $state<HTMLInputElement | null>(null);
-  let nap1StartEl = $state<HTMLInputElement | null>(null);
-  let nap1EndEl   = $state<HTMLInputElement | null>(null);
-  let nap2StartEl = $state<HTMLInputElement | null>(null);
-  let nap2EndEl   = $state<HTMLInputElement | null>(null);
-  let nap3StartEl = $state<HTMLInputElement | null>(null);
-  let nap3EndEl   = $state<HTMLInputElement | null>(null);
-  let nap4StartEl = $state<HTMLInputElement | null>(null);
-  let nap4EndEl   = $state<HTMLInputElement | null>(null);
-  let bedtimeEl   = $state<HTMLInputElement | null>(null);
+  // Track which entry we last synced from; trigger resync when the loaded entry changes.
+  // Using `undefined` initially (vs null) lets us distinguish "never synced" from "synced from no-entry".
+  let syncedFor = $state<string | number>('__init__');
 
-  // After mount, read whatever the browser put into the inputs (autofill / session memory)
-  // and sync to state. Re-runs whenever the form re-mounts via the {#key} below.
   $effect(() => {
-    if (wakeEl      && wakeEl.value      !== wake)      wake      = wakeEl.value;
-    if (nap1StartEl && nap1StartEl.value !== nap1Start) nap1Start = nap1StartEl.value;
-    if (nap1EndEl   && nap1EndEl.value   !== nap1End)   nap1End   = nap1EndEl.value;
-    if (nap2StartEl && nap2StartEl.value !== nap2Start) nap2Start = nap2StartEl.value;
-    if (nap2EndEl   && nap2EndEl.value   !== nap2End)   nap2End   = nap2EndEl.value;
-    if (nap3StartEl && nap3StartEl.value !== nap3Start) nap3Start = nap3StartEl.value;
-    if (nap3EndEl   && nap3EndEl.value   !== nap3End)   nap3End   = nap3EndEl.value;
-    if (nap4StartEl && nap4StartEl.value !== nap4Start) nap4Start = nap4StartEl.value;
-    if (nap4EndEl   && nap4EndEl.value   !== nap4End)   nap4End   = nap4EndEl.value;
-    if (bedtimeEl   && bedtimeEl.value   !== bedtime)   bedtime   = bedtimeEl.value;
+    const id = data.entry?.id ?? 'none';
+    if (id !== syncedFor) {
+      syncedFor = id;
+      wake      = data.entry?.wakeTime  ?? '';
+      nap1Start = data.entry?.nap1Start ?? '';
+      nap1End   = data.entry?.nap1End   ?? '';
+      nap2Start = data.entry?.nap2Start ?? '';
+      nap2End   = data.entry?.nap2End   ?? '';
+      nap3Start = data.entry?.nap3Start ?? '';
+      nap3End   = data.entry?.nap3End   ?? '';
+      nap4Start = data.entry?.nap4Start ?? '';
+      nap4End   = data.entry?.nap4End   ?? '';
+      bedtime   = data.entry?.bedtime   ?? '';
+      notes     = data.entry?.notes     ?? '';
+    }
   });
 
   function safeNextNap(t: string) {
@@ -72,7 +68,6 @@
   }
 </script>
 
-{#key data.entry?.id ?? 'new'}
 <h1>{data.baby.name} — {data.today}</h1>
 <p>Âge : <strong>{data.ageMonths} mois</strong> ({data.ageParams.label}). Recommandé : {data.ageParams.naps} sieste(s), fenêtre {data.ageParams.awakeWindowMin} min, nuit {data.ageParams.nightSleepH}h.</p>
 
@@ -84,7 +79,6 @@
 
   <label>Réveil
     <input type="time" name="wake_time" autocomplete="off"
-      bind:this={wakeEl}
       value={wake}
       oninput={(e) => wake = read(e)}
       onchange={(e) => wake = read(e)}
@@ -94,7 +88,6 @@
   <div class="hint">💤 Sieste 1 suggérée vers <strong>{sugg1 || '—'}</strong></div>
   <label>Début sieste 1
     <input type="time" name="nap1_start" autocomplete="off"
-      bind:this={nap1StartEl}
       value={nap1Start}
       oninput={(e) => nap1Start = read(e)}
       onchange={(e) => nap1Start = read(e)}
@@ -102,7 +95,6 @@
   </label>
   <label>Fin sieste 1
     <input type="time" name="nap1_end" autocomplete="off"
-      bind:this={nap1EndEl}
       value={nap1End}
       oninput={(e) => nap1End = read(e)}
       onchange={(e) => nap1End = read(e)}
@@ -112,7 +104,6 @@
   <div class="hint">💤 Sieste 2 suggérée vers <strong>{sugg2 || '—'}</strong></div>
   <label>Début sieste 2
     <input type="time" name="nap2_start" autocomplete="off"
-      bind:this={nap2StartEl}
       value={nap2Start}
       oninput={(e) => nap2Start = read(e)}
       onchange={(e) => nap2Start = read(e)}
@@ -120,7 +111,6 @@
   </label>
   <label>Fin sieste 2
     <input type="time" name="nap2_end" autocomplete="off"
-      bind:this={nap2EndEl}
       value={nap2End}
       oninput={(e) => nap2End = read(e)}
       onchange={(e) => nap2End = read(e)}
@@ -130,7 +120,6 @@
   <div class="hint">💤 Sieste 3 suggérée vers <strong>{sugg3 || '—'}</strong></div>
   <label>Début sieste 3
     <input type="time" name="nap3_start" autocomplete="off"
-      bind:this={nap3StartEl}
       value={nap3Start}
       oninput={(e) => nap3Start = read(e)}
       onchange={(e) => nap3Start = read(e)}
@@ -138,7 +127,6 @@
   </label>
   <label>Fin sieste 3
     <input type="time" name="nap3_end" autocomplete="off"
-      bind:this={nap3EndEl}
       value={nap3End}
       oninput={(e) => nap3End = read(e)}
       onchange={(e) => nap3End = read(e)}
@@ -148,7 +136,6 @@
   <div class="hint">💤 Sieste 4 suggérée vers <strong>{sugg4 || '—'}</strong></div>
   <label>Début sieste 4
     <input type="time" name="nap4_start" autocomplete="off"
-      bind:this={nap4StartEl}
       value={nap4Start}
       oninput={(e) => nap4Start = read(e)}
       onchange={(e) => nap4Start = read(e)}
@@ -156,7 +143,6 @@
   </label>
   <label>Fin sieste 4
     <input type="time" name="nap4_end" autocomplete="off"
-      bind:this={nap4EndEl}
       value={nap4End}
       oninput={(e) => nap4End = read(e)}
       onchange={(e) => nap4End = read(e)}
@@ -167,7 +153,6 @@
   <div class="key">⭐ Coucher suggéré : <strong>{suggBed || '—'}</strong></div>
   <label>Coucher effectif
     <input type="time" name="bedtime" autocomplete="off"
-      bind:this={bedtimeEl}
       value={bedtime}
       oninput={(e) => bedtime = read(e)}
       onchange={(e) => bedtime = read(e)}
@@ -185,7 +170,6 @@
     <li>{r.date} — réveil {r.wakeTime ?? '?'} / coucher {r.bedtime ?? '?'}</li>
   {/each}
 </ul>
-{/key}
 
 <style>
   form { display: grid; gap: 0.5rem; max-width: 360px; }
