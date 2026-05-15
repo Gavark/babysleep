@@ -13,8 +13,8 @@ export default defineConfig({
         short_name: 'BabySleep',
         start_url: '/',
         display: 'standalone',
-        background_color: '#1F4E78',
-        theme_color: '#1F4E78',
+        background_color: '#FBF8F3',
+        theme_color: '#C97A5D',
         lang: 'fr',
         icons: [
           { src: '/icon-192.png', sizes: '192x192', type: 'image/png' },
