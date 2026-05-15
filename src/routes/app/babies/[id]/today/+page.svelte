@@ -1,6 +1,6 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
-  import { idealBedtime, suggestNextNap, suggestedBedtime } from '$lib/sleep-calc';
+  import { idealBedtime, suggestNextNap, suggestedBedtime, suggestNapEnd, type NapPair } from '$lib/sleep-calc';
   import { isValidHHMM } from '$lib/time';
   import { COMMON_TIMEZONES } from '$lib/tz';
   import Clock from 'phosphor-svelte/lib/Clock';
@@ -58,6 +58,18 @@
   const sugg2 = $derived(safeNextNap(nap1End));
   const sugg3 = $derived(safeNextNap(nap2End));
   const sugg4 = $derived(safeNextNap(nap3End));
+
+  const napsArr = $derived<NapPair[]>([
+    { start: nap1Start, end: nap1End },
+    { start: nap2Start, end: nap2End },
+    { start: nap3Start, end: nap3End },
+    { start: nap4Start, end: nap4End }
+  ]);
+  const napEndSugg1 = $derived(suggestNapEnd(0, nap1Start, napsArr, data.ageParams) ?? '');
+  const napEndSugg2 = $derived(suggestNapEnd(1, nap2Start, napsArr, data.ageParams) ?? '');
+  const napEndSugg3 = $derived(suggestNapEnd(2, nap3Start, napsArr, data.ageParams) ?? '');
+  const napEndSugg4 = $derived(suggestNapEnd(3, nap4Start, napsArr, data.ageParams) ?? '');
+
   const suggBed = $derived(
     isValidHHMM(wake)
       ? (suggestedBedtime(
@@ -118,10 +130,10 @@
   </div>
 
   {#each [
-    { idx: 1, suggValue: sugg1, startVal: nap1Start, endVal: nap1End, setStart: (v: string) => nap1Start = v, setEnd: (v: string) => nap1End = v },
-    { idx: 2, suggValue: sugg2, startVal: nap2Start, endVal: nap2End, setStart: (v: string) => nap2Start = v, setEnd: (v: string) => nap2End = v },
-    { idx: 3, suggValue: sugg3, startVal: nap3Start, endVal: nap3End, setStart: (v: string) => nap3Start = v, setEnd: (v: string) => nap3End = v },
-    { idx: 4, suggValue: sugg4, startVal: nap4Start, endVal: nap4End, setStart: (v: string) => nap4Start = v, setEnd: (v: string) => nap4End = v }
+    { idx: 1, suggValue: sugg1, endSuggValue: napEndSugg1, startVal: nap1Start, endVal: nap1End, setStart: (v: string) => nap1Start = v, setEnd: (v: string) => nap1End = v },
+    { idx: 2, suggValue: sugg2, endSuggValue: napEndSugg2, startVal: nap2Start, endVal: nap2End, setStart: (v: string) => nap2Start = v, setEnd: (v: string) => nap2End = v },
+    { idx: 3, suggValue: sugg3, endSuggValue: napEndSugg3, startVal: nap3Start, endVal: nap3End, setStart: (v: string) => nap3Start = v, setEnd: (v: string) => nap3End = v },
+    { idx: 4, suggValue: sugg4, endSuggValue: napEndSugg4, startVal: nap4Start, endVal: nap4End, setStart: (v: string) => nap4Start = v, setEnd: (v: string) => nap4End = v }
   ] as nap (nap.idx)}
     <div class="nap-block">
       <div class="nap-title"><Sun size={16} weight="regular" /> Sieste {nap.idx}</div>
@@ -140,6 +152,9 @@
             oninput={(e) => nap.setEnd(read(e))} onchange={(e) => nap.setEnd(read(e))} onblur={(e) => nap.setEnd(read(e))} />
         </label>
       </div>
+      {#if nap.endSuggValue && nap.startVal && !nap.endVal}
+        <div class="hint" style="margin-top: var(--s-1);">Fin suggérée vers <strong>{nap.endSuggValue}</strong></div>
+      {/if}
     </div>
   {/each}
 

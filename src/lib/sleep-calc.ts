@@ -1,4 +1,4 @@
-import { parseHHMM, formatHHMM } from './time';
+import { parseHHMM, formatHHMM, isValidHHMM } from './time';
 
 export function ageInMonths(birthDateISO: string, override?: number | null, today: Date = new Date()): number {
   if (override != null) return Math.max(0, Math.floor(override));
@@ -46,4 +46,66 @@ export function suggestedBedtime(
     if (m > bestMin) bestMin = m;
   }
   return formatHHMM(bestMin + params.beforeBedWindowMin);
+}
+
+/**
+ * Pattern weights for typical nap distributions per age tier.
+ * Based on standard guidance: morning short / midday long / late-day short.
+ * Indexed by total nap count (1..4). Each array sums to 1.0.
+ */
+export const NAP_WEIGHTS: Record<number, number[]> = {
+  1: [1.0],
+  2: [0.40, 0.60],
+  3: [0.27, 0.55, 0.18],
+  4: [0.27, 0.32, 0.27, 0.14]
+};
+
+export type NapPair = { start?: string | null; end?: string | null };
+
+/**
+ * Suggest the end time of nap N given:
+ * - napIndex (0-based)
+ * - napStart (HH:MM)
+ * - allNaps: array of all nap pairs in the day (we read those at index < napIndex for completed time)
+ * - ageParams with `naps` (count) and `daySleepH` (budget in hours)
+ *
+ * Returns null if no useful suggestion (budget exhausted, invalid input, etc.).
+ */
+export function suggestNapEnd(
+  napIndex: number,
+  napStart: string,
+  allNaps: NapPair[],
+  ageParams: { naps: number; daySleepH: number }
+): string | null {
+  if (!isValidHHMM(napStart)) return null;
+  if (napIndex < 0 || napIndex >= ageParams.naps) return null;
+
+  // 1. Compute minutes already slept in earlier naps (both start AND end filled and valid)
+  let completedMin = 0;
+  for (let i = 0; i < napIndex; i++) {
+    const p = allNaps[i];
+    if (p?.start && p?.end && isValidHHMM(p.start) && isValidHHMM(p.end)) {
+      const dur = ((parseHHMM(p.end) - parseHHMM(p.start)) % 1440 + 1440) % 1440;
+      completedMin += dur;
+    }
+  }
+
+  // 2. Remaining budget
+  const totalBudgetMin = Math.round(ageParams.daySleepH * 60);
+  const remainingMin = totalBudgetMin - completedMin;
+  if (remainingMin <= 0) return null;
+
+  // 3. Pattern weights: fallback to uniform if count is unusual
+  const weights = NAP_WEIGHTS[ageParams.naps] ?? Array(ageParams.naps).fill(1 / ageParams.naps);
+  if (napIndex >= weights.length) return null;
+
+  const remainingWeight = weights.slice(napIndex).reduce((s, w) => s + w, 0);
+  const myWeight = weights[napIndex];
+  if (remainingWeight <= 0 || myWeight <= 0) return null;
+
+  // 4. Suggested duration with caps (10 min ≤ dur ≤ 180 min for safety)
+  let suggestedMin = Math.round(remainingMin * (myWeight / remainingWeight));
+  suggestedMin = Math.max(10, Math.min(180, suggestedMin));
+
+  return formatHHMM(parseHHMM(napStart) + suggestedMin);
 }

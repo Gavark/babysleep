@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { ageInMonths, idealBedtime, suggestNextNap, suggestedBedtime } from '$lib/sleep-calc';
+import { ageInMonths, idealBedtime, suggestNextNap, suggestedBedtime, NAP_WEIGHTS, suggestNapEnd } from '$lib/sleep-calc';
+import type { NapPair } from '$lib/sleep-calc';
 
 describe('ageInMonths', () => {
   it('returns whole months between two dates', () => {
@@ -61,5 +62,72 @@ describe('suggestedBedtime', () => {
   it('ignores empty/undefined nap ends', () => {
     expect(suggestedBedtime({ wake: '07:00', napEnds: ['', undefined, '15:00'] as (string|undefined)[] }, params))
       .toBe('18:00');
+  });
+});
+
+describe('NAP_WEIGHTS', () => {
+  it('every distribution sums to 1.0 (±0.001)', () => {
+    for (const [, w] of Object.entries(NAP_WEIGHTS)) {
+      const sum = w.reduce((s, x) => s + x, 0);
+      expect(Math.abs(sum - 1.0)).toBeLessThan(0.001);
+    }
+  });
+});
+
+describe('suggestNapEnd', () => {
+  const params3 = { naps: 3, daySleepH: 3 }; // 180 min budget, weights [0.27, 0.55, 0.18]
+  const params1 = { naps: 1, daySleepH: 1.5 }; // 90 min budget, weight [1.0]
+
+  it('first nap of 3-nap day at 09:00 → ~09:49 (27% of 180 min, rounds to 49)', () => {
+    // Math.round(180 * 0.27) = Math.round(48.6) = 49 min
+    expect(suggestNapEnd(0, '09:00', [], params3)).toBe('09:49');
+  });
+
+  it('second nap of 3-nap day at 12:00 (first one was full hour) → ~13:32 (55%/73% of 120 min)', () => {
+    // After 60 min completed, remaining = 120 min, weights for naps 2+3 sum to 0.73
+    // Nap 2 share = 120 * (0.55 / 0.73) = 90.4 ≈ 90 min → 13:30
+    expect(suggestNapEnd(1, '12:00', [{ start: '09:00', end: '10:00' }], params3)).toBe('13:30');
+  });
+
+  it('returns null when napStart invalid', () => {
+    expect(suggestNapEnd(0, 'not-a-time', [], params3)).toBeNull();
+  });
+
+  it('returns null when budget already exhausted', () => {
+    // 3 hours slept already
+    const naps: NapPair[] = [
+      { start: '09:00', end: '10:00' },
+      { start: '12:00', end: '14:00' }
+    ];
+    // completed = 180 min = budget → remaining 0 → null
+    expect(suggestNapEnd(2, '16:00', naps, params3)).toBeNull();
+  });
+
+  it('caps suggestion to 180 min maximum', () => {
+    // Wildly large budget would otherwise give 5h
+    const huge = { naps: 1, daySleepH: 5 };
+    const end = suggestNapEnd(0, '12:00', [], huge);
+    // 5h at weight 1.0 = 300 min → capped to 180 → 15:00
+    expect(end).toBe('15:00');
+  });
+
+  it('caps suggestion to 10 min minimum if remaining is tiny', () => {
+    // 3-nap day, after 2h45 already slept, only 15 min left, but weighted to last nap
+    const naps: NapPair[] = [
+      { start: '09:00', end: '10:00' },
+      { start: '12:00', end: '13:45' }
+    ];
+    // remaining = 180 - 60 - 105 = 15 min, weight for nap 3 / weight remaining = 0.18 / 0.18 = 1
+    // → suggested = 15 min, no cap needed (15 ≥ 10)
+    expect(suggestNapEnd(2, '16:00', naps, params3)).toBe('16:15');
+  });
+
+  it('handles 1-nap days (just adds budget to start)', () => {
+    expect(suggestNapEnd(0, '13:00', [], params1)).toBe('14:30');
+  });
+
+  it('returns null when napIndex out of range', () => {
+    expect(suggestNapEnd(5, '09:00', [], params3)).toBeNull();
+    expect(suggestNapEnd(-1, '09:00', [], params3)).toBeNull();
   });
 });
