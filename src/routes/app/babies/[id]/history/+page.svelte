@@ -64,7 +64,7 @@
       <tbody>
         {#each data.entries as r, i}
           <tr>
-            <td><strong>{r.date}</strong></td>
+            <td><a href="/app/babies/{data.baby.id}/day/{r.date}"><strong>{r.date}</strong></a></td>
             <td>{r.wakeTime ?? ''}</td>
             <td>{r.nap1End ?? ''}</td>
             <td>{r.nap2End ?? ''}</td>

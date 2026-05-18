@@ -46,6 +46,10 @@ export function upsertEntry(db: DB, babyId: number, date: string, patch: EntryPa
   }
 }
 
+export function deleteEntry(db: DB, entryId: number) {
+  db.delete(schema.sleepEntries).where(eq(schema.sleepEntries.id, entryId)).run();
+}
+
 export function getEntryForBabyDate(db: DB, babyId: number, date: string) {
   return db.select().from(schema.sleepEntries)
     .where(and(eq(schema.sleepEntries.babyId, babyId), eq(schema.sleepEntries.date, date)))

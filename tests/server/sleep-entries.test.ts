@@ -4,7 +4,8 @@ import {
   upsertEntry,
   getEntryForBabyDate,
   listEntriesInRange,
-  summariesForBaby
+  summariesForBaby,
+  deleteEntry
 } from '../../src/lib/server/sleep-entries';
 
 function setup(tdb: ReturnType<typeof makeTestDb>) {
@@ -67,5 +68,19 @@ describe('sleep-entries', () => {
     const s = summariesForBaby(tdb.db, babyId, '2026-05-01', '2026-05-31');
     // Day 1: 1h + 1h30 = 2h30 = 150 min. Day 2: 1h + 1h = 120 min. Mean = 135 min = 02:15.
     expect(s.meanDaySleepHHMM).toBe('02:15');
+  });
+});
+
+describe('deleteEntry', () => {
+  let tdb: ReturnType<typeof makeTestDb>;
+  beforeEach(() => { tdb = makeTestDb(); });
+
+  it('removes the entry by id', () => {
+    const { babyId } = setup(tdb);
+    upsertEntry(tdb.db, babyId, '2026-05-15', { wakeTime: '07:00' });
+    const e = getEntryForBabyDate(tdb.db, babyId, '2026-05-15');
+    expect(e).not.toBeNull();
+    deleteEntry(tdb.db, e!.id);
+    expect(getEntryForBabyDate(tdb.db, babyId, '2026-05-15')).toBeNull();
   });
 });

@@ -1,0 +1,83 @@
+import { error, fail, redirect } from '@sveltejs/kit';
+import type { Actions, PageServerLoad } from './$types';
+import { getDb } from '$lib/server/db';
+import { getBabyForUser } from '$lib/server/babies';
+import { getEntryForBabyDate, upsertEntry, deleteEntry } from '$lib/server/sleep-entries';
+import { ageInMonths } from '$lib/sleep-calc';
+import { paramsForAge } from '$lib/age-params';
+import { isValidHHMM } from '$lib/time';
+import { resolveTimezone } from '$lib/tz';
+
+function camel(s: string): string {
+  return s.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+}
+
+export const load: PageServerLoad = ({ locals, params }) => {
+  if (!locals.user) throw redirect(303, '/login');
+  const id = Number(params.id);
+  const date = String(params.date);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw error(400, 'Date invalide');
+
+  const { db } = getDb();
+  const baby = getBabyForUser(db, locals.user.id, id);
+  if (!baby) throw error(404);
+
+  const entry = getEntryForBabyDate(db, baby.id, date);
+  if (!entry) throw error(404, "Aucune entrée à cette date.");
+
+  // Compute baby age AT that date (not today's age — important for old entries)
+  const refDate = new Date(date + 'T12:00:00Z');
+  const months = ageInMonths(baby.birthDate, baby.ageOverrideMonths ?? undefined, refDate);
+  const ageParams = paramsForAge(months);
+
+  const effectiveTz = resolveTimezone(entry.timezone ?? null, baby.timezone, locals.user.timezone);
+
+  return { baby, date, entry, ageMonths: months, ageParams, effectiveTz };
+};
+
+export const actions: Actions = {
+  save: async ({ request, locals, params }) => {
+    if (!locals.user) throw redirect(303, '/login');
+    const id = Number(params.id);
+    const date = String(params.date);
+    const { db } = getDb();
+    const baby = getBabyForUser(db, locals.user.id, id);
+    if (!baby) throw error(404);
+
+    const form = await request.formData();
+    const fields = [
+      'wake_time',
+      'nap1_start', 'nap1_end',
+      'nap2_start', 'nap2_end',
+      'nap3_start', 'nap3_end',
+      'nap4_start', 'nap4_end',
+      'bedtime'
+    ] as const;
+    const patch: Record<string, string | null> = {};
+    for (const f of fields) {
+      const v = String(form.get(f) ?? '').trim();
+      if (v === '') patch[camel(f)] = null;
+      else if (!isValidHHMM(v)) return fail(400, { error: `Heure invalide (${f}): ${v}` });
+      else patch[camel(f)] = v;
+    }
+    const notes = String(form.get('notes') ?? '').trim();
+    patch.notes = notes || null;
+    const formTz = String(form.get('timezone') ?? '').trim();
+    patch.timezone = formTz || null;
+
+    upsertEntry(db, baby.id, date, patch as any);
+    return { success: 'Journée mise à jour.' };
+  },
+
+  delete: ({ locals, params }) => {
+    if (!locals.user) throw redirect(303, '/login');
+    const id = Number(params.id);
+    const date = String(params.date);
+    const { db } = getDb();
+    const baby = getBabyForUser(db, locals.user.id, id);
+    if (!baby) throw error(404);
+    const entry = getEntryForBabyDate(db, baby.id, date);
+    if (entry) deleteEntry(db, entry.id);
+    throw redirect(303, `/app/babies/${id}/history`);
+  }
+};
