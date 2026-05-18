@@ -63,18 +63,43 @@
     data.entries.map((e: any, i: number) => prevNightHours(e, i > 0 ? data.entries[i - 1] : null))
   );
 
-  // Common Y-axis formatter for HH:MM time-of-day charts (0..24 hours)
+  function decimalToHHMM(v: number | null | undefined): string {
+    if (v === null || v === undefined || !Number.isFinite(v)) return '—';
+    const totalMin = Math.round(v * 60);
+    const safeMin = ((totalMin % 1440) + 1440) % 1440;
+    const h = Math.floor(safeMin / 60);
+    const m = safeMin % 60;
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+  }
+
+  function decimalToDuration(v: number | null | undefined): string {
+    if (v === null || v === undefined || !Number.isFinite(v)) return '—';
+    const totalMin = Math.max(0, Math.round(v * 60));
+    const h = Math.floor(totalMin / 60);
+    const m = totalMin % 60;
+    if (h === 0) return `${m} min`;
+    if (m === 0) return `${h}h`;
+    return `${h}h${String(m).padStart(2, '0')}`;
+  }
+
   const timeOfDayOpts = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: (ctx: any) => `${ctx.dataset.label}: ${decimalToHHMM(ctx.parsed.y)}`
+        }
+      }
+    },
     scales: {
       y: {
         min: 0,
         max: 24,
         ticks: {
           stepSize: 2,
-          callback: (v: number) => `${String(Math.floor(v)).padStart(2, '0')}:${String(Math.round((v % 1) * 60)).padStart(2, '0')}`
+          callback: (v: any) => decimalToHHMM(Number(v))
         }
       }
     }
@@ -83,14 +108,36 @@
   const hourOpts = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
-    scales: { y: { beginAtZero: true, title: { display: true, text: 'heures' } } }
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: (ctx: any) => `${ctx.dataset.label}: ${decimalToDuration(ctx.parsed.y)}`
+        }
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: { display: true, text: 'durée' },
+        ticks: {
+          callback: (v: any) => decimalToDuration(Number(v))
+        }
+      }
+    }
   };
 
   const countOpts = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: (ctx: any) => `${ctx.dataset.label}: ${ctx.parsed.y}`
+        }
+      }
+    },
     scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
   };
 </script>
