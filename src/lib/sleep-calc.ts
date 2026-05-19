@@ -32,20 +32,35 @@ export type DayEvents = {
 
 export function suggestedBedtime(
   events: DayEvents,
-  params: { beforeBedWindowMin: number; nightSleepH: number }
+  params: { beforeBedWindowMin: number; nightSleepH: number },
+  dayBudget?: { totalMin: number; completedMin: number }
 ): string | null {
   const valid = events.napEnds.filter((s): s is string => !!s && /^\d{2}:\d{2}$/.test(s));
+  let naturalBedtime: string | null;
+
   if (valid.length === 0) {
     if (!events.wake) return null;
-    return idealBedtime(events.wake, params.nightSleepH);
+    naturalBedtime = idealBedtime(events.wake, params.nightSleepH);
+  } else {
+    const candidates = events.wake ? [events.wake, ...valid] : valid;
+    let bestMin = -1;
+    for (const t of candidates) {
+      const m = parseHHMM(t);
+      if (m > bestMin) bestMin = m;
+    }
+    naturalBedtime = formatHHMM(bestMin + params.beforeBedWindowMin);
   }
-  const candidates = events.wake ? [events.wake, ...valid] : valid;
-  let bestMin = -1;
-  for (const t of candidates) {
-    const m = parseHHMM(t);
-    if (m > bestMin) bestMin = m;
-  }
-  return formatHHMM(bestMin + params.beforeBedWindowMin);
+
+  if (!dayBudget || dayBudget.totalMin <= 0) return naturalBedtime;
+
+  const excess = dayBudget.completedMin - dayBudget.totalMin;
+  const COMP_FACTOR = 0.6;
+  const MAX_SHIFT = 90;
+  let shift = Math.round(excess * COMP_FACTOR);
+  if (shift > MAX_SHIFT) shift = MAX_SHIFT;
+  if (shift < -MAX_SHIFT) shift = -MAX_SHIFT;
+
+  return formatHHMM(parseHHMM(naturalBedtime) + shift);
 }
 
 /**

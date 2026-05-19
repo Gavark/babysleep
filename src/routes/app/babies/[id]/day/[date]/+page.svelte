@@ -74,16 +74,18 @@
   const sugg2 = $derived(safeNextNap(nap1End));
   const sugg3 = $derived(safeNextNap(nap2End));
   const sugg4 = $derived(safeNextNap(nap3End));
+
+  const dayBudget = $derived(computeDaySleepBudget(napsArr, data.ageParams));
+
   const suggBed = $derived(
     isValidHHMM(wake)
       ? (suggestedBedtime(
           { wake, napEnds: [nap1End, nap2End, nap3End, nap4End].filter(isValidHHMM) },
-          data.ageParams
+          data.ageParams,
+          { totalMin: dayBudget.totalMin, completedMin: dayBudget.completedMin }
         ) ?? '')
       : ''
   );
-
-  const dayBudget = $derived(computeDaySleepBudget(napsArr, data.ageParams));
 
   function read(e: Event) {
     return (e.currentTarget as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement).value;

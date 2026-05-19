@@ -63,6 +63,57 @@ describe('suggestedBedtime', () => {
     expect(suggestedBedtime({ wake: '07:00', napEnds: ['', undefined, '15:00'] as (string|undefined)[] }, params))
       .toBe('18:00');
   });
+
+  it('shifts bedtime later when over budget (60% compensation, capped at +90)', () => {
+    // 1 nap completed; lastEnd=15:00 (900 min) + 180 = 18:00 natural bedtime
+    const naturalParams = { beforeBedWindowMin: 180, nightSleepH: 11 };
+    // Budget 180 min, completed 240 min → excess 60 min → shift +36 min
+    const bt = suggestedBedtime(
+      { wake: '07:00', napEnds: ['15:00'] },
+      naturalParams,
+      { totalMin: 180, completedMin: 240 }
+    );
+    expect(bt).toBe('18:36'); // 18:00 + 36 min
+  });
+
+  it('shifts bedtime earlier when under budget', () => {
+    // Budget 180 min, completed 60 min → excess -120 → shift -72 min
+    const bt = suggestedBedtime(
+      { wake: '07:00', napEnds: ['15:00'] },
+      { beforeBedWindowMin: 180, nightSleepH: 11 },
+      { totalMin: 180, completedMin: 60 }
+    );
+    expect(bt).toBe('16:48'); // 18:00 - 72 min
+  });
+
+  it('caps shift at +90 min for big excess', () => {
+    // Excess 300 min × 0.6 = 180 min, capped at +90
+    const bt = suggestedBedtime(
+      { wake: '07:00', napEnds: ['15:00'] },
+      { beforeBedWindowMin: 180, nightSleepH: 11 },
+      { totalMin: 180, completedMin: 480 }
+    );
+    expect(bt).toBe('19:30'); // 18:00 + 90 min
+  });
+
+  it('caps shift at -90 min for big shortage', () => {
+    // Excess -300 × 0.6 = -180, capped at -90
+    const bt = suggestedBedtime(
+      { wake: '07:00', napEnds: ['15:00'] },
+      { beforeBedWindowMin: 180, nightSleepH: 11 },
+      { totalMin: 180, completedMin: 0 }   // 0 completed but at least 1 nap "ended" — though here napEnds=['15:00']
+    );
+    expect(bt).toBe('16:30'); // 18:00 - 90 min
+  });
+
+  it('ignores dayBudget with totalMin = 0', () => {
+    const bt = suggestedBedtime(
+      { wake: '07:00', napEnds: ['15:00'] },
+      { beforeBedWindowMin: 180, nightSleepH: 11 },
+      { totalMin: 0, completedMin: 60 }
+    );
+    expect(bt).toBe('18:00'); // no shift
+  });
 });
 
 describe('NAP_WEIGHTS', () => {
