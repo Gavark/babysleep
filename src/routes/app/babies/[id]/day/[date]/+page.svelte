@@ -126,13 +126,16 @@
     </select>
   </label>
 
-  <div class="card">
+  <div class="card row-with-save">
     <label class="field">
       <span class="field-label"><Sun size={12} /> Réveil</span>
       <input class="field-input" type="time" name="wake_time" autocomplete="off"
         value={wake}
         oninput={(e) => wake = read(e)} onchange={(e) => wake = read(e)} onblur={(e) => wake = read(e)} />
     </label>
+    <button type="submit" class="btn btn-secondary btn-sm save-inline" title="Sauvegarder le réveil" aria-label="Sauvegarder le réveil">
+      <FloppyDisk size={14} />
+    </button>
   </div>
 
   <section class="day-budget">
@@ -179,6 +182,9 @@
       {#if nap.endSuggValue && nap.startVal && !nap.endVal}
         <div class="hint" style="margin-top: var(--s-1);">Fin suggérée vers <strong>{nap.endSuggValue}</strong></div>
       {/if}
+      <button type="submit" class="btn btn-secondary btn-sm save-inline-block" title="Sauvegarder cette sieste" aria-label="Sauvegarder cette sieste">
+        <FloppyDisk size={14} /> Sauvegarder
+      </button>
     </div>
   {/each}
 
@@ -198,13 +204,16 @@
     <span class="key-value">{suggBed || '—'}</span>
   </div>
 
-  <div class="card">
+  <div class="card row-with-save">
     <label class="field">
       <span class="field-label"><Moon size={12} /> Coucher effectif</span>
       <input class="field-input" type="time" name="bedtime" autocomplete="off"
         value={bedtime}
         oninput={(e) => bedtime = read(e)} onchange={(e) => bedtime = read(e)} onblur={(e) => bedtime = read(e)} />
     </label>
+    <button type="submit" class="btn btn-secondary btn-sm save-inline" title="Sauvegarder le coucher" aria-label="Sauvegarder le coucher">
+      <FloppyDisk size={14} />
+    </button>
   </div>
 
   <label class="field">
@@ -228,6 +237,22 @@
 </form>
 
 <style>
+  .row-with-save {
+    display: flex;
+    gap: var(--s-3);
+    align-items: end;
+  }
+  .row-with-save .field { flex: 1; }
+  .save-inline {
+    height: 44px;
+    width: 44px;
+    padding: 0;
+  }
+  .save-inline-block {
+    margin-top: var(--s-2);
+    width: fit-content;
+  }
+
   .today-form { display: grid; gap: var(--s-3); }
   /* day-budget styles are scoped per-page; copy from today/+page.svelte */
   .day-budget {
