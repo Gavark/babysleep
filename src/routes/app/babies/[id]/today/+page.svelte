@@ -1,5 +1,6 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
+  import { onMount } from 'svelte';
   import { idealBedtime, suggestNextNap, suggestedBedtime, suggestNapEnd, computeDaySleepBudget, formatDuration, type NapPair } from '$lib/sleep-calc';
   import { isValidHHMM } from '$lib/time';
   import { COMMON_TIMEZONES } from '$lib/tz';
@@ -12,6 +13,44 @@
   import Cloud from 'phosphor-svelte/lib/Cloud';
 
   let { data, form } = $props();
+
+  function dbg(...args: unknown[]) {
+    if (typeof console !== 'undefined') {
+      console.log(`[BS ${performance.now().toFixed(0)}ms]`, ...args);
+    }
+  }
+
+  dbg('script module evaluated, data.entry:', data.entry ? { id: data.entry.id, wake: data.entry.wakeTime, nap1End: data.entry.nap1End } : 'null');
+
+  onMount(() => {
+    dbg('mount');
+    const onVis = () => dbg('visibilitychange:', document.visibilityState);
+    const onPageshow = (e: PageTransitionEvent) => dbg('pageshow, persisted=', e.persisted);
+    const onPagehide = (e: PageTransitionEvent) => dbg('pagehide, persisted=', e.persisted);
+    const onFreeze = () => dbg('freeze (Chrome Lifecycle)');
+    const onResume = () => dbg('resume (Chrome Lifecycle)');
+    document.addEventListener('visibilitychange', onVis);
+    window.addEventListener('pageshow', onPageshow);
+    window.addEventListener('pagehide', onPagehide);
+    document.addEventListener('freeze', onFreeze);
+    document.addEventListener('resume', onResume);
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('controllerchange', () => dbg('SW controllerchange'));
+      navigator.serviceWorker.ready.then(reg => {
+        reg.addEventListener('updatefound', () => dbg('SW updatefound'));
+      }).catch(() => {});
+    }
+
+    return () => {
+      dbg('unmount');
+      document.removeEventListener('visibilitychange', onVis);
+      window.removeEventListener('pageshow', onPageshow);
+      window.removeEventListener('pagehide', onPagehide);
+      document.removeEventListener('freeze', onFreeze);
+      document.removeEventListener('resume', onResume);
+    };
+  });
 
   let wake       = $state('');
   let nap1Start  = $state('');
@@ -31,6 +70,7 @@
   $effect(() => {
     const id = data.entry?.id ?? 'none';
     if (id !== syncedFor) {
+      dbg('$effect resync: syncedFor', syncedFor, '→', id, 'entry=', data.entry ? { wake: data.entry.wakeTime, nap1End: data.entry.nap1End, bedtime: data.entry.bedtime } : 'null');
       syncedFor = id;
       wake      = data.entry?.wakeTime  ?? '';
       nap1Start = data.entry?.nap1Start ?? '';
@@ -45,6 +85,10 @@
       notes     = data.entry?.notes     ?? '';
       entryTz   = data.entry?.timezone  ?? '';
     }
+  });
+
+  $effect(() => {
+    dbg('data.entry ref changed →', data.entry ? `id=${data.entry.id} wake=${data.entry.wakeTime}` : 'null');
   });
 
   function safeNextNap(t: string) {
@@ -101,7 +145,14 @@
 <form
   method="POST"
   action="?/save"
-  use:enhance={() => async ({ update }) => update({ reset: false })}
+  use:enhance={() => {
+    dbg('form submit start');
+    return async ({ update, result }) => {
+      dbg('form action result:', result.type, result.type === 'failure' ? result.data : '');
+      await update({ reset: false });
+      dbg('form action update() done');
+    };
+  }}
   autocomplete="off"
   class="today-form"
 >
@@ -129,7 +180,7 @@
       <span class="field-label"><Sun size={12} /> Réveil</span>
       <input class="field-input" type="time" name="wake_time" autocomplete="off"
         value={wake}
-        oninput={(e) => wake = read(e)} onchange={(e) => wake = read(e)} onblur={(e) => wake = read(e)} />
+        oninput={(e) => { const v = read(e); dbg('wake oninput:', v); wake = v; }} onchange={(e) => wake = read(e)} onblur={(e) => wake = read(e)} />
     </label>
     <button type="submit" class="btn btn-secondary btn-sm save-inline" title="Sauvegarder le réveil" aria-label="Sauvegarder le réveil">
       <FloppyDisk size={14} />
