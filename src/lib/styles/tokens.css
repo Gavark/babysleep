@@ -23,6 +23,16 @@
   --c-danger: #B8514A;
   --c-focus-ring: rgba(201, 122, 93, 0.18);
 
+  /* Calendar — heatmap (light) */
+  --c-cal-heat-good: #DFEDE2;
+  --c-cal-heat-ok:   #FBF5E4;
+  --c-cal-heat-meh:  #F6E1D6;
+  --c-cal-heat-bad:  #F0CFC1;
+  --c-cal-heat-none: #F4ECE0;
+  /* Calendar — segments */
+  --c-cal-seg-nap:   var(--c-accent-honey);
+  --c-cal-seg-night: #7A6FA9;
+
   /* Typographie */
   --fs-xs: 0.75rem;
   --fs-sm: 0.8125rem;
@@ -71,6 +81,13 @@
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
     --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.5);
     --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.6);
+    --c-cal-heat-good: #2B4234;
+    --c-cal-heat-ok:   #3D3826;
+    --c-cal-heat-meh:  #4A352A;
+    --c-cal-heat-bad:  #5A2E22;
+    --c-cal-heat-none: #2A2117;
+    --c-cal-seg-night: #9A8FCC;
+    /* --c-cal-seg-nap inherits via var(--c-accent-honey), already overridden above */
   }
 }
 
@@ -92,4 +109,11 @@
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
   --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.5);
   --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.6);
+  --c-cal-heat-good: #2B4234;
+  --c-cal-heat-ok:   #3D3826;
+  --c-cal-heat-meh:  #4A352A;
+  --c-cal-heat-bad:  #5A2E22;
+  --c-cal-heat-none: #2A2117;
+  --c-cal-seg-night: #9A8FCC;
+  /* --c-cal-seg-nap inherits via var(--c-accent-honey), already overridden above */
 }
