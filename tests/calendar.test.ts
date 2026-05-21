@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { buildMonthGrid } from '../src/lib/calendar';
+import { buildMonthGrid, buildTimelineSegments, type CalendarEntry } from '../src/lib/calendar';
 
 describe('buildMonthGrid', () => {
   it('returns 35 or 42 cells (multiple of 7)', () => {
@@ -40,5 +40,74 @@ describe('buildMonthGrid', () => {
     const cells = buildMonthGrid(2027, 2);
     expect(cells.length).toBe(28);
     expect(cells[0].date).toBe('2027-02-01');
+  });
+});
+
+function mkEntry(patch: Partial<CalendarEntry>): CalendarEntry {
+  return {
+    wakeTime: null,
+    nap1Start: null, nap1End: null,
+    nap2Start: null, nap2End: null,
+    nap3Start: null, nap3End: null,
+    nap4Start: null, nap4End: null,
+    bedtime: null,
+    ...patch
+  };
+}
+
+describe('buildTimelineSegments', () => {
+  it('returns empty for undefined entry', () => {
+    expect(buildTimelineSegments(undefined)).toEqual([]);
+  });
+
+  it('returns empty for entry with no times', () => {
+    expect(buildTimelineSegments(mkEntry({}))).toEqual([]);
+  });
+
+  it('night segment left from 00:00 to wake_time', () => {
+    const segs = buildTimelineSegments(mkEntry({ wakeTime: '07:00' }));
+    expect(segs).toEqual([{ kind: 'night', startMin: 0, endMin: 420 }]);
+  });
+
+  it('night segment right from bedtime to 24:00', () => {
+    const segs = buildTimelineSegments(mkEntry({ bedtime: '19:30' }));
+    expect(segs).toEqual([{ kind: 'night', startMin: 1170, endMin: 1440 }]);
+  });
+
+  it('adds nap segments for each complete pair', () => {
+    const segs = buildTimelineSegments(
+      mkEntry({ nap1Start: '10:00', nap1End: '11:00', nap2Start: '14:00', nap2End: '15:30' })
+    );
+    expect(segs).toEqual([
+      { kind: 'nap', startMin: 600, endMin: 660 },
+      { kind: 'nap', startMin: 840, endMin: 930 }
+    ]);
+  });
+
+  it('ignores nap pair where only start or only end is set', () => {
+    const segs = buildTimelineSegments(
+      mkEntry({ nap1Start: '10:00', nap1End: null, nap2Start: null, nap2End: '12:00' })
+    );
+    expect(segs).toEqual([]);
+  });
+
+  it('full day returns 4 segments ordered by start', () => {
+    const segs = buildTimelineSegments(
+      mkEntry({
+        wakeTime: '07:00',
+        nap1Start: '10:30', nap1End: '11:40',
+        nap2Start: '13:10', nap2End: '15:06',
+        bedtime: '19:50'
+      })
+    );
+    expect(segs.map((s) => s.kind)).toEqual(['night', 'nap', 'nap', 'night']);
+    expect(segs.map((s) => s.startMin)).toEqual([0, 630, 790, 1190]);
+  });
+
+  it('ignores invalid HH:MM strings', () => {
+    const segs = buildTimelineSegments(
+      mkEntry({ wakeTime: 'bogus', nap1Start: '10:00', nap1End: 'X:Y', bedtime: '25:00' })
+    );
+    expect(segs).toEqual([]);
   });
 });

@@ -1,3 +1,5 @@
+import { parseHHMM, isValidHHMM } from '$lib/time';
+
 export type TimelineSegment = {
   kind: 'nap' | 'night';
   startMin: number;  // 0..1440
@@ -24,6 +26,23 @@ export type DayMetrics = {
 
 export type GridCell = { readonly date: string; readonly inMonth: boolean };
 
+/**
+ * Calendar-facing structural subset of a sleep entry. Defined locally to avoid
+ * pulling in $lib/server/* paths from this pure module.
+ */
+export type CalendarEntry = {
+  wakeTime: string | null;
+  nap1Start: string | null;
+  nap1End: string | null;
+  nap2Start: string | null;
+  nap2End: string | null;
+  nap3Start: string | null;
+  nap3End: string | null;
+  nap4Start: string | null;
+  nap4End: string | null;
+  bedtime: string | null;
+};
+
 function isoDate(y: number, m1to12: number, d: number): string {
   return `${y}-${String(m1to12).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
 }
@@ -42,6 +61,34 @@ function dayOfWeekISOMonZero(iso: string): number {
   const [y, m, d] = iso.split('-').map(Number);
   const jsDow = new Date(Date.UTC(y, m - 1, d)).getUTCDay(); // Sun=0..Sat=6
   return (jsDow + 6) % 7; // shift so Mon=0..Sun=6
+}
+
+export function buildTimelineSegments(entry: CalendarEntry | undefined): TimelineSegment[] {
+  if (!entry) return [];
+  const segs: TimelineSegment[] = [];
+
+  if (entry.wakeTime && isValidHHMM(entry.wakeTime)) {
+    segs.push({ kind: 'night', startMin: 0, endMin: parseHHMM(entry.wakeTime) });
+  }
+
+  const napPairs: [string | null, string | null][] = [
+    [entry.nap1Start, entry.nap1End],
+    [entry.nap2Start, entry.nap2End],
+    [entry.nap3Start, entry.nap3End],
+    [entry.nap4Start, entry.nap4End]
+  ];
+  for (const [s, e] of napPairs) {
+    if (s && e && isValidHHMM(s) && isValidHHMM(e)) {
+      segs.push({ kind: 'nap', startMin: parseHHMM(s), endMin: parseHHMM(e) });
+    }
+  }
+
+  if (entry.bedtime && isValidHHMM(entry.bedtime)) {
+    segs.push({ kind: 'night', startMin: parseHHMM(entry.bedtime), endMin: 1440 });
+  }
+
+  segs.sort((a, b) => a.startMin - b.startMin);
+  return segs;
 }
 
 export function buildMonthGrid(year: number, month1to12: number): GridCell[] {
