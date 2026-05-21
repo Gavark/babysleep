@@ -63,20 +63,27 @@
 <div class="cal-mobile"><CalendarStrip cells={data.cells} babyId={data.baby.id} /></div>
 
 <footer class="cal-legend" aria-label="Légende">
-  <div class="legend-row">
-    <span class="swatch heat-good"></span><span>≥ 90%</span>
-    <span class="swatch heat-ok"></span><span>70-90%</span>
-    <span class="swatch heat-meh"></span><span>50-70%</span>
-    <span class="swatch heat-bad"></span><span>&lt; 50%</span>
-  </div>
-  <div class="legend-row">
-    <span class="swatch seg-nap"></span><span>Sieste</span>
-    <span class="swatch seg-night"></span><span>Nuit</span>
-  </div>
-  <p class="legend-info">
-    Âge à la date du mois : {ageMonths} mois — Quota recommandé : {formatDuration(quotaTotalMin)}
+  <p class="legend-quota">
+    Quota recommandé pour <strong>{ageMonths} mois</strong> :
+    <strong>{formatDuration(quotaTotalMin)}</strong>
     ({formatDuration(quotaDayMin)} siestes + {formatDuration(quotaNightMin)} nuit)
   </p>
+
+  <p class="legend-label">Couleur du jour = % du quota de sommeil atteint</p>
+  <div class="legend-row">
+    <span class="legend-item"><span class="swatch heat-good"></span>Bon (≥ 90%)</span>
+    <span class="legend-item"><span class="swatch heat-ok"></span>Correct (70-90%)</span>
+    <span class="legend-item"><span class="swatch heat-meh"></span>Faible (50-70%)</span>
+    <span class="legend-item"><span class="swatch heat-bad"></span>Très faible (&lt; 50%)</span>
+    <span class="legend-item"><span class="swatch heat-none"></span>Aucune donnée</span>
+    <span class="legend-item"><span class="swatch heat-partial"></span>Journée incomplète (…)</span>
+  </div>
+
+  <p class="legend-label">Segments dans la barre 24h</p>
+  <div class="legend-row">
+    <span class="legend-item"><span class="swatch seg-nap"></span>Sieste</span>
+    <span class="legend-item"><span class="swatch seg-night"></span>Nuit (00→lever et coucher→24)</span>
+  </div>
 </footer>
 
 <style>
@@ -125,11 +132,24 @@
     border-radius: 3px;
     border: 1px solid var(--c-border);
   }
-  .swatch.heat-good { background: var(--c-cal-heat-good); }
-  .swatch.heat-ok   { background: var(--c-cal-heat-ok); }
-  .swatch.heat-meh  { background: var(--c-cal-heat-meh); }
-  .swatch.heat-bad  { background: var(--c-cal-heat-bad); }
-  .swatch.seg-nap   { background: var(--c-cal-seg-nap); border-color: var(--c-cal-seg-nap); }
-  .swatch.seg-night { background: var(--c-cal-seg-night); border-color: var(--c-cal-seg-night); }
-  .legend-info { margin: 0; font-size: var(--fs-xs); }
+  .swatch.heat-good    { background: var(--c-cal-heat-good); }
+  .swatch.heat-ok      { background: var(--c-cal-heat-ok); }
+  .swatch.heat-meh     { background: var(--c-cal-heat-meh); }
+  .swatch.heat-bad     { background: var(--c-cal-heat-bad); }
+  .swatch.heat-none    { background: var(--c-cal-heat-none); }
+  .swatch.heat-partial { background: transparent; border-style: dashed; }
+  .swatch.seg-nap      { background: var(--c-cal-seg-nap); border-color: var(--c-cal-seg-nap); }
+  .swatch.seg-night    { background: var(--c-cal-seg-night); border-color: var(--c-cal-seg-night); }
+  .legend-item { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+  .legend-quota {
+    margin: 0 0 var(--s-2);
+    font-size: var(--fs-sm);
+    color: var(--c-text);
+  }
+  .legend-label {
+    margin: var(--s-1) 0 var(--s-1);
+    font-weight: 600;
+    color: var(--c-text);
+    font-size: var(--fs-xs);
+  }
 </style>
