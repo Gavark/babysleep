@@ -15,7 +15,7 @@ export type DayMetrics = {
   inMonth: boolean;
   isToday: boolean;
   hasAnyData: boolean;
-  isComplete: boolean;           // bedtime saisi
+  isComplete: boolean;           // bedtime + wakeTime saisis
   totalSleepMin: number;
   recommendedMin: number;
   ratio: number;                 // 0..N (may exceed 1)
@@ -132,6 +132,12 @@ export function heatmapClass(level: HeatLevel): string {
   return `heat-${level}`;
 }
 
+/**
+ * Compute display metrics for one calendar day. `inMonth` is hardcoded to `true`
+ * in the returned object — callers MUST override it using the matching
+ * GridCell.inMonth value from `buildMonthGrid` (padding days fall outside the
+ * displayed month).
+ */
 export function computeDayMetrics(
   date: string,
   entry: CalendarEntry | undefined,
