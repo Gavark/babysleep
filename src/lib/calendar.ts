@@ -1,4 +1,6 @@
 import { parseHHMM, isValidHHMM } from '$lib/time';
+import { ageInMonths } from '$lib/sleep-calc';
+import { paramsForAge } from '$lib/age-params';
 
 export type TimelineSegment = {
   kind: 'nap' | 'night';
@@ -25,6 +27,15 @@ export type DayMetrics = {
 };
 
 export type GridCell = { readonly date: string; readonly inMonth: boolean };
+
+/**
+ * Calendar-facing structural subset of a baby. Defined locally to avoid
+ * pulling in $lib/server/* paths from this pure module.
+ */
+export type CalendarBaby = {
+  birthDate: string;            // YYYY-MM-DD
+  ageOverrideMonths: number | null;
+};
 
 /**
  * Calendar-facing structural subset of a sleep entry. Defined locally to avoid
@@ -115,4 +126,63 @@ export function buildMonthGrid(year: number, month1to12: number): GridCell[] {
     cur = addDaysISO(cur, 1);
   }
   return out;
+}
+
+export function heatmapClass(level: HeatLevel): string {
+  return `heat-${level}`;
+}
+
+export function computeDayMetrics(
+  date: string,
+  entry: CalendarEntry | undefined,
+  baby: CalendarBaby,
+  todayISO: string
+): DayMetrics {
+  const refDate = new Date(date + 'T12:00:00Z');
+  const months = ageInMonths(baby.birthDate, baby.ageOverrideMonths ?? undefined, refDate);
+  const ageParams = paramsForAge(months);
+  const recommendedMin = Math.round((ageParams.daySleepH + ageParams.nightSleepH) * 60);
+
+  const segments = buildTimelineSegments(entry);
+  const totalSleepMin = segments.reduce((acc, s) => acc + (s.endMin - s.startMin), 0);
+
+  const hasAnyData = !!entry && segments.length > 0;
+  const isComplete = !!entry?.bedtime && !!entry?.wakeTime;
+
+  const napCount = entry
+    ? [entry.nap1End, entry.nap2End, entry.nap3End, entry.nap4End].filter(Boolean).length
+    : 0;
+
+  const ratio = recommendedMin > 0 ? totalSleepMin / recommendedMin : 0;
+
+  let heatLevel: HeatLevel;
+  if (!hasAnyData) {
+    heatLevel = 'none';
+  } else if (!isComplete) {
+    heatLevel = 'partial';
+  } else if (ratio >= 0.90) {
+    heatLevel = 'good';
+  } else if (ratio >= 0.70) {
+    heatLevel = 'ok';
+  } else if (ratio >= 0.50) {
+    heatLevel = 'meh';
+  } else {
+    heatLevel = 'bad';
+  }
+
+  return {
+    date,
+    inMonth: true,
+    isToday: date === todayISO,
+    hasAnyData,
+    isComplete,
+    totalSleepMin,
+    recommendedMin,
+    ratio,
+    heatLevel,
+    segments,
+    wakeTime: entry?.wakeTime ?? null,
+    bedtime: entry?.bedtime ?? null,
+    napCount
+  };
 }

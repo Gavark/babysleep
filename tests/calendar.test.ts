@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { buildMonthGrid, buildTimelineSegments, type CalendarEntry } from '../src/lib/calendar';
+import { buildMonthGrid, buildTimelineSegments, computeDayMetrics, heatmapClass, type CalendarEntry, type CalendarBaby } from '../src/lib/calendar';
 
 describe('buildMonthGrid', () => {
   it('returns 35 or 42 cells (multiple of 7)', () => {
@@ -125,5 +125,113 @@ describe('buildTimelineSegments', () => {
     // bedtime is HH:MM regex so 24:00 wouldn't validate anyway, but verify 23:59 still works as a normal 1-minute segment.
     const b = buildTimelineSegments(mkEntry({ bedtime: '23:59' }));
     expect(b).toEqual([{ kind: 'night', startMin: 1439, endMin: 1440 }]);
+  });
+});
+
+describe('heatmapClass', () => {
+  it('maps each level to a CSS class', () => {
+    expect(heatmapClass('good')).toBe('heat-good');
+    expect(heatmapClass('ok')).toBe('heat-ok');
+    expect(heatmapClass('meh')).toBe('heat-meh');
+    expect(heatmapClass('bad')).toBe('heat-bad');
+    expect(heatmapClass('partial')).toBe('heat-partial');
+    expect(heatmapClass('none')).toBe('heat-none');
+  });
+});
+
+describe('computeDayMetrics', () => {
+  const baby: CalendarBaby = { birthDate: '2025-11-13', ageOverrideMonths: null };
+
+  it('returns hasAnyData=false for missing entry', () => {
+    const m = computeDayMetrics('2026-05-13', undefined, baby, '2026-05-21');
+    expect(m.hasAnyData).toBe(false);
+    expect(m.heatLevel).toBe('none');
+    expect(m.totalSleepMin).toBe(0);
+    expect(m.segments).toEqual([]);
+  });
+
+  it('returns isComplete=true and heat-good for a full day at ~100% quota (6mo: 14h budget)', () => {
+    // 6 months old, expected daySleepH+nightSleepH = 3 + 11 = 14h = 840min.
+    // Total = 7h (night left) + 3*1h naps + (24-20)*60 (night right) = 7h + 3h + 4h = 14h00 = 840min → ratio 1.0
+    const entry: CalendarEntry = {
+      wakeTime: '07:00',
+      nap1Start: '09:00', nap1End: '10:00',
+      nap2Start: '12:00', nap2End: '13:00',
+      nap3Start: '15:00', nap3End: '16:00',
+      nap4Start: null, nap4End: null,
+      bedtime: '20:00'
+    };
+    const m = computeDayMetrics('2026-05-13', entry, baby, '2026-05-21');
+    expect(m.hasAnyData).toBe(true);
+    expect(m.isComplete).toBe(true);
+    expect(m.totalSleepMin).toBe(840);
+    expect(m.recommendedMin).toBe(840);
+    expect(m.ratio).toBe(1);
+    expect(m.heatLevel).toBe('good');
+    expect(m.napCount).toBe(3);
+  });
+
+  it('returns heatLevel=partial when bedtime is missing but data exists', () => {
+    const entry: CalendarEntry = {
+      wakeTime: '07:00', nap1Start: '09:00', nap1End: '10:00',
+      nap2Start: null, nap2End: null,
+      nap3Start: null, nap3End: null,
+      nap4Start: null, nap4End: null,
+      bedtime: null
+    };
+    const m = computeDayMetrics('2026-05-13', entry, baby, '2026-05-21');
+    expect(m.isComplete).toBe(false);
+    expect(m.heatLevel).toBe('partial');
+  });
+
+  it('returns isToday=true when the date matches todayISO', () => {
+    const m = computeDayMetrics('2026-05-21', undefined, baby, '2026-05-21');
+    expect(m.isToday).toBe(true);
+  });
+
+  it('applies heatLevel thresholds (good >= 0.90, ok [0.70, 0.90), meh [0.50, 0.70), bad < 0.50)', () => {
+    // baby age 6 months → 14h = 840min budget
+    // We synthesize total via wake='00:00' is skipped (zero-width), so only bedtime→24:00 contributes.
+    // To get a precise totalMin we use the night-right segment only.
+    const make = (totalMin: number): CalendarEntry => {
+      // bedtime so that 1440 - bedMin = totalMin → bedMin = 1440 - totalMin
+      const bedMin = 1440 - totalMin;
+      const hh = String(Math.floor(bedMin / 60)).padStart(2, '0');
+      const mm = String(bedMin % 60).padStart(2, '0');
+      return {
+        wakeTime: null,
+        nap1Start: null, nap1End: null, nap2Start: null, nap2End: null,
+        nap3Start: null, nap3End: null, nap4Start: null, nap4End: null,
+        bedtime: `${hh}:${mm}`
+      };
+    };
+    // 840 → ratio 1.00 → good. isComplete requires both wake and bedtime → false here → 'partial'.
+    // Need wakeTime too to make isComplete=true. Use wakeTime='00:01' for a 1-min night-left segment
+    // and compensate by reducing the totalMin we ask the helper to produce.
+    const makeComplete = (totalMin: number): CalendarEntry => {
+      // We want exactly totalMin minutes total. Use wakeTime='00:01' (1-min night-left segment)
+      // and bedtime so that (1440 - bedMin) = totalMin - 1
+      const nightRight = totalMin - 1;
+      const bedMin = 1440 - nightRight;
+      const hh = String(Math.floor(bedMin / 60)).padStart(2, '0');
+      const mm = String(bedMin % 60).padStart(2, '0');
+      return {
+        wakeTime: '00:01',
+        nap1Start: null, nap1End: null, nap2Start: null, nap2End: null,
+        nap3Start: null, nap3End: null, nap4Start: null, nap4End: null,
+        bedtime: `${hh}:${mm}`
+      };
+    };
+    expect(computeDayMetrics('2026-05-13', makeComplete(840), baby, '2026-05-21').heatLevel).toBe('good');   // 100%
+    expect(computeDayMetrics('2026-05-13', makeComplete(672), baby, '2026-05-21').heatLevel).toBe('ok');     // 80%
+    expect(computeDayMetrics('2026-05-13', makeComplete(504), baby, '2026-05-21').heatLevel).toBe('meh');    // 60%
+    expect(computeDayMetrics('2026-05-13', makeComplete(336), baby, '2026-05-21').heatLevel).toBe('bad');    // 40%
+  });
+
+  it('uses ageOverrideMonths when provided', () => {
+    const overrideBaby: CalendarBaby = { birthDate: '2025-11-13', ageOverrideMonths: 12 };
+    // 12-18mo: daySleepH=2.5 + nightSleepH=11 = 13.5h = 810min
+    const m = computeDayMetrics('2026-05-13', undefined, overrideBaby, '2026-05-21');
+    expect(m.recommendedMin).toBe(810);
   });
 });
