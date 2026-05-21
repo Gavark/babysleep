@@ -1,8 +1,3 @@
-import type { SleepEntry, Baby } from '$lib/server/db/schema';
-import { parseHHMM } from '$lib/time';
-import { ageInMonths } from '$lib/sleep-calc';
-import { paramsForAge } from '$lib/age-params';
-
 export type TimelineSegment = {
   kind: 'nap' | 'night';
   startMin: number;  // 0..1440
@@ -27,7 +22,7 @@ export type DayMetrics = {
   napCount: number;
 };
 
-export type GridCell = { date: string; inMonth: boolean };
+export type GridCell = { readonly date: string; readonly inMonth: boolean };
 
 function isoDate(y: number, m1to12: number, d: number): string {
   return `${y}-${String(m1to12).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
@@ -49,7 +44,7 @@ function dayOfWeekISOMonZero(iso: string): number {
   return (jsDow + 6) % 7; // shift so Mon=0..Sun=6
 }
 
-export function buildMonthGrid(year: number, month1to12: number, _todayISO: string): GridCell[] {
+export function buildMonthGrid(year: number, month1to12: number): GridCell[] {
   const firstOfMonth = isoDate(year, month1to12, 1);
   const dowFirst = dayOfWeekISOMonZero(firstOfMonth); // 0..6
   const gridStart = addDaysISO(firstOfMonth, -dowFirst);
@@ -61,10 +56,11 @@ export function buildMonthGrid(year: number, month1to12: number, _todayISO: stri
   const dowLast = dayOfWeekISOMonZero(lastOfMonth);
   const gridEnd = addDaysISO(lastOfMonth, 6 - dowLast);
 
+  const monthKey = isoDate(year, month1to12, 1).slice(0, 7);
   const out: GridCell[] = [];
   let cur = gridStart;
   while (cur <= gridEnd) {
-    out.push({ date: cur, inMonth: cur.slice(0, 7) === `${year}-${String(month1to12).padStart(2, '0')}` });
+    out.push({ date: cur, inMonth: cur.slice(0, 7) === monthKey });
     cur = addDaysISO(cur, 1);
   }
   return out;
