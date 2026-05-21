@@ -96,7 +96,7 @@
 
 <h1>{data.baby.name} — {data.date}</h1>
 <p class="page-meta">
-  Édition d'une journée passée · <strong>{data.ageMonths} mois</strong> à cette date ({data.ageParams.label}) ·
+  {data.entry ? "Édition" : "Création"} d'une journée · <strong>{data.ageMonths} mois</strong> à cette date ({data.ageParams.label}) ·
   {data.ageParams.naps} sieste(s) · fenêtre {data.ageParams.awakeWindowMin} min · nuit {data.ageParams.nightSleepH}h
 </p>
 <p class="tz-info"><Globe size={12} /> Fuseau actif : <strong>{data.effectiveTz}</strong></p>
@@ -227,16 +227,18 @@
 
   <button type="submit" class="btn btn-primary btn-block">
     <FloppyDisk size={18} weight="regular" />
-    Mettre à jour la journée
+    {data.entry ? 'Mettre à jour la journée' : 'Créer la journée'}
   </button>
 </form>
 
+{#if data.entry}
 <form method="POST" action="?/delete" use:enhance
   onsubmit={(e) => { if (!confirm('Supprimer définitivement cette journée ?')) e.preventDefault(); }}
   style="margin-top: var(--s-4);"
 >
   <button type="submit" class="btn btn-danger"><Trash size={16} /> Supprimer cette journée</button>
 </form>
+{/if}
 
 <style>
   .row-with-save {

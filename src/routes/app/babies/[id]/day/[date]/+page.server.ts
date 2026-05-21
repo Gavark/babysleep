@@ -23,14 +23,13 @@ export const load: PageServerLoad = ({ locals, params }) => {
   if (!baby) throw error(404);
 
   const entry = getEntryForBabyDate(db, baby.id, date);
-  if (!entry) throw error(404, "Aucune entrée à cette date.");
 
   // Compute baby age AT that date (not today's age — important for old entries)
   const refDate = new Date(date + 'T12:00:00Z');
   const months = ageInMonths(baby.birthDate, baby.ageOverrideMonths ?? undefined, refDate);
   const ageParams = paramsForAge(months);
 
-  const effectiveTz = resolveTimezone(entry.timezone ?? null, baby.timezone, locals.user.timezone);
+  const effectiveTz = resolveTimezone(entry?.timezone ?? null, baby.timezone, locals.user.timezone);
 
   return { baby, date, entry, ageMonths: months, ageParams, effectiveTz };
 };
