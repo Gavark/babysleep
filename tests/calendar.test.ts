@@ -110,4 +110,20 @@ describe('buildTimelineSegments', () => {
     );
     expect(segs).toEqual([]);
   });
+
+  it('ignores inverted nap pair (start >= end)', () => {
+    const segs = buildTimelineSegments(
+      mkEntry({ nap1Start: '14:00', nap1End: '11:00', nap2Start: '10:00', nap2End: '10:00' })
+    );
+    expect(segs).toEqual([]);
+  });
+
+  it('ignores zero-width segments (wakeTime 00:00, bedtime 24:00)', () => {
+    // wakeTime 00:00 would produce 0..0 → skipped.
+    const a = buildTimelineSegments(mkEntry({ wakeTime: '00:00' }));
+    expect(a).toEqual([]);
+    // bedtime is HH:MM regex so 24:00 wouldn't validate anyway, but verify 23:59 still works as a normal 1-minute segment.
+    const b = buildTimelineSegments(mkEntry({ bedtime: '23:59' }));
+    expect(b).toEqual([{ kind: 'night', startMin: 1439, endMin: 1440 }]);
+  });
 });

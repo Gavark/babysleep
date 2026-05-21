@@ -68,7 +68,8 @@ export function buildTimelineSegments(entry: CalendarEntry | undefined): Timelin
   const segs: TimelineSegment[] = [];
 
   if (entry.wakeTime && isValidHHMM(entry.wakeTime)) {
-    segs.push({ kind: 'night', startMin: 0, endMin: parseHHMM(entry.wakeTime) });
+    const wakeMin = parseHHMM(entry.wakeTime);
+    if (wakeMin > 0) segs.push({ kind: 'night', startMin: 0, endMin: wakeMin });
   }
 
   const napPairs: [string | null, string | null][] = [
@@ -79,12 +80,15 @@ export function buildTimelineSegments(entry: CalendarEntry | undefined): Timelin
   ];
   for (const [s, e] of napPairs) {
     if (s && e && isValidHHMM(s) && isValidHHMM(e)) {
-      segs.push({ kind: 'nap', startMin: parseHHMM(s), endMin: parseHHMM(e) });
+      const sm = parseHHMM(s);
+      const em = parseHHMM(e);
+      if (em > sm) segs.push({ kind: 'nap', startMin: sm, endMin: em });
     }
   }
 
   if (entry.bedtime && isValidHHMM(entry.bedtime)) {
-    segs.push({ kind: 'night', startMin: parseHHMM(entry.bedtime), endMin: 1440 });
+    const bedMin = parseHHMM(entry.bedtime);
+    if (bedMin < 1440) segs.push({ kind: 'night', startMin: bedMin, endMin: 1440 });
   }
 
   segs.sort((a, b) => a.startMin - b.startMin);
