@@ -95,15 +95,17 @@
         Prochaine sieste dans {formatDuration(timerState.remainingMin)} (à {timerState.nextNapAt})
       </div>
     {/if}
-    <button
-      type="button"
-      class="btn btn-secondary action-btn"
-      onclick={handleStart}
-      disabled={submitting || emptySlot === null}
-      title={emptySlot === null ? '4 siestes déjà saisies aujourd\'hui' : 'Démarrer une sieste maintenant'}
-    >
-      <Play size={16} weight="fill" /> Démarrer sieste maintenant
-    </button>
+    {#if emptySlot !== null}
+      <button
+        type="button"
+        class="btn btn-secondary action-btn"
+        onclick={handleStart}
+        disabled={submitting}
+        title="Démarrer une sieste maintenant"
+      >
+        <Play size={16} weight="fill" /> Démarrer sieste maintenant
+      </button>
+    {/if}
   {:else if timerState.kind === 'napping'}
     <div class="row-label honey"><Cloud size={18} weight="duotone" /> En sieste depuis</div>
     <div class="counter honey">{formatDuration(timerState.elapsedMin)}</div>
