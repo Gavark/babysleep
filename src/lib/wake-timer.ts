@@ -28,3 +28,58 @@ export function inProgressNapSlot(naps: TimerInput['naps']): number | null {
   }
   return null;
 }
+
+/**
+ * Convert a HH:MM string into a Date on the same calendar day as `now`,
+ * with local hours/minutes set. Used for computing elapsed minutes against
+ * `now`. Does NOT handle midnight rollover — the timer is used during the
+ * day (06:00–22:00 typically).
+ */
+function hhmmOnSameDay(hhmm: string, now: Date): Date {
+  const m = parseHHMM(hhmm); // minutes since midnight
+  const d = new Date(now);
+  d.setHours(Math.floor(m / 60), m % 60, 0, 0);
+  return d;
+}
+
+function minutesBetween(from: Date, to: Date): number {
+  return Math.floor((to.getTime() - from.getTime()) / 60_000);
+}
+
+export function deriveTimerState(input: TimerInput, now: Date): TimerState {
+  // 1. bedtime overrides everything else
+  if (isValidHHMM(input.bedtime)) {
+    return { kind: 'bedtime', bedtime: input.bedtime };
+  }
+
+  // 2. napping if a nap has a valid start without an end
+  const inProgress = inProgressNapSlot(input.naps);
+  if (inProgress !== null) {
+    const startStr = input.naps[inProgress].start;
+    const elapsed = minutesBetween(hhmmOnSameDay(startStr, now), now);
+    return {
+      kind: 'napping',
+      napIdx: inProgress,
+      elapsedMin: Math.max(0, elapsed)
+    };
+  }
+
+  // 3. awake if wakeTime is valid
+  if (!isValidHHMM(input.wakeTime)) {
+    return { kind: 'empty' };
+  }
+
+  // origin = latest of wakeTime and all valid napEnd values
+  const candidates: string[] = [input.wakeTime];
+  for (const nap of input.naps) {
+    if (isValidHHMM(nap.end)) candidates.push(nap.end);
+  }
+  const originStr = candidates.reduce((acc, cur) => (parseHHMM(cur) > parseHHMM(acc) ? cur : acc));
+  const origin = hhmmOnSameDay(originStr, now);
+  const elapsedMin = Math.max(0, minutesBetween(origin, now));
+  const remainingMin = input.awakeWindowMin - elapsedMin;
+  const overWindow = elapsedMin > input.awakeWindowMin;
+  const nextNapAt = formatHHMM(parseHHMM(originStr) + input.awakeWindowMin);
+
+  return { kind: 'awake', elapsedMin, remainingMin, nextNapAt, overWindow };
+}
