@@ -86,7 +86,11 @@
   {:else if timerState.kind === 'awake'}
     <div class="row-label"><Sun size={18} weight="duotone" /> Éveillé depuis</div>
     <div class="counter primary">{formatDuration(timerState.elapsedMin)}</div>
-    {#if timerState.overWindow}
+    {#if emptySlot === null}
+      <div class="row-sub muted">
+        <Moon size={14} weight="duotone" /> En attente du coucher
+      </div>
+    {:else if timerState.overWindow}
       <div class="row-sub danger">
         <Warning size={14} weight="fill" /> Fenêtre dépassée de {formatDuration(timerState.elapsedMin - ageParams.awakeWindowMin)}
       </div>
