@@ -11,6 +11,7 @@
   import Globe from 'phosphor-svelte/lib/Globe';
   import FloppyDisk from 'phosphor-svelte/lib/FloppyDisk';
   import Cloud from 'phosphor-svelte/lib/Cloud';
+  import WakeTimer from '$lib/components/WakeTimer.svelte';
 
   let { data, form } = $props();
 
@@ -127,6 +128,38 @@
       : ''
   );
 
+  // Strict-shape naps for WakeTimer (which expects non-null strings).
+  const wakeTimerNaps = $derived([
+    { start: nap1Start ?? '', end: nap1End ?? '' },
+    { start: nap2Start ?? '', end: nap2End ?? '' },
+    { start: nap3Start ?? '', end: nap3End ?? '' },
+    { start: nap4Start ?? '', end: nap4End ?? '' }
+  ]);
+
+  let formEl = $state<HTMLFormElement | null>(null);
+
+  function setNapStart(slotIdx: number, hhmm: string) {
+    if (slotIdx === 0) nap1Start = hhmm;
+    else if (slotIdx === 1) nap2Start = hhmm;
+    else if (slotIdx === 2) nap3Start = hhmm;
+    else if (slotIdx === 3) nap4Start = hhmm;
+  }
+  function setNapEnd(slotIdx: number, hhmm: string) {
+    if (slotIdx === 0) nap1End = hhmm;
+    else if (slotIdx === 1) nap2End = hhmm;
+    else if (slotIdx === 2) nap3End = hhmm;
+    else if (slotIdx === 3) nap4End = hhmm;
+  }
+  function handleNapStart(slotIdx: number, hhmm: string) {
+    setNapStart(slotIdx, hhmm);
+    // Defer submit by one microtask so Svelte applies the $state mutation first.
+    setTimeout(() => formEl?.requestSubmit(), 0);
+  }
+  function handleNapEnd(slotIdx: number, hhmm: string) {
+    setNapEnd(slotIdx, hhmm);
+    setTimeout(() => formEl?.requestSubmit(), 0);
+  }
+
   function read(e: Event) {
     return (e.currentTarget as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement).value;
   }
@@ -139,10 +172,21 @@
 </p>
 <p class="tz-info"><Globe size={12} /> Fuseau actif : <strong>{data.effectiveTz}</strong></p>
 
+<WakeTimer
+  wakeTime={wake}
+  naps={wakeTimerNaps}
+  {bedtime}
+  ageParams={data.ageParams}
+  effectiveTz={data.effectiveTz}
+  onNapStart={handleNapStart}
+  onNapEnd={handleNapEnd}
+/>
+
 {#if form?.error}<p class="error" role="alert">{form.error}</p>{/if}
 {#if form?.success}<p class="ok">{form.success}</p>{/if}
 
 <form
+  bind:this={formEl}
   method="POST"
   action="?/save"
   use:enhance={() => {
