@@ -1,11 +1,14 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import type { AgeParams } from '$lib/age-params';
   import { formatDuration } from '$lib/sleep-calc';
-  import { deriveTimerState, type TimerInput } from '$lib/wake-timer';
+  import { deriveTimerState, nextEmptyNapSlot, inProgressNapSlot, type TimerInput, type TimerState } from '$lib/wake-timer';
   import Sun from 'phosphor-svelte/lib/Sun';
   import Cloud from 'phosphor-svelte/lib/Cloud';
   import Moon from 'phosphor-svelte/lib/Moon';
   import Warning from 'phosphor-svelte/lib/Warning';
+  import Play from 'phosphor-svelte/lib/Play';
+  import Check from 'phosphor-svelte/lib/Check';
 
   type Props = {
     wakeTime: string;
@@ -16,10 +19,14 @@
     onNapStart: (slotIdx: number, hhmm: string) => void;
     onNapEnd: (slotIdx: number, hhmm: string) => void;
   };
-  let { wakeTime, naps, bedtime, ageParams, effectiveTz: _effectiveTz, onNapStart: _onNapStart, onNapEnd: _onNapEnd }: Props = $props();
+  let { wakeTime, naps, bedtime, ageParams, effectiveTz, onNapStart, onNapEnd }: Props = $props();
 
-  // `now` will be wired to a setInterval in Task 4. For Task 3 we render against the current Date once.
-  const now = new Date();
+  let now: Date = $state(new Date());
+
+  onMount(() => {
+    const id = setInterval(() => { now = new Date(); }, 30_000);
+    return () => clearInterval(id);
+  });
 
   const input: TimerInput = $derived({
     wakeTime,
@@ -28,32 +35,93 @@
     awakeWindowMin: ageParams.awakeWindowMin
   });
 
-  const state = $derived(deriveTimerState(input, now));
+  const timerState: TimerState = $derived(deriveTimerState(input, now));
+  const emptySlot = $derived(nextEmptyNapSlot(naps));
+  const progressSlot = $derived(inProgressNapSlot(naps));
+
+  let submitting = $state(false);
+  let toastMessage = $state('');
+  let toastVisible = $state(false);
+
+  function formatNowHHMM(tz: string): string {
+    const fmt = new Intl.DateTimeFormat('fr-FR', {
+      timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false
+    });
+    // fr-FR formats as "14:30" already
+    return fmt.format(new Date());
+  }
+
+  function showToast(message: string) {
+    toastMessage = message;
+    toastVisible = true;
+    setTimeout(() => { toastVisible = false; }, 3000);
+  }
+
+  function handleStart() {
+    if (submitting) return;
+    if (emptySlot === null) return;
+    submitting = true;
+    const hhmm = formatNowHHMM(effectiveTz);
+    onNapStart(emptySlot, hhmm);
+    showToast(`Sieste ${emptySlot + 1} démarrée à ${hhmm}`);
+    setTimeout(() => { submitting = false; }, 2000);
+  }
+
+  function handleEnd() {
+    if (submitting) return;
+    if (progressSlot === null) return;
+    submitting = true;
+    const hhmm = formatNowHHMM(effectiveTz);
+    onNapEnd(progressSlot, hhmm);
+    showToast(`Sieste ${progressSlot + 1} terminée à ${hhmm}`);
+    setTimeout(() => { submitting = false; }, 2000);
+  }
 </script>
 
 <section class="wake-timer-card" aria-label="Timer fenêtre d'éveil">
-  {#if state.kind === 'empty'}
+  {#if timerState.kind === 'empty'}
     <p class="msg-empty">
       Saisis l'heure de réveil pour démarrer le suivi.
     </p>
-  {:else if state.kind === 'awake'}
+  {:else if timerState.kind === 'awake'}
     <div class="row-label"><Sun size={18} weight="duotone" /> Éveillé depuis</div>
-    <div class="counter primary">{formatDuration(state.elapsedMin)}</div>
-    {#if state.overWindow}
+    <div class="counter primary">{formatDuration(timerState.elapsedMin)}</div>
+    {#if timerState.overWindow}
       <div class="row-sub danger">
-        <Warning size={14} weight="fill" /> Fenêtre dépassée de {formatDuration(state.elapsedMin - ageParams.awakeWindowMin)}
+        <Warning size={14} weight="fill" /> Fenêtre dépassée de {formatDuration(timerState.elapsedMin - ageParams.awakeWindowMin)}
       </div>
     {:else}
       <div class="row-sub muted">
-        Prochaine sieste dans {formatDuration(state.remainingMin)} (à {state.nextNapAt})
+        Prochaine sieste dans {formatDuration(timerState.remainingMin)} (à {timerState.nextNapAt})
       </div>
     {/if}
-  {:else if state.kind === 'napping'}
+    <button
+      type="button"
+      class="btn btn-secondary action-btn"
+      onclick={handleStart}
+      disabled={submitting || emptySlot === null}
+      title={emptySlot === null ? '4 siestes déjà saisies aujourd\'hui' : 'Démarrer une sieste maintenant'}
+    >
+      <Play size={16} weight="fill" /> Démarrer sieste maintenant
+    </button>
+  {:else if timerState.kind === 'napping'}
     <div class="row-label honey"><Cloud size={18} weight="duotone" /> En sieste depuis</div>
-    <div class="counter honey">{formatDuration(state.elapsedMin)}</div>
-    <div class="row-sub muted">Sieste {state.napIdx + 1}</div>
-  {:else if state.kind === 'bedtime'}
-    <div class="row-label night"><Moon size={18} weight="duotone" /> Couché à {state.bedtime} · bonne nuit 🌙</div>
+    <div class="counter honey">{formatDuration(timerState.elapsedMin)}</div>
+    <div class="row-sub muted">Sieste {timerState.napIdx + 1}</div>
+    <button
+      type="button"
+      class="btn btn-secondary action-btn"
+      onclick={handleEnd}
+      disabled={submitting}
+    >
+      <Check size={16} weight="bold" /> Terminer sieste maintenant
+    </button>
+  {:else if timerState.kind === 'bedtime'}
+    <div class="row-label night"><Moon size={18} weight="duotone" /> Couché à {timerState.bedtime} · bonne nuit 🌙</div>
+  {/if}
+
+  {#if toastVisible}
+    <div class="toast" role="status" aria-live="polite">{toastMessage}</div>
   {/if}
 </section>
 
@@ -103,4 +171,22 @@
   }
   .row-sub.muted { color: var(--c-text-muted); }
   .row-sub.danger { color: var(--c-danger); font-weight: 600; }
+  .action-btn {
+    margin-top: var(--s-2);
+    justify-self: center;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-1);
+  }
+  .toast {
+    margin-top: var(--s-2);
+    padding: var(--s-2) var(--s-3);
+    background: var(--c-bg-soft);
+    color: var(--c-text);
+    border-radius: var(--r-sm);
+    font-size: var(--fs-sm);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .wake-timer-card { transition: none; }
+  }
 </style>
