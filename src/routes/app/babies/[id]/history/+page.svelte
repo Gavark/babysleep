@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { parseHHMM, formatHHMM } from '$lib/time';
+  import { parseHHMM, formatHHMM, isValidHHMM } from '$lib/time';
+  import { formatDuration } from '$lib/sleep-calc';
   import Download from 'phosphor-svelte/lib/Download';
   import Calendar from 'phosphor-svelte/lib/Calendar';
   import CalendarBlank from 'phosphor-svelte/lib/CalendarBlank';
@@ -12,6 +13,23 @@
 
   function napCount(r: any) {
     return [r.nap1End, r.nap2End, r.nap3End, r.nap4End].filter(Boolean).length;
+  }
+
+  function totalNapsMin(r: any): number {
+    const pairs: [string | null, string | null][] = [
+      [r.nap1Start, r.nap1End],
+      [r.nap2Start, r.nap2End],
+      [r.nap3Start, r.nap3End],
+      [r.nap4Start, r.nap4End]
+    ];
+    let total = 0;
+    for (const [s, e] of pairs) {
+      if (s && e && isValidHHMM(s) && isValidHHMM(e)) {
+        const d = parseHHMM(e) - parseHHMM(s);
+        if (d > 0) total += d;
+      }
+    }
+    return total;
   }
 
   function prevNight(curr: any, prev: any | undefined): string {
@@ -56,7 +74,7 @@
     <table>
       <thead>
         <tr>
-          <th>Date</th><th>Réveil</th>
+          <th>Date</th><th>Σ Siestes</th><th>Réveil</th>
           <th>S1</th><th>S2</th><th>S3</th><th>S4</th>
           <th>Coucher</th><th>Nuit préc.</th><th>Nb</th><th>Notes</th>
         </tr>
@@ -65,6 +83,7 @@
         {#each data.entries as r, i}
           <tr>
             <td><a href="/app/babies/{data.baby.id}/day/{r.date}"><strong>{r.date}</strong></a></td>
+            <td>{totalNapsMin(r) > 0 ? formatDuration(totalNapsMin(r)) : ''}</td>
             <td>{r.wakeTime ?? ''}</td>
             <td>{r.nap1End ?? ''}</td>
             <td>{r.nap2End ?? ''}</td>
