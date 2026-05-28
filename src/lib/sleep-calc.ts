@@ -102,6 +102,11 @@ function projectDayBedtime(events: DayEvents, params: BedtimeParams): string | n
       lastEvent = lastNapEnd;
       cumulativeNapMin += myDur;
     } else {
+      // Both projected. If actual naps already filled (or exceeded) the day
+      // budget, projecting an extra phantom nap pushes bedtime hours into
+      // the evening for no reason — stop here and let bedtime anchor on the
+      // last real nap end.
+      if (cumulativeNapMin >= daySleepBudget) break;
       const startMin = parseHHMM(lastEvent) + params.awakeWindowMin;
       const myDur = projectDuration(i);
       const endMin = startMin + myDur;

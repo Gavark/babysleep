@@ -109,6 +109,22 @@ describe('suggestedBedtime', () => {
     expect(suggestedBedtime({ wake: '05:30', naps }, params46)).toBe('18:30');
   });
 
+  it('does not project a phantom nap when actuals already filled the day budget', () => {
+    // wake=05:30. nap1 86min (08:25→09:51). nap2 150min (14:22→16:52).
+    // Cumulative = 236 min > daySleepH budget (210 min). Slot 2 (nap3) is empty.
+    // Old behaviour projected a 10-min nap starting at 18:52, ending 19:02,
+    // giving bedtime 21:02 — way too late.
+    // New behaviour: break out of the projection loop, bedtime anchors on
+    // last actual nap end. 16:52 + 2h = 18:52. MAX(idealBedtime 18:30, 18:52) = 18:52.
+    const naps = [
+      { start: '08:25', end: '09:51' },
+      { start: '14:22', end: '16:52' },
+      { start: '', end: '' },
+      { start: '', end: '' }
+    ];
+    expect(suggestedBedtime({ wake: '05:30', naps }, params46)).toBe('18:52');
+  });
+
   it('accounts for actual naps beyond the expected count via MAX', () => {
     // Expected count = 3, but baby did 4 naps. nap4 ends 17:51 (latest).
     // projection (after expectedCount loop) takes lastNapEnd=15:39 from nap3, then MAX with nap4End=17:51.
