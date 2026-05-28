@@ -79,11 +79,7 @@
 
   const suggBed = $derived(
     isValidHHMM(wake)
-      ? (suggestedBedtime(
-          { wake, napEnds: [nap1End, nap2End, nap3End, nap4End].filter(isValidHHMM) },
-          data.ageParams,
-          { totalMin: dayBudget.totalMin, completedMin: dayBudget.completedMin }
-        ) ?? '')
+      ? (suggestedBedtime({ wake, naps: napsArr }, data.ageParams) ?? '')
       : ''
   );
 

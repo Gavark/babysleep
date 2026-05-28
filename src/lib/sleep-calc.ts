@@ -26,41 +26,103 @@ export function suggestNextNap(lastEndHHMM: string, awakeWindowMin: number): str
 }
 
 export type DayEvents = {
-  wake?: string | null;
-  napEnds: (string | null | undefined)[];
+  wake: string;
+  naps: NapPair[];
 };
 
-export function suggestedBedtime(
-  events: DayEvents,
-  params: { beforeBedWindowMin: number; nightSleepH: number },
-  dayBudget?: { totalMin: number; completedMin: number }
-): string | null {
-  const valid = events.napEnds.filter((s): s is string => !!s && /^\d{2}:\d{2}$/.test(s));
-  let naturalBedtime: string | null;
+export type BedtimeParams = {
+  naps: number;             // expected nap count for the age (1..4)
+  awakeWindowMin: number;
+  beforeBedWindowMin: number;
+  nightSleepH: number;
+  daySleepH: number;
+};
 
-  if (valid.length === 0) {
-    if (!events.wake) return null;
-    naturalBedtime = idealBedtime(events.wake, params.nightSleepH);
-  } else {
-    const candidates = events.wake ? [events.wake, ...valid] : valid;
-    let bestMin = -1;
-    for (const t of candidates) {
-      const m = parseHHMM(t);
-      if (m > bestMin) bestMin = m;
-    }
-    naturalBedtime = formatHHMM(bestMin + params.beforeBedWindowMin);
+/**
+ * Suggest the night bedtime by combining two models:
+ *  - idealBedtime(wake, nightSleepH): "11h before next wake" floor
+ *  - projectDayBedtime: simulate the whole day forward (uses actual naps
+ *    where known, projects the rest via NAP_WEIGHTS + awakeWindowMin),
+ *    then bedtime = last (real or projected) nap end + beforeBedWindowMin
+ * Returns the LATER of the two — projections that come out earlier than
+ * the night anchor are ignored, projections that push the day later win.
+ */
+export function suggestedBedtime(events: DayEvents, params: BedtimeParams): string | null {
+  if (!isValidHHMM(events.wake)) return null;
+
+  const idealStr = idealBedtime(events.wake, params.nightSleepH);
+  const projectedStr = projectDayBedtime(events, params);
+
+  if (!projectedStr) return idealStr;
+
+  const idealMin = parseHHMM(idealStr);
+  const projectedMin = parseHHMM(projectedStr);
+  return projectedMin > idealMin ? projectedStr : idealStr;
+}
+
+function projectDayBedtime(events: DayEvents, params: BedtimeParams): string | null {
+  const expectedCount = params.naps;
+  if (expectedCount <= 0) return null;
+
+  const weights = NAP_WEIGHTS[expectedCount] ?? Array(expectedCount).fill(1 / expectedCount);
+  const daySleepBudget = Math.round(params.daySleepH * 60);
+
+  let lastEvent = events.wake;
+  let lastNapEnd: string | null = null;
+  let cumulativeNapMin = 0;
+
+  function sumWeights(from: number): number {
+    let s = 0;
+    for (let i = from; i < weights.length; i++) s += weights[i];
+    return s;
+  }
+  function clamp(v: number, lo: number, hi: number): number {
+    return Math.max(lo, Math.min(hi, v));
+  }
+  function projectDuration(napIdx: number): number {
+    const remaining = Math.max(0, daySleepBudget - cumulativeNapMin);
+    const remainingWeight = sumWeights(napIdx);
+    if (remainingWeight <= 0) return 10;
+    return clamp(Math.round(remaining * weights[napIdx] / remainingWeight), 10, 180);
   }
 
-  if (!dayBudget || dayBudget.totalMin <= 0) return naturalBedtime;
+  for (let i = 0; i < expectedCount; i++) {
+    const pair = events.naps[i];
+    if (pair?.start && pair?.end && isValidHHMM(pair.start) && isValidHHMM(pair.end)) {
+      const dur = parseHHMM(pair.end) - parseHHMM(pair.start);
+      if (dur > 0) {
+        cumulativeNapMin += dur;
+        lastNapEnd = pair.end;
+        lastEvent = pair.end;
+      }
+    } else if (pair?.start && isValidHHMM(pair.start)) {
+      const myDur = projectDuration(i);
+      const endMin = parseHHMM(pair.start) + myDur;
+      lastNapEnd = formatHHMM(endMin);
+      lastEvent = lastNapEnd;
+      cumulativeNapMin += myDur;
+    } else {
+      const startMin = parseHHMM(lastEvent) + params.awakeWindowMin;
+      const myDur = projectDuration(i);
+      const endMin = startMin + myDur;
+      lastNapEnd = formatHHMM(endMin);
+      lastEvent = lastNapEnd;
+      cumulativeNapMin += myDur;
+    }
+  }
 
-  const excess = dayBudget.completedMin - dayBudget.totalMin;
-  const COMP_FACTOR = 0.6;
-  const MAX_SHIFT = 90;
-  let shift = Math.round(excess * COMP_FACTOR);
-  if (shift > MAX_SHIFT) shift = MAX_SHIFT;
-  if (shift < -MAX_SHIFT) shift = -MAX_SHIFT;
+  // Account for extra actual naps beyond the expected count.
+  for (let i = expectedCount; i < events.naps.length; i++) {
+    const end = events.naps[i]?.end;
+    if (end && isValidHHMM(end)) {
+      if (lastNapEnd === null || parseHHMM(end) > parseHHMM(lastNapEnd)) {
+        lastNapEnd = end;
+      }
+    }
+  }
 
-  return formatHHMM(parseHHMM(naturalBedtime) + shift);
+  if (lastNapEnd === null) return null;
+  return formatHHMM(parseHHMM(lastNapEnd) + params.beforeBedWindowMin);
 }
 
 /**
