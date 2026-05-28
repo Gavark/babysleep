@@ -72,9 +72,9 @@
         class:badge-bad={badgeKind === 'bad'}
         aria-hidden="true"
       >
-        {#if badgeKind === 'good'}<CheckCircle size={22} weight="fill" />
-        {:else if badgeKind === 'medium'}<MinusCircle size={22} weight="fill" />
-        {:else if badgeKind === 'bad'}<XCircle size={22} weight="fill" />
+        {#if badgeKind === 'good'}<CheckCircle size={32} weight="fill" />
+        {:else if badgeKind === 'medium'}<MinusCircle size={32} weight="fill" />
+        {:else if badgeKind === 'bad'}<XCircle size={32} weight="fill" />
         {/if}
       </span>
       <span class="num">{dayNum}<small>{dayShort}</small></span>
@@ -147,7 +147,7 @@
 
   .cell.mode-strip {
     display: grid;
-    grid-template-columns: 24px 56px 1fr 56px;
+    grid-template-columns: 36px 56px 1fr 56px;
     align-items: center;
     gap: var(--s-2);
     min-height: 0;
