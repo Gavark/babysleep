@@ -2,6 +2,9 @@
   import type { DayMetrics } from '$lib/calendar';
   import { heatmapClass } from '$lib/calendar';
   import { formatDuration } from '$lib/sleep-calc';
+  import CheckCircle from 'phosphor-svelte/lib/CheckCircle';
+  import MinusCircle from 'phosphor-svelte/lib/MinusCircle';
+  import XCircle from 'phosphor-svelte/lib/XCircle';
 
   type Props = {
     metrics: DayMetrics;
@@ -17,6 +20,12 @@
   const pct = $derived(Math.round(metrics.ratio * 100));
   const ariaLabel = $derived(buildAriaLabel(metrics, dayLabel));
   const tooltipText = $derived(buildTooltip(metrics, dayLabel, pct));
+  const badgeKind = $derived(
+    metrics.heatLevel === 'good' ? 'good'
+    : metrics.heatLevel === 'ok' || metrics.heatLevel === 'meh' ? 'medium'
+    : metrics.heatLevel === 'bad' ? 'bad'
+    : null
+  );
 
   function formatLongDay(iso: string): string {
     const [y, m, d] = iso.split('-').map(Number);
@@ -56,6 +65,12 @@
     title={tooltipText}
   >
     {#if mode === 'strip'}
+      <span class="badge badge-strip" aria-hidden="true">
+        {#if badgeKind === 'good'}<span class="badge-good"><CheckCircle size={22} weight="fill" /></span>
+        {:else if badgeKind === 'medium'}<span class="badge-medium"><MinusCircle size={22} weight="fill" /></span>
+        {:else if badgeKind === 'bad'}<span class="badge-bad"><XCircle size={22} weight="fill" /></span>
+        {/if}
+      </span>
       <span class="num">{dayNum}<small>{dayShort}</small></span>
       <span class="timeline" aria-hidden="true">
         {#each metrics.segments as s (s.startMin)}
@@ -67,7 +82,7 @@
       </span>
       <span class="total">{metrics.hasAnyData ? totalStr : ''}</span>
     {:else}
-      <span class="num">{dayNum}{#if !metrics.isComplete && metrics.hasAnyData}<span class="partial-mark" aria-hidden="true">…</span>{/if}</span>
+      <span class="num">{dayNum}{#if !metrics.isComplete && metrics.hasAnyData}<span class="partial-mark" aria-hidden="true">…</span>{:else if badgeKind}<span class="badge badge-grid" aria-hidden="true">{#if badgeKind === 'good'}<span class="badge-good"><CheckCircle size={16} weight="fill" /></span>{:else if badgeKind === 'medium'}<span class="badge-medium"><MinusCircle size={16} weight="fill" /></span>{:else if badgeKind === 'bad'}<span class="badge-bad"><XCircle size={16} weight="fill" /></span>{/if}</span>{/if}</span>
       <span class="timeline" aria-hidden="true">
         {#each metrics.segments as s (s.startMin)}
           <span
@@ -107,9 +122,14 @@
   .heat-partial { background: transparent; }
   .heat-none { background: var(--c-cal-heat-none); }
 
-  .num { font-weight: 600; font-size: var(--fs-sm); display: flex; justify-content: space-between; align-items: baseline; }
+  .num { font-weight: 600; font-size: var(--fs-sm); display: flex; justify-content: space-between; align-items: center; }
   .num small { font-weight: 400; font-size: var(--fs-xs); opacity: 0.6; margin-left: var(--s-1); }
   .partial-mark { font-weight: 400; opacity: 0.6; }
+
+  .badge { display: inline-flex; align-items: center; line-height: 0; }
+  .badge-good   { color: var(--c-accent-sage); }
+  .badge-medium { color: var(--c-accent-honey); }
+  .badge-bad    { color: var(--c-danger); }
 
   .timeline { position: relative; display: block; height: 14px; margin-top: var(--s-1); background: rgba(0,0,0,0.05); border-radius: 3px; overflow: hidden; }
   .seg { position: absolute; top: 1px; bottom: 1px; border-radius: 2px; }
@@ -120,7 +140,7 @@
 
   .cell.mode-strip {
     display: grid;
-    grid-template-columns: 56px 1fr 56px;
+    grid-template-columns: 24px 56px 1fr 56px;
     align-items: center;
     gap: var(--s-2);
     min-height: 0;
