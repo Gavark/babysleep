@@ -1,0 +1,6 @@
+# Caddyfile example — copy to `Caddyfile` and edit with your domain.
+# `Caddyfile` is gitignored so your real config stays local.
+your-domain.example.com {
+    encode gzip
+    reverse_proxy app:3000
+}

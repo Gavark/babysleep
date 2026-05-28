@@ -46,6 +46,6 @@ RUN apk add --no-cache sqlite
 USER node
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
-  CMD wget --quiet --tries=1 --spider http://localhost:3000/healthz || exit 1
+  CMD wget --quiet --tries=1 --spider http://127.0.0.1:3000/healthz || exit 1
 
 CMD ["/app/start.sh"]

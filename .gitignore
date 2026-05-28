@@ -14,3 +14,7 @@ coverage/
 /backups/
 .claude/
 .superpowers/
+docs/superpowers/
+
+# Local reverse-proxy config (copy Caddyfile.example to Caddyfile)
+Caddyfile
