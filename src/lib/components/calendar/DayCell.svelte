@@ -127,9 +127,10 @@
   .partial-mark { font-weight: 400; opacity: 0.6; }
 
   .badge { display: inline-flex; align-items: center; line-height: 0; }
-  .badge-good   { color: var(--c-accent-sage); }
-  .badge-medium { color: var(--c-accent-honey); }
-  .badge-bad    { color: var(--c-danger); }
+  .badge :global(svg) { display: block; }
+  .badge-good   { color: var(--c-accent-sage); display: inline-flex; }
+  .badge-medium { color: var(--c-accent-honey); display: inline-flex; }
+  .badge-bad    { color: var(--c-danger); display: inline-flex; }
 
   .timeline { position: relative; display: block; height: 14px; margin-top: var(--s-1); background: rgba(0,0,0,0.05); border-radius: 3px; overflow: hidden; }
   .seg { position: absolute; top: 1px; bottom: 1px; border-radius: 2px; }
