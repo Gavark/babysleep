@@ -109,6 +109,22 @@ describe('suggestedBedtime', () => {
     expect(suggestedBedtime({ wake: '05:30', naps }, params46)).toBe('18:30');
   });
 
+  it('does not project a nap when the gap before ideal bedtime is shorter than the awake window', () => {
+    // wake=07:00 → ideal bedtime = 07:00 - 11h = 20:00 (1200 min).
+    // nap1 09:00-10:00 (60 min), nap2 18:00-18:30 (30 min). Cumulative = 90 min,
+    // well under the 210-min day budget (budget rule does NOT fire).
+    // For nap3 projection: lastEvent=18:30 (1110 min). Gap to ideal = 90 min,
+    // shorter than awakeWindowMin (120 min). Awake-window rule fires → break.
+    // bedtime = 18:30 + 2h = 20:30. MAX(idealBedtime 20:00, 20:30) = 20:30.
+    const naps = [
+      { start: '09:00', end: '10:00' },
+      { start: '18:00', end: '18:30' },
+      { start: '', end: '' },
+      { start: '', end: '' }
+    ];
+    expect(suggestedBedtime({ wake: '07:00', naps }, params46)).toBe('20:30');
+  });
+
   it('does not project a phantom nap when actuals already filled the day budget', () => {
     // wake=05:30. nap1 86min (08:25→09:51). nap2 150min (14:22→16:52).
     // Cumulative = 236 min > daySleepH budget (210 min). Slot 2 (nap3) is empty.
