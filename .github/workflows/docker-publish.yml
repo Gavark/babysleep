@@ -55,7 +55,11 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          platforms: linux/amd64,linux/arm64
+          # linux/arm64 disabled for now: QEMU emulation of arm64 on x86 runners
+          # crashes during `npm ci` ("illegal instruction" from better-sqlite3's
+          # native binary). Re-enable once the repo is public (free native arm64
+          # runners) or by adding a self-hosted arm64 runner.
+          platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
