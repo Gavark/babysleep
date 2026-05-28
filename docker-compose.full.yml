@@ -1,0 +1,87 @@
+# Full self-hosted stack: app + Caddy (HTTPS via Let's Encrypt) + nightly backup sidecar.
+# Copy Caddyfile.example to Caddyfile (and edit your domain) before bringing this up.
+#
+#   docker compose -f docker-compose.full.yml up -d
+#
+# For app-only (bring your own reverse proxy), use the default docker-compose.yml instead.
+
+services:
+  app:
+    image: ghcr.io/gavark/babysleep:latest
+    # Falls back to building from source if the image isn't pulled (e.g. during local dev
+    # before the first GHCR push, or for users who prefer to build from source).
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: babysleep
+    restart: unless-stopped
+    expose:
+      - "3000"
+    # Local debug port (optional — remove if you want the app reachable only via Caddy)
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_PATH=/data/babysleep.sqlite
+      - SESSION_SECRET=${SESSION_SECRET}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - DISABLE_SIGNUP=${DISABLE_SIGNUP:-false}
+      - TZ=${TZ:-Europe/Paris}
+      - ORIGIN=${ORIGIN:-}
+      - PROTOCOL_HEADER=x-forwarded-proto
+      - HOST_HEADER=x-forwarded-host
+    volumes:
+      - babysleep_data:/data
+    networks:
+      - internal
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: babysleep-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"  # HTTP/3
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+    networks:
+      - internal
+
+  backup:
+    image: alpine:3
+    container_name: babysleep-backup
+    restart: unless-stopped
+    volumes:
+      - babysleep_data:/data:ro
+      - ./backups:/backups
+      - ./scripts/run-backup.sh:/usr/local/bin/run-backup:ro
+    environment:
+      - TZ=${TZ:-Europe/Paris}
+      - BACKUP_RETENTION=${BACKUP_RETENTION:-30}
+      - BACKUP_SCHEDULE=${BACKUP_SCHEDULE:-0 3 * * *}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        apk add --no-cache sqlite tzdata >/dev/null
+        echo "$${BACKUP_SCHEDULE} BACKUP_RETENTION=$${BACKUP_RETENTION} sh /usr/local/bin/run-backup >> /proc/1/fd/1 2>&1" | crontab -
+        echo "[boot] cron registered: $${BACKUP_SCHEDULE}"
+        echo "[boot] retention: $${BACKUP_RETENTION} backups"
+        echo "[boot] running initial backup..."
+        BACKUP_RETENTION=$${BACKUP_RETENTION} sh /usr/local/bin/run-backup
+        exec crond -f -L /dev/stdout
+    networks:
+      - internal
+
+volumes:
+  babysleep_data:
+  caddy_data:
+  caddy_config:
+
+networks:
+  internal:
