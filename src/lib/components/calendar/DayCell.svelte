@@ -65,10 +65,16 @@
     title={tooltipText}
   >
     {#if mode === 'strip'}
-      <span class="badge badge-strip" aria-hidden="true">
-        {#if badgeKind === 'good'}<span class="badge-good"><CheckCircle size={22} weight="fill" /></span>
-        {:else if badgeKind === 'medium'}<span class="badge-medium"><MinusCircle size={22} weight="fill" /></span>
-        {:else if badgeKind === 'bad'}<span class="badge-bad"><XCircle size={22} weight="fill" /></span>
+      <span
+        class="badge badge-strip"
+        class:badge-good={badgeKind === 'good'}
+        class:badge-medium={badgeKind === 'medium'}
+        class:badge-bad={badgeKind === 'bad'}
+        aria-hidden="true"
+      >
+        {#if badgeKind === 'good'}<CheckCircle size={22} weight="fill" />
+        {:else if badgeKind === 'medium'}<MinusCircle size={22} weight="fill" />
+        {:else if badgeKind === 'bad'}<XCircle size={22} weight="fill" />
         {/if}
       </span>
       <span class="num">{dayNum}<small>{dayShort}</small></span>
@@ -82,7 +88,7 @@
       </span>
       <span class="total">{metrics.hasAnyData ? totalStr : ''}</span>
     {:else}
-      <span class="num">{dayNum}{#if !metrics.isComplete && metrics.hasAnyData}<span class="partial-mark" aria-hidden="true">…</span>{:else if badgeKind}<span class="badge badge-grid" aria-hidden="true">{#if badgeKind === 'good'}<span class="badge-good"><CheckCircle size={16} weight="fill" /></span>{:else if badgeKind === 'medium'}<span class="badge-medium"><MinusCircle size={16} weight="fill" /></span>{:else if badgeKind === 'bad'}<span class="badge-bad"><XCircle size={16} weight="fill" /></span>{/if}</span>{/if}</span>
+      <span class="num">{dayNum}{#if !metrics.isComplete && metrics.hasAnyData}<span class="partial-mark" aria-hidden="true">…</span>{:else if badgeKind}<span class="badge badge-grid badge-{badgeKind}" aria-hidden="true">{#if badgeKind === 'good'}<CheckCircle size={16} weight="fill" />{:else if badgeKind === 'medium'}<MinusCircle size={16} weight="fill" />{:else if badgeKind === 'bad'}<XCircle size={16} weight="fill" />{/if}</span>{/if}</span>
       <span class="timeline" aria-hidden="true">
         {#each metrics.segments as s (s.startMin)}
           <span
@@ -126,11 +132,11 @@
   .num small { font-weight: 400; font-size: var(--fs-xs); opacity: 0.6; margin-left: var(--s-1); }
   .partial-mark { font-weight: 400; opacity: 0.6; }
 
-  .badge { display: inline-flex; align-items: center; line-height: 0; }
-  .badge :global(svg) { display: block; }
-  .badge-good   { color: var(--c-accent-sage); display: inline-flex; }
-  .badge-medium { color: var(--c-accent-honey); display: inline-flex; }
-  .badge-bad    { color: var(--c-danger); display: inline-flex; }
+  .badge { display: inline-flex; align-items: center; justify-content: center; line-height: 0; background: transparent; }
+  .badge :global(svg) { display: block; background: transparent; }
+  .badge.badge-good   { color: var(--c-accent-sage); }
+  .badge.badge-medium { color: var(--c-accent-honey); }
+  .badge.badge-bad    { color: var(--c-danger); }
 
   .timeline { position: relative; display: block; height: 14px; margin-top: var(--s-1); background: rgba(0,0,0,0.05); border-radius: 3px; overflow: hidden; }
   .seg { position: absolute; top: 1px; bottom: 1px; border-radius: 2px; }
