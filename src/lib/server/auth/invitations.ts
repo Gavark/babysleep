@@ -1,9 +1,11 @@
 import { eq, and, isNull, gt, desc } from 'drizzle-orm';
 import { randomBytes } from 'node:crypto';
-import type { drizzle } from 'drizzle-orm/better-sqlite3';
+import type { BaseSQLiteDatabase } from 'drizzle-orm/sqlite-core';
 import * as schema from '../db/schema';
 
-type DB = ReturnType<typeof drizzle<typeof schema>>;
+// Accept both a top-level Drizzle DB and a SQLiteTransaction so callers can
+// pass `tx` from inside db.transaction((tx) => …) without a cast.
+type DB = BaseSQLiteDatabase<'sync', unknown, typeof schema>;
 
 export const INVITATION_TTL_SEC = 7 * 24 * 60 * 60;
 

@@ -3,6 +3,7 @@ import type { drizzle } from 'drizzle-orm/better-sqlite3';
 import * as schema from '$lib/server/db/schema';
 import { verifyPassword } from '$lib/server/auth/password';
 import { createSession } from '$lib/server/auth/session';
+import { normalizeEmail } from '$lib/server/auth/email';
 
 type DB = ReturnType<typeof drizzle<typeof schema>>;
 
@@ -15,7 +16,7 @@ export async function attemptLogin(
   input: { email: string; password: string },
   userAgent: string | null
 ): Promise<LoginResult> {
-  const email = String(input.email ?? '').toLowerCase().trim();
+  const email = normalizeEmail(input.email);
   const password = String(input.password ?? '');
   if (!email || !password) return { ok: false, reason: 'invalid' };
   const user = db.select().from(schema.users).where(eq(schema.users.email, email)).all()[0];
