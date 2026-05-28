@@ -9,6 +9,9 @@
   import Bed from 'phosphor-svelte/lib/Bed';
   import Cloud from 'phosphor-svelte/lib/Cloud';
   import Coffee from 'phosphor-svelte/lib/Coffee';
+  import CheckCircle from 'phosphor-svelte/lib/CheckCircle';
+  import MinusCircle from 'phosphor-svelte/lib/MinusCircle';
+  import XCircle from 'phosphor-svelte/lib/XCircle';
   let { data } = $props();
 
   function napCount(r: any) {
@@ -74,7 +77,7 @@
     <table>
       <thead>
         <tr>
-          <th>Date</th><th>Σ Siestes</th><th>Réveil</th>
+          <th>Date</th><th>Note</th><th>Σ Siestes</th><th>Réveil</th>
           <th>S1</th><th>S2</th><th>S3</th><th>S4</th>
           <th>Coucher</th><th>Nuit préc.</th><th>Nb</th><th>Notes</th>
         </tr>
@@ -83,6 +86,12 @@
         {#each data.entries as r, i}
           <tr>
             <td><a href="/app/babies/{data.baby.id}/day/{r.date}"><strong>{r.date}</strong></a></td>
+            <td class="rating-cell">
+              {#if r.nightRating === 'good'}<span class="rating rating-good" title="Bonne nuit"><CheckCircle size={16} weight="fill" /></span>
+              {:else if r.nightRating === 'medium'}<span class="rating rating-medium" title="Nuit moyenne"><MinusCircle size={16} weight="fill" /></span>
+              {:else if r.nightRating === 'bad'}<span class="rating rating-bad" title="Mauvaise nuit"><XCircle size={16} weight="fill" /></span>
+              {/if}
+            </td>
             <td>{totalNapsMin(r) > 0 ? formatDuration(totalNapsMin(r)) : ''}</td>
             <td>{r.wakeTime ?? ''}</td>
             <td>{r.nap1End ?? ''}</td>
@@ -113,6 +122,12 @@
 {/if}
 
 <style>
+  .rating-cell { text-align: center; }
+  .rating { display: inline-flex; line-height: 0; }
+  .rating-good   { color: var(--c-accent-sage); }
+  .rating-medium { color: var(--c-accent-honey); }
+  .rating-bad    { color: var(--c-danger); }
+
   .filter-row {
     display: flex;
     gap: var(--s-3);

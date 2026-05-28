@@ -71,6 +71,7 @@ export const sleepEntries = sqliteTable(
     bedtime: text('bedtime'),
     notes: text('notes'),
     timezone: text('timezone'),
+    nightRating: text('night_rating'),
     createdAt: integer('created_at').notNull().default(sql`(unixepoch())`),
     updatedAt: integer('updated_at').notNull().default(sql`(unixepoch())`)
   },

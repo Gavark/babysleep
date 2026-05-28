@@ -5,15 +5,16 @@
   type Props = {
     cells: DayMetrics[];
     babyId: number;
+    onSelect?: (date: string) => void;
   };
-  let { cells, babyId }: Props = $props();
+  let { cells, babyId, onSelect }: Props = $props();
 
   const inMonthCells = $derived(cells.filter((c) => c.inMonth));
 </script>
 
 <ul class="cal-strip" aria-label="Liste des journées du mois">
   {#each inMonthCells as cell (cell.date)}
-    <li><DayCell metrics={cell} {babyId} mode="strip" /></li>
+    <li><DayCell metrics={cell} {babyId} mode="strip" {onSelect} /></li>
   {/each}
 </ul>
 

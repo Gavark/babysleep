@@ -5,7 +5,8 @@ import {
   getEntryForBabyDate,
   listEntriesInRange,
   summariesForBaby,
-  deleteEntry
+  deleteEntry,
+  setNightRating
 } from '../../src/lib/server/sleep-entries';
 
 function setup(tdb: ReturnType<typeof makeTestDb>) {
@@ -82,5 +83,33 @@ describe('deleteEntry', () => {
     expect(e).not.toBeNull();
     deleteEntry(tdb.db, e!.id);
     expect(getEntryForBabyDate(tdb.db, babyId, '2026-05-15')).toBeNull();
+  });
+});
+
+describe('setNightRating', () => {
+  let tdb: ReturnType<typeof makeTestDb>;
+  beforeEach(() => { tdb = makeTestDb(); });
+
+  it('creates an entry with the rating when none exists', () => {
+    const { babyId } = setup(tdb);
+    setNightRating(tdb.db, babyId, '2026-05-22', 'good');
+    expect(getEntryForBabyDate(tdb.db, babyId, '2026-05-22')?.nightRating).toBe('good');
+  });
+
+  it('updates only the rating, preserving other fields', () => {
+    const { babyId } = setup(tdb);
+    upsertEntry(tdb.db, babyId, '2026-05-22', { wakeTime: '07:00', bedtime: '20:00' });
+    setNightRating(tdb.db, babyId, '2026-05-22', 'medium');
+    const e = getEntryForBabyDate(tdb.db, babyId, '2026-05-22');
+    expect(e?.nightRating).toBe('medium');
+    expect(e?.wakeTime).toBe('07:00');
+    expect(e?.bedtime).toBe('20:00');
+  });
+
+  it('clears the rating when called with null', () => {
+    const { babyId } = setup(tdb);
+    setNightRating(tdb.db, babyId, '2026-05-22', 'bad');
+    setNightRating(tdb.db, babyId, '2026-05-22', null);
+    expect(getEntryForBabyDate(tdb.db, babyId, '2026-05-22')?.nightRating).toBeNull();
   });
 });

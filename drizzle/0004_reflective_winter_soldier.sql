@@ -1,0 +1,1 @@
+ALTER TABLE `sleep_entries` ADD `night_rating` text;

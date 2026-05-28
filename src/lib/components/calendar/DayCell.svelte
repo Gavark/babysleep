@@ -10,8 +10,9 @@
     metrics: DayMetrics;
     babyId: number;
     mode: 'grid' | 'strip';
+    onSelect?: (date: string) => void;
   };
-  let { metrics, babyId, mode }: Props = $props();
+  let { metrics, babyId: _babyId, mode, onSelect }: Props = $props();
 
   const dayNum = $derived(Number(metrics.date.slice(8, 10)));
   const dayLabel = $derived(formatLongDay(metrics.date));
@@ -20,12 +21,7 @@
   const pct = $derived(Math.round(metrics.ratio * 100));
   const ariaLabel = $derived(buildAriaLabel(metrics, dayLabel));
   const tooltipText = $derived(buildTooltip(metrics, dayLabel, pct));
-  const badgeKind = $derived(
-    metrics.heatLevel === 'good' ? 'good'
-    : metrics.heatLevel === 'ok' || metrics.heatLevel === 'meh' ? 'medium'
-    : metrics.heatLevel === 'bad' ? 'bad'
-    : null
-  );
+  const badgeKind = $derived(metrics.nightRating);
 
   function formatLongDay(iso: string): string {
     const [y, m, d] = iso.split('-').map(Number);
@@ -58,9 +54,10 @@
     <span class="num">{dayNum}</span>
   </div>
 {:else}
-  <a
+  <button
+    type="button"
     class="cell {heatmapClass(metrics.heatLevel)} {metrics.isToday ? 'today' : ''} mode-{mode}"
-    href="/app/babies/{babyId}/day/{metrics.date}"
+    onclick={() => onSelect?.(metrics.date)}
     aria-label={ariaLabel}
     title={tooltipText}
   >
@@ -99,12 +96,13 @@
       </span>
       {#if metrics.hasAnyData}<span class="total">{totalStr}</span>{/if}
     {/if}
-  </a>
+  </button>
 {/if}
 
 <style>
   .cell {
     display: block;
+    width: 100%;
     border: 1px solid var(--c-border);
     border-radius: var(--r-md);
     background: var(--c-cal-heat-none);
@@ -113,8 +111,12 @@
     padding: var(--s-2);
     min-height: 90px;
     font-size: var(--fs-xs);
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
     transition: filter 0.15s;
   }
+  button.cell { -webkit-tap-highlight-color: transparent; }
   .cell.padding {
     opacity: 0.35;
     pointer-events: none;

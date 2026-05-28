@@ -2,12 +2,18 @@
   import { goto } from '$app/navigation';
   import CalendarGrid from '$lib/components/calendar/CalendarGrid.svelte';
   import CalendarStrip from '$lib/components/calendar/CalendarStrip.svelte';
+  import NightRatingPicker from '$lib/components/calendar/NightRatingPicker.svelte';
   import CaretLeft from 'phosphor-svelte/lib/CaretLeft';
   import CaretRight from 'phosphor-svelte/lib/CaretRight';
   import { ageInMonths, formatDuration } from '$lib/sleep-calc';
   import { paramsForAge } from '$lib/age-params';
 
   let { data } = $props();
+
+  let pickerDate = $state<string | null>(null);
+  const pickerCell = $derived(
+    pickerDate ? data.cells.find((c) => c.date === pickerDate) ?? null : null
+  );
 
   const monthLabel = $derived(formatMonth(data.year, data.month));
   const prevHref = $derived(buildHref(data.year, data.month - 1));
@@ -59,8 +65,17 @@
   <a class="btn btn-secondary btn-sm today-btn" href={todayHref}>Aujourd'hui</a>
 </nav>
 
-<div class="cal-desktop"><CalendarGrid cells={data.cells} babyId={data.baby.id} /></div>
-<div class="cal-mobile"><CalendarStrip cells={data.cells} babyId={data.baby.id} /></div>
+<div class="cal-desktop"><CalendarGrid cells={data.cells} babyId={data.baby.id} onSelect={(d) => pickerDate = d} /></div>
+<div class="cal-mobile"><CalendarStrip cells={data.cells} babyId={data.baby.id} onSelect={(d) => pickerDate = d} /></div>
+
+{#if pickerCell}
+  <NightRatingPicker
+    date={pickerCell.date}
+    currentRating={pickerCell.nightRating}
+    babyId={data.baby.id}
+    onClose={() => pickerDate = null}
+  />
+{/if}
 
 <footer class="cal-legend" aria-label="Légende">
   <p class="legend-quota">

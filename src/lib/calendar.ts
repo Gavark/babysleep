@@ -10,6 +10,8 @@ export type TimelineSegment = {
 
 export type HeatLevel = 'good' | 'ok' | 'meh' | 'bad' | 'partial' | 'none';
 
+export type NightRating = 'good' | 'medium' | 'bad';
+
 export type DayMetrics = {
   date: string;                  // YYYY-MM-DD
   inMonth: boolean;
@@ -24,6 +26,7 @@ export type DayMetrics = {
   wakeTime: string | null;
   bedtime: string | null;
   napCount: number;
+  nightRating: NightRating | null;     // manual user-set rating (not derived from heatLevel)
 };
 
 export type GridCell = { readonly date: string; readonly inMonth: boolean };
@@ -52,6 +55,7 @@ export type CalendarEntry = {
   nap4Start: string | null;
   nap4End: string | null;
   bedtime: string | null;
+  nightRating?: string | null;
 };
 
 function isoDate(y: number, m1to12: number, d: number): string {
@@ -176,6 +180,10 @@ export function computeDayMetrics(
     heatLevel = 'bad';
   }
 
+  const raw = entry?.nightRating ?? null;
+  const nightRating: NightRating | null =
+    raw === 'good' || raw === 'medium' || raw === 'bad' ? raw : null;
+
   return {
     date,
     inMonth: true,
@@ -189,6 +197,7 @@ export function computeDayMetrics(
     segments,
     wakeTime: entry?.wakeTime ?? null,
     bedtime: entry?.bedtime ?? null,
-    napCount
+    napCount,
+    nightRating
   };
 }

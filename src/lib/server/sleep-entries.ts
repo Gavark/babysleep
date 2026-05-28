@@ -5,6 +5,8 @@ import { parseHHMM, formatHHMM } from '$lib/time';
 
 type DB = ReturnType<typeof drizzle<typeof schema>>;
 
+export type NightRating = 'good' | 'medium' | 'bad';
+
 export type EntryPatch = Partial<{
   wakeTime: string | null;
   nap1Start: string | null;
@@ -18,6 +20,7 @@ export type EntryPatch = Partial<{
   bedtime: string | null;
   notes: string | null;
   timezone: string | null;
+  nightRating: NightRating | null;
 }>;
 
 export function upsertEntry(db: DB, babyId: number, date: string, patch: EntryPatch) {
@@ -38,6 +41,7 @@ export function upsertEntry(db: DB, babyId: number, date: string, patch: EntryPa
       bedtime: patch.bedtime ?? null,
       notes: patch.notes ?? null,
       timezone: patch.timezone ?? null,
+      nightRating: patch.nightRating ?? null,
       createdAt: t, updatedAt: t
     }).run();
   } else {
@@ -48,6 +52,11 @@ export function upsertEntry(db: DB, babyId: number, date: string, patch: EntryPa
 
 export function deleteEntry(db: DB, entryId: number) {
   db.delete(schema.sleepEntries).where(eq(schema.sleepEntries.id, entryId)).run();
+}
+
+/** Set or clear the manual night-quality rating for a (baby, date). Creates the entry if missing. */
+export function setNightRating(db: DB, babyId: number, date: string, rating: NightRating | null) {
+  upsertEntry(db, babyId, date, { nightRating: rating });
 }
 
 export function getEntryForBabyDate(db: DB, babyId: number, date: string) {
