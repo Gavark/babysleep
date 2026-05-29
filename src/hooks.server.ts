@@ -1,4 +1,5 @@
 import type { Handle } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import { getDb } from '$lib/server/db';
 import { rateLimit } from '$lib/server/rate-limit';
 import {
@@ -7,7 +8,7 @@ import {
   purgeExpiredSessions,
   SESSION_TTL_SEC
 } from '$lib/server/auth/session';
-import { bootstrapAdmin } from '$lib/server/auth/bootstrap';
+import { bootstrapAdmin, hasNoUsers } from '$lib/server/auth/bootstrap';
 
 const { db } = getDb();
 
@@ -18,13 +19,36 @@ async function maybeBootstrap() {
   await bootstrapAdmin(db, { email: process.env.ADMIN_EMAIL, password: process.env.ADMIN_PASSWORD });
 }
 
+// Becomes true the first time we observe a user row. Avoids querying on every
+// hot-path request once the wizard has been completed.
+let usersExist = false;
+function isInSetupMode(): boolean {
+  if (usersExist) return false;
+  if (!hasNoUsers(db)) { usersExist = true; return false; }
+  return true;
+}
+
 setInterval(() => purgeExpiredSessions(db), 3600 * 1000);
 
 export const handle: Handle = async ({ event, resolve }) => {
   await maybeBootstrap();
+
+  const path = event.url.pathname;
+  // While the database has no user, force the visitor through the wizard.
+  // Whitelist: /setup itself, the Docker healthcheck, SvelteKit assets, and
+  // any path with a file extension (favicon, icons, manifest, fonts).
+  if (
+    isInSetupMode() &&
+    path !== '/setup' &&
+    path !== '/healthz' &&
+    !path.startsWith('/_app/') &&
+    !/\.[a-z0-9]+$/i.test(path)
+  ) {
+    throw redirect(303, '/setup');
+  }
+
   const rawTheme = event.cookies.get('theme');
   event.locals.theme = rawTheme === 'light' || rawTheme === 'dark' ? rawTheme : 'auto';
-  const path = event.url.pathname;
   if ((path === '/login' || path === '/signup') && event.request.method === 'POST') {
     const ip = event.getClientAddress();
     if (!rateLimit(`${path}:${ip}`, 5, 15 * 60)) {
