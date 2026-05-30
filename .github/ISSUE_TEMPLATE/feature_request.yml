@@ -1,0 +1,54 @@
+name: Feature request
+description: Suggest a new capability or an improvement to an existing one.
+title: "[feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the suggestion. The clearer the use-case, the easier it is to prioritise — please describe the *problem* you're trying to solve before jumping to a solution.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem are you trying to solve?
+      description: The user-facing situation, not the proposed implementation.
+      placeholder: "e.g. I want to know when my baby's awake window will be over without having to look at the app."
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What do you have in mind?
+      description: A rough sketch of the feature. Doesn't need to be a spec.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered
+      description: Existing workarounds, other tools that do this, etc.
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Who would benefit?
+      options:
+        - "Just me"
+        - "Most BabySleep users"
+        - "A specific deployment pattern (self-hoster on RPi, NAS, etc.)"
+        - "Not sure"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and didn't find a duplicate.
+          required: true
+        - label: I checked the roadmap section in the README.
+          required: true

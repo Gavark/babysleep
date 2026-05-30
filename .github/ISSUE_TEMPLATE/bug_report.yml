@@ -1,0 +1,82 @@
+name: Bug report
+description: Something is broken or behaves unexpectedly.
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this. Please fill the form below — it's faster for me to act on a precise reproduction than on free-form text.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: One or two sentences. What did the app do wrong?
+      placeholder: e.g. "Saving a nap with start='14:00' end='13:00' creates a row instead of being rejected."
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to /app/babies/1/today
+        2. Click "Démarrer sieste maintenant"
+        3. ...
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: BabySleep version
+      description: "Run: docker inspect babysleep --format '{{.Image}}'  (or 'git describe' if dev)"
+      placeholder: "ghcr.io/gavark/babysleep:v0.1.0  /  sha-3cdd777"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: deployment
+    attributes:
+      label: How are you running it?
+      options:
+        - "docker-compose.yml (minimal)"
+        - "docker-compose.full.yml (Caddy + backup)"
+        - "Custom Docker setup"
+        - "npm run dev (local development)"
+    validations:
+      required: true
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser / device (if frontend bug)
+      placeholder: "Chrome 142 / Android 14 / Pixel 7"
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: |
+        Server: `docker compose logs --tail=200 app`
+        Browser: console output from devtools
+      render: shell
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and didn't find a duplicate.
+          required: true
+        - label: I checked I'm running a reasonably recent version.
+          required: true
