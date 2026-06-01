@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm';
 import type { drizzle } from 'drizzle-orm/better-sqlite3';
 import * as schema from '$lib/server/db/schema';
-import { hashPassword, verifyPassword } from '$lib/server/auth/password';
+import { hashPassword, verifyPassword, MAX_PASSWORD_LEN } from '$lib/server/auth/password';
 import { createSession } from '$lib/server/auth/session';
 import { normalizeEmail } from '$lib/server/auth/email';
 
@@ -30,6 +30,11 @@ export async function attemptLogin(
   const email = normalizeEmail(input.email);
   const password = String(input.password ?? '');
   if (!email || !password) return { ok: false, reason: 'invalid' };
+  // Reject pathologically long passwords before they reach argon2 — without
+  // this, /login becomes a CPU oracle (each request worth N MB of hashing).
+  // Doesn't reveal anything about email existence so the timing-safe path
+  // is preserved.
+  if (password.length > MAX_PASSWORD_LEN) return { ok: false, reason: 'invalid' };
   const user = db.select().from(schema.users).where(eq(schema.users.email, email)).all()[0];
   // Always run verify against SOMETHING — real hash when user exists, a dummy
   // hash otherwise. Both paths spend ~100ms inside argon2id so response times

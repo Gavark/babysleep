@@ -19,6 +19,17 @@ export async function verifyPassword(hashStr: string, plain: string): Promise<bo
   }
 }
 
+// Lower bound: anything shorter is trivially guessable.
+// Upper bound: argon2id cost grows with input length; without a cap an
+// attacker could submit a multi-megabyte "password" on /signup or
+// /account changePassword and tie up a worker.
+export const MIN_PASSWORD_LEN = 10;
+export const MAX_PASSWORD_LEN = 1024;
+
 export function isStrongEnough(plain: string): boolean {
-  return typeof plain === 'string' && plain.length >= 10;
+  return (
+    typeof plain === 'string' &&
+    plain.length >= MIN_PASSWORD_LEN &&
+    plain.length <= MAX_PASSWORD_LEN
+  );
 }
