@@ -99,8 +99,8 @@ In a strict sense, the SQLite file is the only thing that's _yours_. But for a
 true disaster-recovery scenario where you lose the whole host, also keep
 copies of:
 
-- **`.env`** — `SESSION_SECRET` and any admin/backup credentials. Without it
-  you can still recreate the instance, but every session is invalidated.
+- **`.env`** — any admin/backup credentials you set there. Without it the
+  instance still boots; you'd just have to re-enter the configuration.
 - **`Caddyfile`** — your domain and any tuning you've added. The
   `Caddyfile.example` in the repo is a starting point only.
 - **The contents of `./backups/`** — push them off-site (S3, B2, rsync to a

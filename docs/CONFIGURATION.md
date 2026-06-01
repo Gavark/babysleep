@@ -7,21 +7,20 @@ because they only apply to specific topologies.
 
 ## Core
 
-### `SESSION_SECRET` _(required)_
+### Sessions — no `SESSION_SECRET` needed
 
-Random string used to sign auth cookies. Minimum 32 characters; longer is fine.
-**Treat as a credential** — leaking it lets an attacker forge sessions for any
-user without their password.
+Earlier versions of this file documented a `SESSION_SECRET` env var. It was
+never read by the application and has been removed from `.env.example` and
+the compose files. Drop it from your `.env` if you set it.
 
-Generate one once and reuse for the life of the instance:
+Sessions are protected by 256-bit cryptographically random IDs generated via
+`crypto.randomBytes(32)` and stored server-side in the `sessions` table. The
+session cookie is set with `HttpOnly`, `Secure` (in production), and
+`SameSite=Lax`. Each request looks the ID up against the DB, so there is no
+shared secret to rotate.
 
-```bash
-openssl rand -base64 36
-```
-
-Rotating it logs everyone out (existing session cookies become unverifiable).
-There is no procedure to migrate sessions across a rotation — users just
-re-login.
+To force-logout everyone, delete rows from the `sessions` table or use the
+"sign out other devices" UI on `/account`.
 
 ### `DATABASE_PATH` _(default `/data/babysleep.sqlite`)_
 

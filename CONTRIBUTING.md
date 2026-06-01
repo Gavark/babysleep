@@ -14,7 +14,6 @@ Usage questions go to [Discussions](https://github.com/Gavark/babysleep/discussi
 ```bash
 npm install
 cp .env.example .env
-# Set SESSION_SECRET to any 32+ char random string.
 mkdir -p data
 npm run db:migrate
 npm run dev

@@ -79,7 +79,8 @@ You need Docker and Docker Compose v2.
 git clone https://github.com/Gavark/babysleep.git
 cd babysleep
 cp .env.example .env
-# Edit .env and set SESSION_SECRET (a random ≥ 32-char string)
+# .env.example works as-is for a first test; re-read it to customise TZ,
+# ORIGIN, or to opt into the scripted-admin setup.
 docker compose up -d
 ```
 
@@ -109,11 +110,14 @@ for the full annotated list. Highlights:
 
 | Variable | Required | Description |
 |---|---|---|
-| `SESSION_SECRET` | yes | Random ≥ 32-char string. Signs auth cookies. |
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD` | no | Skip the setup wizard for scripted deployments. |
 | `DISABLE_SIGNUP` | no | `true` to block `/signup` entirely. Invitations still work. |
 | `ORIGIN` | yes if behind a proxy | Public HTTPS URL for CSRF/Origin checks. |
 | `TZ` | no | Container timezone. Default `Europe/Paris`. |
+
+Sessions are secured by 256-bit random IDs stored in `HttpOnly` + `Secure` +
+`SameSite=Lax` cookies and validated against the database on every request —
+there is no "session secret" to manage.
 
 ---
 
@@ -163,7 +167,6 @@ You'll be prompted for a new password.
 ```bash
 npm install
 cp .env.example .env
-# Set SESSION_SECRET
 mkdir -p data
 npm run db:migrate
 npm run dev

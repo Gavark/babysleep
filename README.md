@@ -83,7 +83,8 @@ Tu as besoin de Docker et Docker Compose v2.
 git clone https://github.com/Gavark/babysleep.git
 cd babysleep
 cp .env.example .env
-# Édite .env et mets une valeur pour SESSION_SECRET (chaîne aléatoire ≥ 32 chars)
+# .env.example fonctionne tel quel pour un premier test ; relis-le pour
+# personnaliser TZ, ORIGIN ou activer le wizard automatisé.
 docker compose up -d
 ```
 
@@ -114,11 +115,14 @@ Toute la config passe par des variables d'environnement. Voir
 
 | Variable | Requis | Description |
 |---|---|---|
-| `SESSION_SECRET` | oui | Chaîne aléatoire ≥ 32 chars. Signe les cookies d'auth. |
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD` | non | Passe le wizard pour les déploiements scriptés. |
 | `DISABLE_SIGNUP` | non | `true` pour bloquer `/signup`. Les invitations marchent quand même. |
 | `ORIGIN` | oui si derrière un proxy | URL publique HTTPS pour les checks CSRF/Origin. |
 | `TZ` | non | Fuseau horaire du container. Défaut `Europe/Paris`. |
+
+Les sessions sont protégées par des IDs aléatoires de 256 bits stockés dans
+des cookies `HttpOnly` + `Secure` + `SameSite=Lax` et validés en base à
+chaque requête — il n'y a pas de "session secret" à gérer.
 
 ---
 
@@ -192,7 +196,6 @@ device). Trois moyens de les couper :
 ```bash
 npm install
 cp .env.example .env
-# Mets une valeur pour SESSION_SECRET
 mkdir -p data
 npm run db:migrate
 npm run dev
