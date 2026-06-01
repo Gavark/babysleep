@@ -17,7 +17,8 @@ const config = {
         'worker-src': ['self'],
         'object-src': ['none'],
         'base-uri': ['self'],
-        'form-action': ['self']
+        'form-action': ['self'],
+        'frame-ancestors': ['none']
       }
     },
     alias: {

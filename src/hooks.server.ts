@@ -72,12 +72,24 @@ export const handle: Handle = async ({ event, resolve }) => {
     }
   }
   const dataTheme = event.locals.theme === 'auto' ? '' : event.locals.theme;
-  return resolve(event, {
+  const response = await resolve(event, {
     transformPageChunk: ({ html }) => {
       if (!dataTheme) return html;
       return html.replace('<html', `<html data-theme="${dataTheme}"`);
     }
   });
+  // Defence-in-depth response headers. HSTS is left to the reverse proxy
+  // (Caddy) so the app stays usable behind plain HTTP for local debug.
+  // CSP's frame-ancestors directive covers modern browsers; X-Frame-Options
+  // keeps older clients safe from clickjacking.
+  response.headers.set('X-Frame-Options', 'DENY');
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('Referrer-Policy', 'same-origin');
+  response.headers.set(
+    'Permissions-Policy',
+    'camera=(), microphone=(), geolocation=(), interest-cohort=()'
+  );
+  return response;
 };
 
 export function setSessionCookie(cookies: import('@sveltejs/kit').Cookies, sessionId: string) {
