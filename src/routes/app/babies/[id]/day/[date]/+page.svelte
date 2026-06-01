@@ -51,8 +51,8 @@
     }
   });
 
-  function safeNextNap(t: string) {
-    return isValidHHMM(t) ? suggestNextNap(t, data.ageParams.awakeWindowMin) : '';
+  function safeNextNap(t: string, windowMin: number) {
+    return isValidHHMM(t) ? suggestNextNap(t, windowMin) : '';
   }
   function safeIdeal(t: string) {
     return isValidHHMM(t) ? idealBedtime(t, data.ageParams.nightSleepH) : '';
@@ -70,10 +70,11 @@
   const napEndSugg4 = $derived(suggestNapEnd(3, nap4Start, napsArr, data.ageParams) ?? '');
 
   const ideal = $derived(safeIdeal(data.baby.desiredWakeTime ?? '') || safeIdeal(wake));
-  const sugg1 = $derived(safeNextNap(wake));
-  const sugg2 = $derived(safeNextNap(nap1End));
-  const sugg3 = $derived(safeNextNap(nap2End));
-  const sugg4 = $derived(safeNextNap(nap3End));
+  // Sieste 1 uses the shorter first-of-day window; later naps use the general one.
+  const sugg1 = $derived(safeNextNap(wake, data.ageParams.firstAwakeWindowMin));
+  const sugg2 = $derived(safeNextNap(nap1End, data.ageParams.awakeWindowMin));
+  const sugg3 = $derived(safeNextNap(nap2End, data.ageParams.awakeWindowMin));
+  const sugg4 = $derived(safeNextNap(nap3End, data.ageParams.awakeWindowMin));
 
   const dayBudget = $derived(computeDaySleepBudget(napsArr, data.ageParams));
 

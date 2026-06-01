@@ -32,6 +32,7 @@
     wakeTime,
     naps,
     bedtime,
+    firstAwakeWindowMin: ageParams.firstAwakeWindowMin,
     awakeWindowMin: ageParams.awakeWindowMin
   });
 
@@ -92,7 +93,7 @@
       </div>
     {:else if timerState.overWindow}
       <div class="row-sub danger">
-        <Warning size={14} weight="fill" /> Fenêtre dépassée de {formatDuration(timerState.elapsedMin - ageParams.awakeWindowMin)}
+        <Warning size={14} weight="fill" /> Fenêtre dépassée de {formatDuration(-timerState.remainingMin)}
       </div>
     {:else}
       <div class="row-sub muted">

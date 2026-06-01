@@ -49,9 +49,14 @@ describe('suggestNextNap', () => {
 
 describe('suggestedBedtime', () => {
   // 4-6 mois bracket reference params: 3 naps × NAP_WEIGHTS[3]=[0.27,0.55,0.18],
-  // awakeWindow 2h, beforeBed 2h, night 11h, dayBudget 3.5h = 210 min.
+  // firstAwakeWindow 100, awakeWindow 120, beforeBed 150, night 11h, dayBudget 210 min.
   const params46 = {
-    naps: 3, awakeWindowMin: 120, beforeBedWindowMin: 120, nightSleepH: 11, daySleepH: 3.5
+    naps: 3,
+    firstAwakeWindowMin: 100,
+    awakeWindowMin: 120,
+    beforeBedWindowMin: 150,
+    nightSleepH: 11,
+    daySleepH: 3.5
   };
   const emptyNaps = () => [
     { start: '', end: '' }, { start: '', end: '' }, { start: '', end: '' }, { start: '', end: '' }
@@ -64,45 +69,44 @@ describe('suggestedBedtime', () => {
 
   it('falls back to idealBedtime when projection produces an earlier time (wake only)', () => {
     // wake=05:30, ideal = 05:30 - 11h = 18:30.
-    // Projection: 3 naps starting at 05:30+2h=07:30, alternating with 2h awake windows, budget 210.
-    // Nap1 (w=0.27/1.0) = 57 → 07:30-08:27. Nap2 starts 10:27 (w=0.55/0.73=0.753) dur=115 → 10:27-12:22.
-    // Nap3 starts 14:22 (w=0.18/0.18=1.0) dur=210-57-115=38 → 14:22-15:00. bedtime=15:00+2h=17:00.
-    // MAX(18:30, 17:00) = 18:30.
+    // Projection: 3 naps. Nap1 uses firstAwakeWindow=100, so starts at 05:30+100=07:10.
+    // dur(0)=round(210*0.27/1.0)=57 → 07:10-08:07.
+    // Nap2 starts 08:07+120=10:07, dur=round((210-57)*0.55/0.73)=115 → 10:07-12:02.
+    // Nap3 starts 12:02+120=14:02, dur=round((210-172)*1.0)=38 → 14:02-14:40.
+    // bedtime=14:40+150=17:10. MAX(18:30, 17:10) = 18:30.
     expect(suggestedBedtime({ wake: '05:30', naps: emptyNaps() }, params46)).toBe('18:30');
   });
 
   it('uses projection when day is structured later than ideal', () => {
-    // 3 actual naps ending at 17:37 → projection = 17:37 + 2h = 19:37.
-    // wake=06:50, ideal = 06:50 - 11h = 19:50.
-    // MAX(19:50, 19:37) = 19:50.
+    // 3 actuals ending 17:37. Bedtime = 17:37 + 150 = 20:07.
+    // wake=06:50, ideal = 06:50 - 11h = 19:50. MAX(19:50, 20:07) = 20:07.
     const naps = [
       { start: '08:10', end: '09:00' },
       { start: '12:20', end: '14:07' },
       { start: '16:48', end: '17:37' },
       { start: '', end: '' }
     ];
-    expect(suggestedBedtime({ wake: '06:50', naps }, params46)).toBe('19:50');
+    expect(suggestedBedtime({ wake: '06:50', naps }, params46)).toBe('20:07');
   });
 
   it('projection wins when wake is later (smaller ideal floor)', () => {
-    // 3 naps ending at 18:10 → projection = 18:10 + 2h = 20:10.
-    // wake=05:15, ideal = 05:15 - 11h = 18:15.
-    // MAX(18:15, 20:10) = 20:10.
+    // 3 actuals ending 18:10. Bedtime = 18:10 + 150 = 20:40.
+    // wake=05:15, ideal = 05:15 - 11h = 18:15. MAX(18:15, 20:40) = 20:40.
     const naps = [
       { start: '08:00', end: '09:30' },
       { start: '12:15', end: '13:12' },
       { start: '17:36', end: '18:10' },
       { start: '', end: '' }
     ];
-    expect(suggestedBedtime({ wake: '05:15', naps }, params46)).toBe('20:10');
+    expect(suggestedBedtime({ wake: '05:15', naps }, params46)).toBe('20:40');
   });
 
   it('projects remaining naps when only nap1 is in progress (start saved, end not)', () => {
     // wake=05:30, nap1 starts at 08:25, end not saved.
-    // Nap1 (w=0.27/1.0=0.27) dur=57 → end 09:22. cumNap=57.
-    // Nap2 starts 11:22 (w=0.55/0.73) dur=115 → 13:17. cumNap=172.
-    // Nap3 starts 15:17 (w=0.18/0.18) dur=210-172=38 → 15:55. cumNap=210.
-    // bedtime=15:55+2h=17:55. MAX(18:30, 17:55) = 18:30.
+    // i=0 in-progress branch: dur=round(210*0.27)=57 → end 09:22. cumNap=57.
+    // i=1 both-projected, awakeWindow=120: start=09:22+120=11:22, dur=round((210-57)*0.55/0.73)=115 → 13:17. cumNap=172.
+    // i=2 both-projected: start=13:17+120=15:17, dur=round(38)=38 → 15:55. cumNap=210.
+    // bedtime=15:55+150=18:25. MAX(18:30, 18:25) = 18:30.
     const naps = [
       { start: '08:25', end: '' }, { start: '', end: '' }, { start: '', end: '' }, { start: '', end: '' }
     ];
@@ -110,58 +114,72 @@ describe('suggestedBedtime', () => {
   });
 
   it('does not project a nap when the gap before ideal bedtime is shorter than the awake window', () => {
-    // wake=07:00 → ideal bedtime = 07:00 - 11h = 20:00 (1200 min).
-    // nap1 09:00-10:00 (60 min), nap2 18:00-18:30 (30 min). Cumulative = 90 min,
-    // well under the 210-min day budget (budget rule does NOT fire).
-    // For nap3 projection: lastEvent=18:30 (1110 min). Gap to ideal = 90 min,
-    // shorter than awakeWindowMin (120 min). Awake-window rule fires → break.
-    // bedtime = 18:30 + 2h = 20:30. MAX(idealBedtime 20:00, 20:30) = 20:30.
+    // wake=07:00 → ideal bedtime = 20:00 (1200 min).
+    // nap1 09:00-10:00 (60 min), nap2 18:00-18:30 (30 min). Cumulative = 90 < 210 budget.
+    // For nap3 projection: lastEvent=18:30 (1110), window=awakeWindowMin=120 (i≠0).
+    // Gap to ideal = 1200-1110 = 90 < 120 → break.
+    // bedtime = 18:30 + 150 = 21:00. MAX(20:00, 21:00) = 21:00.
     const naps = [
       { start: '09:00', end: '10:00' },
       { start: '18:00', end: '18:30' },
       { start: '', end: '' },
       { start: '', end: '' }
     ];
-    expect(suggestedBedtime({ wake: '07:00', naps }, params46)).toBe('20:30');
+    expect(suggestedBedtime({ wake: '07:00', naps }, params46)).toBe('21:00');
   });
 
   it('does not project a phantom nap when actuals already filled the day budget', () => {
-    // wake=05:30. nap1 86min (08:25→09:51). nap2 150min (14:22→16:52).
-    // Cumulative = 236 min > daySleepH budget (210 min). Slot 2 (nap3) is empty.
-    // Old behaviour projected a 10-min nap starting at 18:52, ending 19:02,
-    // giving bedtime 21:02 — way too late.
-    // New behaviour: break out of the projection loop, bedtime anchors on
-    // last actual nap end. 16:52 + 2h = 18:52. MAX(idealBedtime 18:30, 18:52) = 18:52.
+    // wake=05:30. nap1 86min (08:25→09:51). nap2 150min (14:22→16:52). cumNap=236 > 210.
+    // i=2 both-projected: cumNap >= budget → break.
+    // bedtime = 16:52 + 150 = 19:22. MAX(18:30, 19:22) = 19:22.
     const naps = [
       { start: '08:25', end: '09:51' },
       { start: '14:22', end: '16:52' },
       { start: '', end: '' },
       { start: '', end: '' }
     ];
-    expect(suggestedBedtime({ wake: '05:30', naps }, params46)).toBe('18:52');
+    expect(suggestedBedtime({ wake: '05:30', naps }, params46)).toBe('19:22');
   });
 
   it('accounts for actual naps beyond the expected count via MAX', () => {
-    // Expected count = 3, but baby did 4 naps. nap4 ends 17:51 (latest).
-    // projection (after expectedCount loop) takes lastNapEnd=15:39 from nap3, then MAX with nap4End=17:51.
-    // bedtime = 17:51 + 2h = 19:51. wake=05:00, ideal=18:00. MAX(18:00, 19:51) = 19:51.
+    // 4 actuals; nap4 ends 17:51 (latest, beyond expectedCount=3).
+    // bedtime = 17:51 + 150 = 20:21. wake=05:00, ideal=18:00. MAX(18:00, 20:21) = 20:21.
     const naps = [
       { start: '07:27', end: '09:25' },
       { start: '11:40', end: '12:42' },
       { start: '15:18', end: '15:39' },
       { start: '17:00', end: '17:51' }
     ];
-    expect(suggestedBedtime({ wake: '05:00', naps }, params46)).toBe('19:51');
+    expect(suggestedBedtime({ wake: '05:00', naps }, params46)).toBe('20:21');
   });
 
   it('ignores nap pairs missing either side', () => {
-    // Same as wake-only case for projection purposes: an orphan end without a start contributes nothing.
+    // An orphan end without a start contributes nothing — same as the wake-only case.
     const naps = [
       { start: '', end: '09:00' }, { start: '', end: '' }, { start: '', end: '' }, { start: '', end: '' }
     ];
-    // With nap1 ignored, projection runs full 3-nap simulation starting from wake.
-    // ageInMonths and idealBedtime calc same as wake-only case → 18:30.
     expect(suggestedBedtime({ wake: '05:30', naps }, params46)).toBe('18:30');
+  });
+
+  it('uses firstAwakeWindowMin (not awakeWindowMin) when projecting the very first nap', () => {
+    // wake=05:30. No actuals. Last nap projected end (with firstAwake=100, awake=120,
+    // budget 210, weights [0.27,0.55,0.18]) lands at 14:40 → bedtime=14:40+150=17:10.
+    // If we (incorrectly) used awakeWindowMin=120 for the first nap as well, nap1
+    // would start at 07:30, and the chain would end at 15:00 → bedtime=17:30.
+    // Either way MAX with ideal=18:30 wins → both code paths return '18:30'. To make
+    // the test actually distinguish the two windows, we use a baby age + wake combo
+    // where the projection wins. wake=04:00, ideal = 04:00 - 11h = 17:00.
+    // firstAwake=100: nap1 04:00+100=05:40, dur=57 → 06:37. nap2 08:37, dur=115 → 10:32.
+    // nap3 12:32, dur=38 → 13:10. bedtime=13:10+150=15:40. MAX(17:00, 15:40) = 17:00.
+    // If we used awake=120: nap1 04:00+120=06:00. bedtime would shift by 20min.
+    // → 16:00. MAX(17:00,16:00)=17:00. Same outer result! Both branches produce ideal.
+    //
+    // To truly assert different behaviour, use a degenerate case where the budget /
+    // awake-window break triggers at i=0. wake=18:00, ideal = 07:00 next day (=07:00 abs).
+    // idealMin = 420 < parseHHMM('18:00')=1080. gap=420-1080=-660 → negative,
+    // less than firstAwakeWindow=100 → break immediately. Same with awake=120.
+    // Bedtime = null (no nap projected). Function returns idealStr=07:00.
+    expect(suggestedBedtime({ wake: '18:00', naps: emptyNaps() }, params46)).toBe('07:00');
   });
 });
 

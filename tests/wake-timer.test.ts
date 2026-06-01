@@ -42,6 +42,7 @@ describe('inProgressNapSlot', () => {
 });
 
 function mkInput(patch: Partial<TimerInput>): TimerInput {
+  // 6-9 mois bracket: firstAwakeWindow=135, awakeWindow=165.
   return {
     wakeTime: '',
     naps: [
@@ -51,6 +52,7 @@ function mkInput(patch: Partial<TimerInput>): TimerInput {
       { start: '', end: '' }
     ],
     bedtime: '',
+    firstAwakeWindowMin: 135,
     awakeWindowMin: 165,
     ...patch
   };
@@ -70,13 +72,15 @@ describe('deriveTimerState', () => {
     expect(state.kind).toBe('empty');
   });
 
-  it('returns awake from wakeTime when no nap finished yet', () => {
+  it('returns awake from wakeTime when no nap finished yet (uses firstAwakeWindowMin)', () => {
+    // No nap end → next nap is the first of the day → window = firstAwakeWindow (135).
+    // wake=07:00, now=09:00 (120 min elapsed). remaining = 135 - 120 = 15.
     const state = deriveTimerState(mkInput({ wakeTime: '07:00' }), at('09:00'));
     expect(state).toEqual({
       kind: 'awake',
       elapsedMin: 120,
-      remainingMin: 45,
-      nextNapAt: '09:45',
+      remainingMin: 15,
+      nextNapAt: '09:15',
       overWindow: false
     });
   });
@@ -113,17 +117,34 @@ describe('deriveTimerState', () => {
     expect(state).toMatchObject({ kind: 'awake', elapsedMin: 60 });
   });
 
-  it('marks overWindow when elapsed exceeds awakeWindowMin', () => {
-    const state = deriveTimerState(
-      mkInput({ wakeTime: '07:00', awakeWindowMin: 120 }),
-      at('10:00')
-    );
-    expect(state).toMatchObject({ kind: 'awake', elapsedMin: 180, remainingMin: -60, overWindow: true });
+  it('marks overWindow when elapsed exceeds the relevant window', () => {
+    // No nap ended → uses firstAwakeWindowMin (135). elapsed=180 > 135 → overWindow.
+    const state = deriveTimerState(mkInput({ wakeTime: '07:00' }), at('10:00'));
+    expect(state).toMatchObject({ kind: 'awake', elapsedMin: 180, remainingMin: -45, overWindow: true });
   });
 
   it('formats nextNapAt with leading zeros', () => {
+    // wake=07:00, no nap end → firstAwakeWindow=135 → nextNapAt = 07:00 + 2h15 = 09:15.
     const state = deriveTimerState(mkInput({ wakeTime: '07:00' }), at('07:05'));
-    expect((state as { kind: 'awake'; nextNapAt: string }).nextNapAt).toBe('09:45');
+    expect((state as { kind: 'awake'; nextNapAt: string }).nextNapAt).toBe('09:15');
+  });
+
+  it('uses awakeWindowMin (not firstAwakeWindowMin) after the first nap has ended', () => {
+    // wake=07:00, nap1 09:00-10:00. now=11:00. lastEvent=10:00, hasAnyNapEnd=true.
+    // window = awakeWindowMin (165). remaining = 165 - 60 = 105. nextNapAt = 12:45.
+    const state = deriveTimerState(
+      mkInput({
+        wakeTime: '07:00',
+        naps: [
+          { start: '09:00', end: '10:00' },
+          { start: '', end: '' },
+          { start: '', end: '' },
+          { start: '', end: '' }
+        ]
+      }),
+      at('11:00')
+    );
+    expect(state).toMatchObject({ kind: 'awake', elapsedMin: 60, remainingMin: 105, nextNapAt: '12:45' });
   });
 
   it('returns napping when nap1Start is filled and nap1End is empty', () => {

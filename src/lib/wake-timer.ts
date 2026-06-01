@@ -4,7 +4,8 @@ export type TimerInput = {
   wakeTime: string;
   naps: Array<{ start: string; end: string }>;
   bedtime: string;
-  awakeWindowMin: number;
+  firstAwakeWindowMin: number;   // applied when no nap has ended yet (origin = wakeTime)
+  awakeWindowMin: number;        // applied between naps
 };
 
 export type TimerState =
@@ -71,15 +72,22 @@ export function deriveTimerState(input: TimerInput, now: Date): TimerState {
 
   // origin = latest of wakeTime and all valid napEnd values
   const candidates: string[] = [input.wakeTime];
+  let hasAnyNapEnd = false;
   for (const nap of input.naps) {
-    if (isValidHHMM(nap.end)) candidates.push(nap.end);
+    if (isValidHHMM(nap.end)) {
+      candidates.push(nap.end);
+      hasAnyNapEnd = true;
+    }
   }
   const originStr = candidates.reduce((acc, cur) => (parseHHMM(cur) > parseHHMM(acc) ? cur : acc));
+  // When no nap has finished yet, origin is the morning wake — the next nap is
+  // the FIRST nap of the day, which uses the (typically shorter) first window.
+  const window = hasAnyNapEnd ? input.awakeWindowMin : input.firstAwakeWindowMin;
   const origin = hhmmOnSameDay(originStr, now);
   const elapsedMin = Math.max(0, minutesBetween(origin, now));
-  const remainingMin = input.awakeWindowMin - elapsedMin;
-  const overWindow = elapsedMin > input.awakeWindowMin;
-  const nextNapAt = formatHHMM(parseHHMM(originStr) + input.awakeWindowMin);
+  const remainingMin = window - elapsedMin;
+  const overWindow = elapsedMin > window;
+  const nextNapAt = formatHHMM(parseHHMM(originStr) + window);
 
   return { kind: 'awake', elapsedMin, remainingMin, nextNapAt, overWindow };
 }

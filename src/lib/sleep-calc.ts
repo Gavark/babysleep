@@ -31,9 +31,10 @@ export type DayEvents = {
 };
 
 export type BedtimeParams = {
-  naps: number;             // expected nap count for the age (1..4)
-  awakeWindowMin: number;
-  beforeBedWindowMin: number;
+  naps: number;                  // expected nap count for the age (1..4)
+  firstAwakeWindowMin: number;   // wake → first nap (shorter than later windows)
+  awakeWindowMin: number;        // between consecutive naps
+  beforeBedWindowMin: number;    // last nap → night
   nightSleepH: number;
   daySleepH: number;
 };
@@ -103,16 +104,21 @@ function projectDayBedtime(events: DayEvents, params: BedtimeParams): string | n
       lastEvent = lastNapEnd;
       cumulativeNapMin += myDur;
     } else {
-      // Both projected. Stop here in either of two cases:
+      // Both projected. The window between lastEvent and this nap's start is
+      // firstAwakeWindowMin for the first nap of the day (i.e. when no prior
+      // nap data has been processed and lastEvent is still wake) and
+      // awakeWindowMin otherwise.
+      const window = i === 0 ? params.firstAwakeWindowMin : params.awakeWindowMin;
+      // Stop here in either of two cases:
       // (a) actual naps already filled (or exceeded) the day budget —
       //     projecting a phantom nap pushes bedtime hours into the evening
       //     for no reason.
       // (b) the gap between lastEvent and the night-anchor (idealBedtime)
-      //     is shorter than the typical awake window for this age —
+      //     is shorter than the relevant awake window for this nap —
       //     there's no room left for another full sleep cycle before night.
       if (cumulativeNapMin >= daySleepBudget) break;
-      if (idealBedtimeMin - parseHHMM(lastEvent) < params.awakeWindowMin) break;
-      const startMin = parseHHMM(lastEvent) + params.awakeWindowMin;
+      if (idealBedtimeMin - parseHHMM(lastEvent) < window) break;
+      const startMin = parseHHMM(lastEvent) + window;
       const myDur = projectDuration(i);
       const endMin = startMin + myDur;
       lastNapEnd = formatHHMM(endMin);
