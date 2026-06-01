@@ -73,13 +73,13 @@
 {#if data.entries.length === 0}
   <p class="empty">Aucune entrée sur cette période.</p>
 {:else}
-  <div class="card" style="padding: 0; overflow-x: auto;">
-    <table>
+  <div class="card history-card">
+    <table class="history-table">
       <thead>
         <tr>
           <th>Date</th><th>Note</th><th>Σ Siestes</th><th>Réveil</th>
           <th>S1</th><th>S2</th><th>S3</th><th>S4</th>
-          <th>Coucher</th><th>Nuit préc.</th><th>Nb</th><th>Notes</th>
+          <th>Coucher</th><th>Nuit préc.</th><th>Nb</th><th class="notes-col">Notes</th>
         </tr>
       </thead>
       <tbody>
@@ -101,7 +101,7 @@
             <td>{r.bedtime ?? ''}</td>
             <td>{prevNight(r, data.entries[i + 1])}</td>
             <td>{napCount(r)}</td>
-            <td>{r.notes ?? ''}</td>
+            <td class="notes-cell">{r.notes ?? ''}</td>
           </tr>
         {/each}
       </tbody>
@@ -127,6 +127,32 @@
   .rating-good   { color: var(--c-accent-sage); }
   .rating-medium { color: var(--c-accent-honey); }
   .rating-bad    { color: var(--c-danger); }
+
+  /* The default 720px container is too narrow for this 12-column table.
+     Widen `main` only while this page is mounted — Svelte scopes the rule
+     to the component lifecycle. */
+  :global(main:has(.history-card)) {
+    max-width: min(1200px, 95vw);
+  }
+  .history-card {
+    padding: 0;
+    overflow-x: auto;   /* mobile fallback when the table still overflows */
+  }
+  /* Compact cells everywhere except Notes, which absorbs the remaining width. */
+  .history-table th,
+  .history-table td {
+    padding: var(--s-2) var(--s-2);
+    white-space: nowrap;
+    font-feature-settings: "tnum" 1;
+  }
+  .history-table .notes-col,
+  .history-table .notes-cell {
+    white-space: normal;
+    word-break: break-word;
+    min-width: 12ch;
+    width: 100%;        /* let this column absorb the rest of the row */
+    font-feature-settings: normal;
+  }
 
   .filter-row {
     display: flex;
