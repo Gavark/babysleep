@@ -159,7 +159,11 @@ tes données sont safe entre versions pendant la phase `v0.x`.
 docker compose exec app npm run reset-password -- ton@email
 ```
 
-Un prompt te demandera le nouveau mot de passe.
+Un prompt te demandera le nouveau mot de passe. **Aucune donnée n'est perdue** :
+seul le hash du mot de passe est remplacé en base. Tes bébés, tes saisies de
+sommeil, tes invitations et tes sessions actives sont conservés (les autres
+sessions déjà ouvertes restent valides — déconnecte-les manuellement si tu
+veux les couper).
 
 ---
 
