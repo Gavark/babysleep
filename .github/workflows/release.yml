@@ -1,0 +1,50 @@
+name: Create GitHub Release
+
+# Fires whenever an annotated `v*` tag is pushed (e.g. `v0.1.0`,
+# `v1.0.0-rc1`). Reads the tag's annotation message and publishes it as
+# the body of a GitHub Release pointing at that tag.
+#
+# A re-push of an existing tag will fail at `gh release create` because a
+# Release already exists. That's intentional — re-tagging is usually a
+# mistake; surface it loudly. Delete the Release manually if you really
+# want to re-publish under the same name.
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Full history so the tag annotation is available locally.
+          fetch-depth: 0
+
+      - name: Extract annotated tag message
+        run: |
+          git tag -l --format='%(contents)' "${GITHUB_REF_NAME}" > release-body.md
+          if [ ! -s release-body.md ]; then
+            echo "Tag ${GITHUB_REF_NAME} has no annotation (lightweight tag?). Using default body."
+            echo "Release ${GITHUB_REF_NAME}." > release-body.md
+          fi
+
+      - name: Create Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Tag includes a hyphen → semver pre-release (e.g. v1.0.0-rc1).
+          PRERELEASE_FLAG=""
+          if [[ "${GITHUB_REF_NAME}" == *-* ]]; then
+            PRERELEASE_FLAG="--prerelease"
+          fi
+          gh release create "${GITHUB_REF_NAME}" \
+            --title "${GITHUB_REF_NAME}" \
+            --notes-file release-body.md \
+            --verify-tag \
+            $PRERELEASE_FLAG
