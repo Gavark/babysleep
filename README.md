@@ -5,7 +5,7 @@ Built for parents who want to keep their family data on their own server.
 
 🇫🇷 [Lis-moi en français](./README.fr.md)
 
-> _Screenshot of the calendar view goes here once we have one._
+![Calendar month view](./docs/screenshots/1.png)
 
 ---
 
@@ -45,6 +45,29 @@ a single SQLite file on a Docker volume you control.
   another tracker.
 
 UI is French at the moment. EN is on the roadmap.
+
+---
+
+## Screenshots
+
+<table>
+  <tr>
+    <td width="50%"><img src="./docs/screenshots/2.png" alt="Calendar — mobile strip view" /></td>
+    <td width="50%"><img src="./docs/screenshots/3.png" alt="Today page with the wake-window timer" /></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Calendar (mobile)</sub></td>
+    <td align="center"><sub>Today page with live wake-window timer</sub></td>
+  </tr>
+  <tr>
+    <td><img src="./docs/screenshots/4.png" alt="History table with CSV export" /></td>
+    <td><img src="./docs/screenshots/5.png" alt="Stats with Chart.js" /></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>History table</sub></td>
+    <td align="center"><sub>Stats over a date range</sub></td>
+  </tr>
+</table>
 
 ---
 
