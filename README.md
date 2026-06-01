@@ -94,7 +94,7 @@ commence à enregistrer.
 ### Derrière un reverse proxy avec HTTPS
 
 Si tu veux HTTPS via Let's Encrypt et un nom de domaine, le projet ship une
-stack complète avec Caddy + un sidecar de backup nocturne SQLite :
+stack complète avec Caddy + un container annexe qui fait un backup SQLite chaque nuit :
 
 ```bash
 cp Caddyfile.example Caddyfile
@@ -124,8 +124,8 @@ Toute la config passe par des variables d'environnement. Voir
 
 ## Backup
 
-`docker-compose.full.yml` inclut un sidecar qui copie la DB SQLite dans
-`./backups/` tous les jours à 03:00 (configurable via `BACKUP_SCHEDULE`).
+`docker-compose.full.yml` inclut un container dédié qui copie la DB SQLite
+dans `./backups/` tous les jours à 03:00 (configurable via `BACKUP_SCHEDULE`).
 Rétention par défaut : 30 snapshots quotidiens (`BACKUP_RETENTION`).
 
 Pour déclencher un backup à la demande :
