@@ -161,9 +161,29 @@ docker compose exec app npm run reset-password -- ton@email
 
 Un prompt te demandera le nouveau mot de passe. **Aucune donnée n'est perdue** :
 seul le hash du mot de passe est remplacé en base. Tes bébés, tes saisies de
-sommeil, tes invitations et tes sessions actives sont conservés (les autres
-sessions déjà ouvertes restent valides — déconnecte-les manuellement si tu
-veux les couper).
+sommeil et tes invitations sont conservés.
+
+En revanche, **toutes tes sessions actives sont déconnectées** (y compris celle
+que tu utilises au moment du reset) — c'est volontaire, ça évite qu'une session
+volée reste valide avec l'ancien mot de passe. Tu te reconnectes avec le nouveau.
+
+## Sessions actives
+
+La page `/account` liste les sessions ouvertes (navigateur, dernière utilisation,
+device). Trois moyens de les couper :
+
+- **Couper une session précise** : bouton "Déconnecter" en face de chaque ligne
+  sur `/account`. Celle que tu utilises actuellement n'a pas le bouton — utilise
+  le menu "Déconnexion" du header pour ça.
+- **Couper toutes les autres** : la section "Changer mon mot de passe" de
+  `/account` invalide automatiquement toutes les autres sessions une fois le
+  changement réussi (la tienne reste).
+- **Tout couper d'un coup** : le `reset-password` CLI ci-dessus, ou en SQL direct :
+
+  ```bash
+  docker compose exec app sqlite3 /data/babysleep.sqlite \
+    "DELETE FROM sessions WHERE user_id = (SELECT id FROM users WHERE email='ton@email');"
+  ```
 
 ---
 
