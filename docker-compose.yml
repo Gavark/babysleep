@@ -18,8 +18,12 @@ services:
       dockerfile: Dockerfile
     container_name: babysleep
     restart: unless-stopped
+    # Bound to loopback by default so the app is reachable only from this host
+    # (your reverse proxy connects via 127.0.0.1:3000). Change to "3000:3000"
+    # if your proxy runs on a different machine and needs to reach it across
+    # the network — never publish a plain-HTTP port to the public internet.
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     environment:
       - NODE_ENV=production
       - DATABASE_PATH=/data/babysleep.sqlite

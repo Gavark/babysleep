@@ -17,9 +17,11 @@ services:
     restart: unless-stopped
     expose:
       - "3000"
-    # Local debug port (optional — remove if you want the app reachable only via Caddy)
+    # Loopback-only debug port: lets you `curl 127.0.0.1:3000` from the
+    # host without exposing the app outside Caddy's HTTPS termination.
+    # Drop this block entirely if you never debug from the host.
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     environment:
       - NODE_ENV=production
       - DATABASE_PATH=/data/babysleep.sqlite
