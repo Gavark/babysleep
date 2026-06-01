@@ -1,140 +1,145 @@
 # BabySleep
 
-A self-hosted PWA for tracking your baby's sleep, naps, and night-time patterns.
-Built for parents who want to keep their family data on their own server.
+Une PWA auto-hébergée pour suivre le sommeil, les siestes et les nuits de ton
+bébé. Pensée pour les parents qui veulent garder leurs données de famille sur
+leur propre serveur.
 
-🇫🇷 [Readme en français](./README.fr.md)
+🇬🇧 [Read in English](./README.en.md)
 
-![Calendar month view](./docs/screenshots/1.png)
-
----
-
-## What is this?
-
-BabySleep is a small web app you run on your own machine (Raspberry Pi, NAS,
-VPS, laptop — whatever runs Docker). It helps you:
-
-- Log your baby's wake time, naps, and bedtime
-- See an age-appropriate suggestion for the next nap and tonight's bedtime
-- Track progress over weeks with a calendar heatmap and a stats page
-- Rate each night manually (good / so-so / rough) for at-a-glance review later
-- Share access with a partner via private invitations
-
-No cloud, no analytics, no account on someone else's server. Your data lives in
-a single SQLite file on a Docker volume you control.
+![Vue calendrier mensuelle](./docs/screenshots/1.png)
 
 ---
 
-## Features
+## C'est quoi ?
 
-- **Today view** — quick form for today's wake / nap / bedtime entries with a
-  live "wake-window" timer so you know when the next nap is due.
-- **Calendar** — month grid (or vertical strip on mobile) with a 24h timeline
-  per day, heatmap colours based on % of age-recommended total sleep, and a
-  manual rating per night (✓ / − / ✗).
-- **History** — filterable table with CSV export.
-- **Stats** — charts of averages over the period (wake time, bedtime, nap
-  durations).
-- **Multi-baby** — track several babies under the same account.
-- **Multi-user** — admin generates time-limited invitation links; password-based
-  auth with argon2id hashing.
-- **PWA** — installable from the browser; iOS standalone-capable with the
-  proper apple-touch-icon and metas.
-- **Timezone-aware** — per-user, per-baby, and per-entry overrides.
-- **Simple schema** — straightforward CSV import if you're migrating from
-  another tracker.
+BabySleep est une petite app web que tu fais tourner sur ta propre machine
+(Raspberry Pi, NAS, VPS, laptop — tout ce qui fait tourner Docker). Elle te
+permet de :
 
-UI is French at the moment. EN is on the roadmap.
+- Enregistrer l'heure de réveil, les siestes et le coucher de bébé
+- Voir une suggestion par tranche d'âge pour la prochaine sieste et l'heure
+  de coucher du soir
+- Suivre l'évolution sur plusieurs semaines via un calendrier heatmap et une
+  page de stats
+- Noter chaque nuit manuellement (bonne / moyenne / mauvaise) pour un repère
+  visuel rapide
+- Partager l'accès avec ton/ta partenaire via des invitations privées
+
+Pas de cloud, pas d'analytics, pas de compte chez un tiers. Tes données vivent
+dans un fichier SQLite unique sur un volume Docker que tu contrôles.
 
 ---
 
-## Screenshots
+## Fonctionnalités
+
+- **Vue Aujourd'hui** — formulaire rapide pour les saisies du jour avec un
+  timer live "fenêtre d'éveil" qui te dit quand caler la prochaine sieste.
+- **Calendrier** — grille mensuelle (ou strip vertical sur mobile) avec une
+  timeline 24h par jour, couleurs heatmap selon le % du quota de sommeil
+  recommandé pour l'âge, et une note manuelle par nuit (✓ / − / ✗).
+- **Historique** — tableau filtrable avec export CSV.
+- **Stats** — graphes des moyennes sur la période (heure de réveil, coucher,
+  durée des siestes).
+- **Multi-bébés** — suivre plusieurs bébés sous le même compte.
+- **Multi-utilisateurs** — l'admin génère des liens d'invitation à durée
+  limitée ; auth par mot de passe avec hash argon2id.
+- **PWA** — installable depuis le navigateur ; mode standalone iOS avec
+  apple-touch-icon et metas dédiées.
+- **Fuseaux horaires** — overrides par utilisateur, par bébé et par entrée.
+- **Schéma simple** — facile à migrer depuis un autre tracker via CSV.
+
+UI en français pour l'instant. EN dans la roadmap.
+
+---
+
+## Captures d'écran
 
 <table>
   <tr>
-    <td width="50%"><img src="./docs/screenshots/2.png" alt="Calendar — mobile strip view" /></td>
-    <td width="50%"><img src="./docs/screenshots/3.png" alt="Today page with the wake-window timer" /></td>
+    <td width="50%"><img src="./docs/screenshots/2.png" alt="Calendrier — vue mobile (strip vertical)" /></td>
+    <td width="50%"><img src="./docs/screenshots/3.png" alt="Page Aujourd'hui avec le timer fenêtre d'éveil" /></td>
   </tr>
   <tr>
-    <td align="center"><sub>Calendar (mobile)</sub></td>
-    <td align="center"><sub>Today page with live wake-window timer</sub></td>
+    <td align="center"><sub>Calendrier (mobile)</sub></td>
+    <td align="center"><sub>Page Aujourd'hui avec timer live</sub></td>
   </tr>
   <tr>
-    <td><img src="./docs/screenshots/4.png" alt="History table with CSV export" /></td>
-    <td><img src="./docs/screenshots/5.png" alt="Stats with Chart.js" /></td>
+    <td><img src="./docs/screenshots/4.png" alt="Tableau historique avec export CSV" /></td>
+    <td><img src="./docs/screenshots/5.png" alt="Stats avec Chart.js" /></td>
   </tr>
   <tr>
-    <td align="center"><sub>History table</sub></td>
-    <td align="center"><sub>Stats over a date range</sub></td>
+    <td align="center"><sub>Tableau historique</sub></td>
+    <td align="center"><sub>Stats sur une période</sub></td>
   </tr>
 </table>
 
 ---
 
-## Quick start (Docker)
+## Démarrage rapide (Docker)
 
-You need Docker and Docker Compose v2.
+Tu as besoin de Docker et Docker Compose v2.
 
 ```bash
 git clone https://github.com/Gavark/babysleep.git
 cd babysleep
 cp .env.example .env
-# Edit .env and set SESSION_SECRET (a random ≥ 32-char string)
+# Édite .env et mets une valeur pour SESSION_SECRET (chaîne aléatoire ≥ 32 chars)
 docker compose up -d
 ```
 
-Open <http://localhost:3000> in your browser — you'll be sent to a setup wizard
-to create your admin account. After that, log in and start tracking.
+Ouvre <http://localhost:3000> dans ton navigateur — tu seras redirigé vers un
+wizard de configuration pour créer ton compte admin. Ensuite, connecte-toi et
+commence à enregistrer.
 
-### Behind a reverse proxy with HTTPS
+### Derrière un reverse proxy avec HTTPS
 
-If you want HTTPS via Let's Encrypt and a domain, the project ships a full
-stack with Caddy + a nightly SQLite backup sidecar:
+Si tu veux HTTPS via Let's Encrypt et un nom de domaine, le projet ship une
+stack complète avec Caddy + un sidecar de backup nocturne SQLite :
 
 ```bash
 cp Caddyfile.example Caddyfile
-# Edit Caddyfile and set your domain (DNS A/AAAA records must point at this host)
+# Édite Caddyfile et mets ton domaine (records DNS A/AAAA pointant vers ce host)
 docker compose -f docker-compose.full.yml up -d
 ```
 
-If you prefer Nginx Proxy Manager, Traefik, or your own reverse proxy, stick
-with the minimal `docker-compose.yml` and point your proxy at port 3000.
+Si tu préfères Nginx Proxy Manager, Traefik ou ton propre reverse proxy, reste
+sur le `docker-compose.yml` minimal et pointe ton proxy vers le port 3000.
 
 ---
 
 ## Configuration
 
-All configuration is environment variables. See [`.env.example`](./.env.example)
-for the full annotated list. Highlights:
+Toute la config passe par des variables d'environnement. Voir
+[`.env.example`](./.env.example) pour la liste complète annotée. Les principales :
 
-| Variable | Required | Description |
+| Variable | Requis | Description |
 |---|---|---|
-| `SESSION_SECRET` | yes | Random ≥ 32-char string. Signs auth cookies. |
-| `ADMIN_EMAIL`, `ADMIN_PASSWORD` | no | Skip the setup wizard for scripted deployments. |
-| `DISABLE_SIGNUP` | no | `true` to block `/signup` entirely. Invitations still work. |
-| `ORIGIN` | yes if behind a proxy | Public HTTPS URL for CSRF/Origin checks. |
-| `TZ` | no | Container timezone. Default `Europe/Paris`. |
+| `SESSION_SECRET` | oui | Chaîne aléatoire ≥ 32 chars. Signe les cookies d'auth. |
+| `ADMIN_EMAIL`, `ADMIN_PASSWORD` | non | Passe le wizard pour les déploiements scriptés. |
+| `DISABLE_SIGNUP` | non | `true` pour bloquer `/signup`. Les invitations marchent quand même. |
+| `ORIGIN` | oui si derrière un proxy | URL publique HTTPS pour les checks CSRF/Origin. |
+| `TZ` | non | Fuseau horaire du container. Défaut `Europe/Paris`. |
 
 ---
 
 ## Backup
 
-`docker-compose.full.yml` ships a backup sidecar that copies the SQLite DB
-into `./backups/` every night at 03:00 (configurable via `BACKUP_SCHEDULE`).
-Retention defaults to 30 daily snapshots (`BACKUP_RETENTION`).
+`docker-compose.full.yml` inclut un sidecar qui copie la DB SQLite dans
+`./backups/` tous les jours à 03:00 (configurable via `BACKUP_SCHEDULE`).
+Rétention par défaut : 30 snapshots quotidiens (`BACKUP_RETENTION`).
 
-To trigger a backup on demand:
+Pour déclencher un backup à la demande :
 
 ```bash
 docker compose -f docker-compose.full.yml exec backup sh /usr/local/bin/run-backup
 ```
 
-If you use the minimal compose, bring your own backup tooling (restic, borg, …)
-pointed at the `babysleep_data` Docker volume.
+Si tu utilises le compose minimal, apporte ton propre outil de backup
+(restic, borg, …) pointé sur le volume Docker `babysleep_data`.
 
 ---
 
-## Upgrade
+## Mise à jour
 
 ```bash
 git pull
@@ -142,75 +147,76 @@ docker compose -f docker-compose.full.yml pull app
 docker compose -f docker-compose.full.yml up -d app
 ```
 
-The app applies pending Drizzle migrations at startup. Migrations to date are
-additive only (no drops, no destructive changes) — your data is safe across
-versions during `v0.x`.
+L'app applique les migrations Drizzle en attente au démarrage. Les migrations
+à ce jour sont uniquement additives (aucun drop, aucun changement destructif) —
+tes données sont safe entre versions pendant la phase `v0.x`.
 
 ---
 
-## Reset your password
+## Mot de passe oublié
 
 ```bash
-docker compose exec app npm run reset-password -- your@email
+docker compose exec app npm run reset-password -- ton@email
 ```
 
-You'll be prompted for a new password.
+Un prompt te demandera le nouveau mot de passe.
 
 ---
 
-## Development
+## Développement local
 
 ```bash
 npm install
 cp .env.example .env
-# Set SESSION_SECRET
+# Mets une valeur pour SESSION_SECRET
 mkdir -p data
 npm run db:migrate
 npm run dev
 ```
 
-Run the test suite:
+Tests :
 
 ```bash
 npm test
 ```
 
-Type-check:
+Type-check :
 
 ```bash
 npm run check
 ```
 
-Stack: SvelteKit 2 + Svelte 5 (runes) + TypeScript strict, Drizzle ORM over
-better-sqlite3, argon2id via `@node-rs/argon2`, Chart.js for stats,
-phosphor-svelte for icons, Nunito Variable (self-hosted) for typography.
+Stack : SvelteKit 2 + Svelte 5 (runes) + TypeScript strict, Drizzle ORM sur
+better-sqlite3, argon2id via `@node-rs/argon2`, Chart.js pour les stats,
+phosphor-svelte pour les icônes, Nunito Variable (self-hosted) pour la typo.
 
 ---
 
-## Status & roadmap
+## Statut & roadmap
 
-This is `v0.x` — the data model and config surface may break between minor
-versions. The schema is small (`users`, `babies`, `sleep_entries`, `sessions`,
-`invitations`) and migrations are additive, but I'm not committing to API
-stability until `v1.0`.
+On est en `v0.x` — le modèle de données et la surface de config peuvent break
+entre versions mineures. Le schéma est petit (`users`, `babies`, `sleep_entries`,
+`sessions`, `invitations`) et les migrations sont additives, mais je ne m'engage
+pas sur la stabilité de l'API avant `v1.0`.
 
-Things I want to add (no firm ETA):
+Ce que je veux ajouter (pas d'ETA ferme) :
 
-- English UI (i18n)
-- Native arm64 image (Raspberry Pi without rebuilding from source)
-- Web Push notifications when the wake window is over
-- "Share with co-parent" with read-only / read-write distinction
-- Optional tags per day (sick, daycare, vacation)
-
----
-
-## License
-
-[AGPL-3.0-or-later](./LICENSE). If you run a modified copy as a public service,
-you must publish your modifications under the same license.
+- UI anglaise (i18n)
+- Image arm64 native (Raspberry Pi sans rebuild depuis les sources)
+- Notifications Web Push quand la fenêtre d'éveil est dépassée
+- Partage co-parent avec distinction lecture-seule / lecture-écriture
+- Tags optionnels par jour (malade, crèche, vacances)
 
 ---
 
-## Author
+## Licence
 
-Built by [@Gavark](https://github.com/Gavark). Issues and PRs welcome.
+[AGPL-3.0-or-later](./LICENSE). Si tu fais tourner une copie modifiée en
+tant que service public, tu dois publier tes modifications sous la même
+licence.
+
+---
+
+## Auteur
+
+Construit par [@Gavark](https://github.com/Gavark). Issues et PRs bienvenues.
