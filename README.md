@@ -3,7 +3,7 @@
 A self-hosted PWA for tracking your baby's sleep, naps, and night-time patterns.
 Built for parents who want to keep their family data on their own server.
 
-🇫🇷 [Lis-moi en français](./README.fr.md)
+🇫🇷 [Readme en français](./README.fr.md)
 
 ![Calendar month view](./docs/screenshots/1.png)
 
