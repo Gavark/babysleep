@@ -1,7 +1,7 @@
 import type { Handle } from '@sveltejs/kit';
 import { redirect } from '@sveltejs/kit';
 import { getDb } from '$lib/server/db';
-import { rateLimit } from '$lib/server/rate-limit';
+import { rateLimit, purgeExpiredBuckets } from '$lib/server/rate-limit';
 import {
   getSessionWithUser,
   refreshSessionIfStale,
@@ -29,6 +29,10 @@ function isInSetupMode(): boolean {
 }
 
 setInterval(() => purgeExpiredSessions(db), 3600 * 1000);
+// Hourly sweep of the in-memory rate-limit map. Without this, every unique
+// IP that ever hit /login or /signup keeps a bucket alive — under spray
+// attacks from many IPs the Map would grow unbounded.
+setInterval(() => purgeExpiredBuckets(), 3600 * 1000);
 
 export const handle: Handle = async ({ event, resolve }) => {
   await maybeBootstrap();
