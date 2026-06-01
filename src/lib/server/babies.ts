@@ -64,13 +64,21 @@ export function updateBaby(
     patch = { ...patch, timezone: validateTimezone(patch.timezone) };
   }
   const t = Math.floor(Date.now() / 1000);
-  db.update(schema.babies).set({ ...patch, updatedAt: t }).where(eq(schema.babies.id, babyId)).run();
+  // Defence-in-depth: scope the UPDATE by (id, userId) too. The ownership
+  // check above is already authoritative, but pinning userId here means a
+  // future refactor that drops the pre-check still can't cross tenants.
+  db.update(schema.babies)
+    .set({ ...patch, updatedAt: t })
+    .where(and(eq(schema.babies.id, babyId), eq(schema.babies.userId, userId)))
+    .run();
   return true;
 }
 
 export function deleteBaby(db: DB, userId: number, babyId: number): boolean {
   const owned = getBabyForUser(db, userId, babyId);
   if (!owned) return false;
-  db.delete(schema.babies).where(eq(schema.babies.id, babyId)).run();
+  db.delete(schema.babies)
+    .where(and(eq(schema.babies.id, babyId), eq(schema.babies.userId, userId)))
+    .run();
   return true;
 }
