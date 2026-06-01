@@ -17,6 +17,10 @@ export type EntryPatch = Partial<{
   nap3End: string | null;
   nap4Start: string | null;
   nap4End: string | null;
+  nap1PauseMin: number | null;
+  nap2PauseMin: number | null;
+  nap3PauseMin: number | null;
+  nap4PauseMin: number | null;
   bedtime: string | null;
   notes: string | null;
   timezone: string | null;
@@ -38,6 +42,10 @@ export function upsertEntry(db: DB, babyId: number, date: string, patch: EntryPa
       nap3End: patch.nap3End ?? null,
       nap4Start: patch.nap4Start ?? null,
       nap4End: patch.nap4End ?? null,
+      nap1PauseMin: patch.nap1PauseMin ?? null,
+      nap2PauseMin: patch.nap2PauseMin ?? null,
+      nap3PauseMin: patch.nap3PauseMin ?? null,
+      nap4PauseMin: patch.nap4PauseMin ?? null,
       bedtime: patch.bedtime ?? null,
       notes: patch.notes ?? null,
       timezone: patch.timezone ?? null,
@@ -57,6 +65,14 @@ export function deleteEntry(db: DB, entryId: number) {
 /** Set or clear the manual night-quality rating for a (baby, date). Creates the entry if missing. */
 export function setNightRating(db: DB, babyId: number, date: string, rating: NightRating | null) {
   upsertEntry(db, babyId, date, { nightRating: rating });
+}
+
+/** Add `deltaMin` minutes of pause to nap `napIdx` (1..4) for (baby, date). Cumulative. */
+export function addNapPause(db: DB, babyId: number, date: string, napIdx: 1 | 2 | 3 | 4, deltaMin: number) {
+  const existing = getEntryForBabyDate(db, babyId, date);
+  const key = (`nap${napIdx}PauseMin`) as 'nap1PauseMin' | 'nap2PauseMin' | 'nap3PauseMin' | 'nap4PauseMin';
+  const current = existing?.[key] ?? 0;
+  upsertEntry(db, babyId, date, { [key]: current + deltaMin });
 }
 
 export function getEntryForBabyDate(db: DB, babyId: number, date: string) {
@@ -129,16 +145,16 @@ export function summariesForBaby(db: DB, babyId: number, from: string, to: strin
   for (const r of rows) {
     let dayTotal = 0;
     let hasAny = false;
-    const pairs: [string | null, string | null][] = [
-      [r.nap1Start, r.nap1End],
-      [r.nap2Start, r.nap2End],
-      [r.nap3Start, r.nap3End],
-      [r.nap4Start, r.nap4End]
+    const pairs: [string | null, string | null, number | null][] = [
+      [r.nap1Start, r.nap1End, r.nap1PauseMin],
+      [r.nap2Start, r.nap2End, r.nap2PauseMin],
+      [r.nap3Start, r.nap3End, r.nap3PauseMin],
+      [r.nap4Start, r.nap4End, r.nap4PauseMin]
     ];
-    for (const [s, e] of pairs) {
+    for (const [s, e, pause] of pairs) {
       if (s && e && /^\d{2}:\d{2}$/.test(s) && /^\d{2}:\d{2}$/.test(e)) {
         const dur = ((parseHHMM(e) - parseHHMM(s)) % 1440 + 1440) % 1440;
-        dayTotal += dur;
+        dayTotal += Math.max(0, dur - (pause ?? 0));
         hasAny = true;
       }
     }

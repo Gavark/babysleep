@@ -93,7 +93,7 @@ function projectDayBedtime(events: DayEvents, params: BedtimeParams): string | n
     if (pair?.start && pair?.end && isValidHHMM(pair.start) && isValidHHMM(pair.end)) {
       const dur = parseHHMM(pair.end) - parseHHMM(pair.start);
       if (dur > 0) {
-        cumulativeNapMin += dur;
+        cumulativeNapMin += Math.max(0, dur - (pair.pauseMin ?? 0));
         lastNapEnd = pair.end;
         lastEvent = pair.end;
       }
@@ -153,7 +153,7 @@ export const NAP_WEIGHTS: Record<number, number[]> = {
   4: [0.27, 0.32, 0.27, 0.14]
 };
 
-export type NapPair = { start?: string | null; end?: string | null };
+export type NapPair = { start?: string | null; end?: string | null; pauseMin?: number | null };
 
 /**
  * Suggest the end time of nap N given:
@@ -179,7 +179,7 @@ export function suggestNapEnd(
     const p = allNaps[i];
     if (p?.start && p?.end && isValidHHMM(p.start) && isValidHHMM(p.end)) {
       const dur = ((parseHHMM(p.end) - parseHHMM(p.start)) % 1440 + 1440) % 1440;
-      completedMin += dur;
+      completedMin += Math.max(0, dur - (p.pauseMin ?? 0));
     }
   }
 
@@ -200,7 +200,10 @@ export function suggestNapEnd(
   let suggestedMin = Math.round(remainingMin * (myWeight / remainingWeight));
   suggestedMin = Math.max(10, Math.min(180, suggestedMin));
 
-  return formatHHMM(parseHHMM(napStart) + suggestedMin);
+  // Wall-clock end = start + sleep budget + any pause already accumulated for this nap
+  // (so the suggestion advances if baby woke briefly mid-nap).
+  const currentNapPause = allNaps[napIndex]?.pauseMin ?? 0;
+  return formatHHMM(parseHHMM(napStart) + suggestedMin + currentNapPause);
 }
 
 export type DaySleepBudget = {
@@ -218,7 +221,8 @@ export function computeDaySleepBudget(
   let completedMin = 0;
   for (const n of naps) {
     if (n.start && n.end && isValidHHMM(n.start) && isValidHHMM(n.end)) {
-      completedMin += ((parseHHMM(n.end) - parseHHMM(n.start)) % 1440 + 1440) % 1440;
+      const dur = ((parseHHMM(n.end) - parseHHMM(n.start)) % 1440 + 1440) % 1440;
+      completedMin += Math.max(0, dur - (n.pauseMin ?? 0));
     }
   }
   const remainingMin = Math.max(0, totalMin - completedMin);

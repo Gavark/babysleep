@@ -19,17 +19,17 @@
   }
 
   function totalNapsMin(r: any): number {
-    const pairs: [string | null, string | null][] = [
-      [r.nap1Start, r.nap1End],
-      [r.nap2Start, r.nap2End],
-      [r.nap3Start, r.nap3End],
-      [r.nap4Start, r.nap4End]
+    const pairs: [string | null, string | null, number | null][] = [
+      [r.nap1Start, r.nap1End, r.nap1PauseMin ?? null],
+      [r.nap2Start, r.nap2End, r.nap2PauseMin ?? null],
+      [r.nap3Start, r.nap3End, r.nap3PauseMin ?? null],
+      [r.nap4Start, r.nap4End, r.nap4PauseMin ?? null]
     ];
     let total = 0;
-    for (const [s, e] of pairs) {
+    for (const [s, e, pause] of pairs) {
       if (s && e && isValidHHMM(s) && isValidHHMM(e)) {
         const d = parseHHMM(e) - parseHHMM(s);
-        if (d > 0) total += d;
+        if (d > 0) total += Math.max(0, d - (pause ?? 0));
       }
     }
     return total;

@@ -15,20 +15,20 @@
     try { return parseHHMM(s) / 60; } catch { return null; }
   }
 
-  // Helper: total nap minutes for an entry (start/end pairs)
+  // Helper: total nap minutes for an entry (start/end pairs, pause subtracted)
   function dayNapMinutes(r: any): number | null {
     let total = 0;
     let hasAny = false;
-    const pairs: [string | null, string | null][] = [
-      [r.nap1Start, r.nap1End],
-      [r.nap2Start, r.nap2End],
-      [r.nap3Start, r.nap3End],
-      [r.nap4Start, r.nap4End]
+    const triples: [string | null, string | null, number | null][] = [
+      [r.nap1Start, r.nap1End, r.nap1PauseMin ?? null],
+      [r.nap2Start, r.nap2End, r.nap2PauseMin ?? null],
+      [r.nap3Start, r.nap3End, r.nap3PauseMin ?? null],
+      [r.nap4Start, r.nap4End, r.nap4PauseMin ?? null]
     ];
-    for (const [s, e] of pairs) {
+    for (const [s, e, pause] of triples) {
       if (s && e && /^\d{2}:\d{2}$/.test(s) && /^\d{2}:\d{2}$/.test(e)) {
         const dur = ((parseHHMM(e) - parseHHMM(s)) % 1440 + 1440) % 1440;
-        total += dur;
+        total += Math.max(0, dur - (pause ?? 0));
         hasAny = true;
       }
     }

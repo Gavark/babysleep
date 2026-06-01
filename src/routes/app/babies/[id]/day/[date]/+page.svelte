@@ -26,6 +26,10 @@
   let nap3End    = $state('');
   let nap4Start  = $state('');
   let nap4End    = $state('');
+  let nap1Pause  = $state(0);
+  let nap2Pause  = $state(0);
+  let nap3Pause  = $state(0);
+  let nap4Pause  = $state(0);
   let bedtime    = $state('');
   let notes      = $state('');
   let entryTz    = $state('');
@@ -45,6 +49,10 @@
       nap3End   = data.entry?.nap3End   ?? '';
       nap4Start = data.entry?.nap4Start ?? '';
       nap4End   = data.entry?.nap4End   ?? '';
+      nap1Pause = data.entry?.nap1PauseMin ?? 0;
+      nap2Pause = data.entry?.nap2PauseMin ?? 0;
+      nap3Pause = data.entry?.nap3PauseMin ?? 0;
+      nap4Pause = data.entry?.nap4PauseMin ?? 0;
       bedtime   = data.entry?.bedtime   ?? '';
       notes     = data.entry?.notes     ?? '';
       entryTz   = data.entry?.timezone  ?? '';
@@ -59,10 +67,10 @@
   }
 
   const napsArr = $derived<NapPair[]>([
-    { start: nap1Start, end: nap1End },
-    { start: nap2Start, end: nap2End },
-    { start: nap3Start, end: nap3End },
-    { start: nap4Start, end: nap4End }
+    { start: nap1Start, end: nap1End, pauseMin: nap1Pause },
+    { start: nap2Start, end: nap2End, pauseMin: nap2Pause },
+    { start: nap3Start, end: nap3End, pauseMin: nap3Pause },
+    { start: nap4Start, end: nap4End, pauseMin: nap4Pause }
   ]);
   const napEndSugg1 = $derived(suggestNapEnd(0, nap1Start, napsArr, data.ageParams) ?? '');
   const napEndSugg2 = $derived(suggestNapEnd(1, nap2Start, napsArr, data.ageParams) ?? '');
@@ -156,15 +164,15 @@
   </section>
 
   {#each [
-    { idx: 1, suggValue: sugg1, endSuggValue: napEndSugg1, startVal: nap1Start, endVal: nap1End, setStart: (v: string) => nap1Start = v, setEnd: (v: string) => nap1End = v },
-    { idx: 2, suggValue: sugg2, endSuggValue: napEndSugg2, startVal: nap2Start, endVal: nap2End, setStart: (v: string) => nap2Start = v, setEnd: (v: string) => nap2End = v },
-    { idx: 3, suggValue: sugg3, endSuggValue: napEndSugg3, startVal: nap3Start, endVal: nap3End, setStart: (v: string) => nap3Start = v, setEnd: (v: string) => nap3End = v },
-    { idx: 4, suggValue: sugg4, endSuggValue: napEndSugg4, startVal: nap4Start, endVal: nap4End, setStart: (v: string) => nap4Start = v, setEnd: (v: string) => nap4End = v }
+    { idx: 1, suggValue: sugg1, endSuggValue: napEndSugg1, startVal: nap1Start, endVal: nap1End, pauseVal: nap1Pause, setStart: (v: string) => nap1Start = v, setEnd: (v: string) => nap1End = v, setPause: (v: number) => nap1Pause = v },
+    { idx: 2, suggValue: sugg2, endSuggValue: napEndSugg2, startVal: nap2Start, endVal: nap2End, pauseVal: nap2Pause, setStart: (v: string) => nap2Start = v, setEnd: (v: string) => nap2End = v, setPause: (v: number) => nap2Pause = v },
+    { idx: 3, suggValue: sugg3, endSuggValue: napEndSugg3, startVal: nap3Start, endVal: nap3End, pauseVal: nap3Pause, setStart: (v: string) => nap3Start = v, setEnd: (v: string) => nap3End = v, setPause: (v: number) => nap3Pause = v },
+    { idx: 4, suggValue: sugg4, endSuggValue: napEndSugg4, startVal: nap4Start, endVal: nap4End, pauseVal: nap4Pause, setStart: (v: string) => nap4Start = v, setEnd: (v: string) => nap4End = v, setPause: (v: number) => nap4Pause = v }
   ] as nap (nap.idx)}
     <div class="nap-block">
       <div class="nap-title"><Sun size={16} weight="regular" /> Sieste {nap.idx}</div>
       <div class="hint">Suggérée vers <strong>{nap.suggValue || '—'}</strong></div>
-      <div class="pair">
+      <div class="pair pair-with-pause">
         <label class="field">
           <span class="field-label">Début</span>
           <input class="field-input" type="time" name="nap{nap.idx}_start" autocomplete="off"
@@ -176,6 +184,12 @@
           <input class="field-input" type="time" name="nap{nap.idx}_end" autocomplete="off"
             value={nap.endVal}
             oninput={(e) => nap.setEnd(read(e))} onchange={(e) => nap.setEnd(read(e))} onblur={(e) => nap.setEnd(read(e))} />
+        </label>
+        <label class="field field-pause">
+          <span class="field-label">Pause (min)</span>
+          <input class="field-input" type="number" min="0" step="5" name="nap{nap.idx}_pause_min" autocomplete="off"
+            value={nap.pauseVal || ''} placeholder="0"
+            oninput={(e) => nap.setPause(Number(read(e)) || 0)} onchange={(e) => nap.setPause(Number(read(e)) || 0)} />
         </label>
       </div>
       {#if nap.endSuggValue && nap.startVal && !nap.endVal}
@@ -255,6 +269,22 @@
   }
 
   .today-form { display: grid; gap: var(--s-3); }
+  .pair-with-pause {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s-2);
+  }
+  .pair-with-pause .field-pause {
+    grid-column: 1 / -1;
+  }
+  @media (min-width: 480px) {
+    .pair-with-pause {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+    .pair-with-pause .field-pause {
+      grid-column: auto;
+    }
+  }
   /* day-budget styles are scoped per-page; copy from today/+page.svelte */
   .day-budget {
     background: var(--c-bg-card);

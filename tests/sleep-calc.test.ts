@@ -281,6 +281,54 @@ describe('computeDaySleepBudget', () => {
     expect(r.remainingMin).toBe(0);
     expect(r.ratio).toBeGreaterThan(1);
   });
+  it('subtracts pause minutes from each nap', () => {
+    const r = computeDaySleepBudget(
+      [
+        { start: '09:00', end: '10:00', pauseMin: 15 },     // 60 - 15 = 45
+        { start: '13:00', end: '14:30', pauseMin: 30 }      // 90 - 30 = 60
+      ],
+      { daySleepH: 3 }
+    );
+    expect(r.completedMin).toBe(105);
+    expect(r.remainingMin).toBe(75);
+  });
+  it('clamps a nap with pause >= duration to 0 (no negative time)', () => {
+    const r = computeDaySleepBudget(
+      [{ start: '09:00', end: '09:30', pauseMin: 60 }],
+      { daySleepH: 3 }
+    );
+    expect(r.completedMin).toBe(0);
+  });
+});
+
+describe('suggestNapEnd — pause adjustments', () => {
+  const params3 = { naps: 3, daySleepH: 3 };
+  it('counts earlier naps net of pause when computing remaining budget', () => {
+    // 1st nap: 60min duration, 30min pause → 30min actual sleep counted.
+    // Without pause-awareness, 60min would be counted, leaving 120min budget;
+    // we now should leave 150min, so the 2nd nap suggestion is longer.
+    const naps = [{ start: '09:00', end: '10:00', pauseMin: 30 }];
+    const withPause = suggestNapEnd(1, '12:00', naps, params3);
+    const withoutPause = suggestNapEnd(1, '12:00', [{ start: '09:00', end: '10:00' }], params3);
+    expect(withPause).not.toBeNull();
+    expect(withoutPause).not.toBeNull();
+    // withPause should end strictly LATER (more sleep budget remaining).
+    expect(parseInt(withPause!.replace(':', ''), 10))
+      .toBeGreaterThan(parseInt(withoutPause!.replace(':', ''), 10));
+  });
+  it('pushes the wall-clock suggested end by the current nap pause already accumulated', () => {
+    const baseline = suggestNapEnd(0, '09:00', [], params3);     // e.g. 09:49 for 3-nap, 3h budget
+    const naps = [{ start: '09:00', end: '', pauseMin: 20 }];
+    const withCurrentPause = suggestNapEnd(0, '09:00', naps, params3);
+    expect(baseline).not.toBeNull();
+    expect(withCurrentPause).not.toBeNull();
+    // Wall-clock suggestion should be 20 min later when 20 min of pause occurred.
+    const baseMin =
+      parseInt(baseline!.slice(0, 2), 10) * 60 + parseInt(baseline!.slice(3), 10);
+    const pausedMin =
+      parseInt(withCurrentPause!.slice(0, 2), 10) * 60 + parseInt(withCurrentPause!.slice(3), 10);
+    expect(pausedMin - baseMin).toBe(20);
+  });
 });
 
 describe('formatDuration', () => {

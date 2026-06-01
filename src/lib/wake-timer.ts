@@ -2,7 +2,7 @@ import { isValidHHMM, parseHHMM, formatHHMM } from '$lib/time';
 
 export type TimerInput = {
   wakeTime: string;
-  naps: Array<{ start: string; end: string }>;
+  naps: Array<{ start: string; end: string; pauseMin?: number | null }>;
   bedtime: string;
   firstAwakeWindowMin: number;   // applied when no nap has ended yet (origin = wakeTime)
   awakeWindowMin: number;        // applied between naps
@@ -11,7 +11,7 @@ export type TimerInput = {
 export type TimerState =
   | { kind: 'empty' }
   | { kind: 'awake'; elapsedMin: number; remainingMin: number; nextNapAt: string; overWindow: boolean }
-  | { kind: 'napping'; napIdx: number; elapsedMin: number }
+  | { kind: 'napping'; napIdx: number; elapsedMin: number; pauseMin: number }
   | { kind: 'bedtime'; bedtime: string };
 
 /** Returns 0..3 for the first empty slot (start is ''), or null if all 4 are filled. */
@@ -61,7 +61,8 @@ export function deriveTimerState(input: TimerInput, now: Date): TimerState {
     return {
       kind: 'napping',
       napIdx: inProgress,
-      elapsedMin: Math.max(0, elapsed)
+      elapsedMin: Math.max(0, elapsed),
+      pauseMin: Math.max(0, input.naps[inProgress].pauseMin ?? 0)
     };
   }
 

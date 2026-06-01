@@ -189,6 +189,28 @@ describe('computeDayMetrics', () => {
     expect(m.isToday).toBe(true);
   });
 
+  it('subtracts pauseMin from totalSleepMin without altering segment positions', () => {
+    const entry: CalendarEntry = {
+      wakeTime: '07:00',
+      nap1Start: '09:00', nap1End: '10:00',
+      nap2Start: '12:00', nap2End: '13:00',
+      nap3Start: '15:00', nap3End: '16:00',
+      nap4Start: null, nap4End: null,
+      nap1PauseMin: 15,
+      nap2PauseMin: 30,
+      nap3PauseMin: null,
+      nap4PauseMin: null,
+      bedtime: '20:00'
+    };
+    const m = computeDayMetrics('2026-05-13', entry, baby, '2026-05-21');
+    // Without pause this was 840. Pauses subtract 45 → 795.
+    expect(m.totalSleepMin).toBe(795);
+    // Timeline segments stay visually identical (no shrinking).
+    expect(m.segments.find((s) => s.kind === 'nap' && s.startMin === 540)).toEqual({
+      kind: 'nap', startMin: 540, endMin: 600
+    });
+  });
+
   it('applies heatLevel thresholds (good >= 0.90, ok [0.70, 0.90), meh [0.50, 0.70), bad < 0.50)', () => {
     // baby age 6 months → 14h = 840min budget
     // We synthesize total via wake='00:00' is skipped (zero-width), so only bedtime→24:00 contributes.

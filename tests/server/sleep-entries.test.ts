@@ -6,7 +6,8 @@ import {
   listEntriesInRange,
   summariesForBaby,
   deleteEntry,
-  setNightRating
+  setNightRating,
+  addNapPause
 } from '../../src/lib/server/sleep-entries';
 
 function setup(tdb: ReturnType<typeof makeTestDb>) {
@@ -69,6 +70,40 @@ describe('sleep-entries', () => {
     const s = summariesForBaby(tdb.db, babyId, '2026-05-01', '2026-05-31');
     // Day 1: 1h + 1h30 = 2h30 = 150 min. Day 2: 1h + 1h = 120 min. Mean = 135 min = 02:15.
     expect(s.meanDaySleepHHMM).toBe('02:15');
+  });
+
+  it('summariesForBaby subtracts pause minutes from each completed nap', () => {
+    const { babyId } = setup(tdb);
+    upsertEntry(tdb.db, babyId, '2026-05-12', {
+      nap1Start: '09:00', nap1End: '10:00', nap1PauseMin: 15,    // 60 - 15 = 45
+      nap2Start: '13:00', nap2End: '14:30', nap2PauseMin: 30     // 90 - 30 = 60
+    });
+    const s = summariesForBaby(tdb.db, babyId, '2026-05-01', '2026-05-31');
+    // 45 + 60 = 105 min → 01:45
+    expect(s.meanDaySleepHHMM).toBe('01:45');
+  });
+});
+
+describe('addNapPause', () => {
+  let tdb: ReturnType<typeof makeTestDb>;
+  beforeEach(() => { tdb = makeTestDb(); });
+
+  it('creates the entry with the pause when none exists', () => {
+    const { babyId } = setup(tdb);
+    addNapPause(tdb.db, babyId, '2026-06-01', 2, 15);
+    const e = getEntryForBabyDate(tdb.db, babyId, '2026-06-01');
+    expect(e?.nap2PauseMin).toBe(15);
+  });
+
+  it('accumulates pause across multiple calls on the same nap', () => {
+    const { babyId } = setup(tdb);
+    upsertEntry(tdb.db, babyId, '2026-06-01', { nap1Start: '09:00' });
+    addNapPause(tdb.db, babyId, '2026-06-01', 1, 10);
+    addNapPause(tdb.db, babyId, '2026-06-01', 1, 5);
+    addNapPause(tdb.db, babyId, '2026-06-01', 1, 7);
+    const e = getEntryForBabyDate(tdb.db, babyId, '2026-06-01');
+    expect(e?.nap1PauseMin).toBe(22);
+    expect(e?.nap1Start).toBe('09:00');
   });
 });
 

@@ -9,17 +9,21 @@
   import Warning from 'phosphor-svelte/lib/Warning';
   import Play from 'phosphor-svelte/lib/Play';
   import Check from 'phosphor-svelte/lib/Check';
+  import Pause from 'phosphor-svelte/lib/Pause';
+  import Plus from 'phosphor-svelte/lib/Plus';
+  import X from 'phosphor-svelte/lib/X';
 
   type Props = {
     wakeTime: string;
-    naps: Array<{ start: string; end: string }>;
+    naps: Array<{ start: string; end: string; pauseMin?: number | null }>;
     bedtime: string;
     ageParams: AgeParams;
     effectiveTz: string;
     onNapStart: (slotIdx: number, hhmm: string) => void;
     onNapEnd: (slotIdx: number, hhmm: string) => void;
+    onAddPause?: (slotIdx: number, deltaMin: number) => void;
   };
-  let { wakeTime, naps, bedtime, ageParams, effectiveTz, onNapStart, onNapEnd }: Props = $props();
+  let { wakeTime, naps, bedtime, ageParams, effectiveTz, onNapStart, onNapEnd, onAddPause }: Props = $props();
 
   let now: Date = $state(new Date());
 
@@ -77,6 +81,23 @@
     showToast(`Sieste ${progressSlot + 1} terminée à ${hhmm}`);
     setTimeout(() => { submitting = false; }, 2000);
   }
+
+  let pauseOpen = $state(false);
+  let pauseInputMin = $state(10);
+
+  function handleAddPauseSubmit() {
+    if (submitting) return;
+    if (progressSlot === null) return;
+    if (!onAddPause) return;
+    const n = Math.round(Number(pauseInputMin));
+    if (!Number.isFinite(n) || n <= 0 || n > 600) return;
+    submitting = true;
+    onAddPause(progressSlot, n);
+    showToast(`+${n} min de pause sur sieste ${progressSlot + 1}`);
+    pauseOpen = false;
+    pauseInputMin = 10;
+    setTimeout(() => { submitting = false; }, 2000);
+  }
 </script>
 
 <section class="wake-timer-card" aria-label="Timer fenêtre d'éveil">
@@ -114,15 +135,65 @@
   {:else if timerState.kind === 'napping'}
     <div class="row-label honey"><Cloud size={18} weight="duotone" /> En sieste depuis</div>
     <div class="counter honey">{formatDuration(timerState.elapsedMin)}</div>
-    <div class="row-sub muted">Sieste {timerState.napIdx + 1}</div>
-    <button
-      type="button"
-      class="btn btn-secondary action-btn"
-      onclick={handleEnd}
-      disabled={submitting}
-    >
-      <Check size={16} weight="bold" /> Terminer sieste maintenant
-    </button>
+    <div class="row-sub muted">
+      Sieste {timerState.napIdx + 1}
+      {#if timerState.pauseMin > 0}
+        · dont {formatDuration(timerState.pauseMin)} de pause
+      {/if}
+    </div>
+    <div class="nap-actions">
+      <button
+        type="button"
+        class="btn btn-secondary action-btn"
+        onclick={handleEnd}
+        disabled={submitting}
+      >
+        <Check size={16} weight="bold" /> Terminer sieste maintenant
+      </button>
+      {#if onAddPause}
+        {#if !pauseOpen}
+          <button
+            type="button"
+            class="btn btn-secondary btn-sm pause-trigger"
+            onclick={() => { pauseOpen = true; }}
+            disabled={submitting}
+            title="Ajouter du temps de pause (réveil court pendant la sieste)"
+          >
+            <Pause size={14} weight="fill" /> Ajouter une pause
+          </button>
+        {:else}
+          <div class="pause-inline">
+            <label class="pause-inline-label" for="pause-min-input">
+              <Pause size={14} weight="fill" /> Pause (min) :
+            </label>
+            <input
+              id="pause-min-input"
+              class="field-input pause-input"
+              type="number" min="1" max="180" step="5"
+              bind:value={pauseInputMin}
+            />
+            <button
+              type="button"
+              class="btn btn-primary btn-sm"
+              onclick={handleAddPauseSubmit}
+              disabled={submitting}
+              title="Ajouter cette pause à la sieste en cours"
+            >
+              <Plus size={14} weight="bold" /> Ajouter
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary btn-sm pause-cancel"
+              onclick={() => { pauseOpen = false; }}
+              aria-label="Annuler"
+              title="Annuler"
+            >
+              <X size={14} />
+            </button>
+          </div>
+        {/if}
+      {/if}
+    </div>
   {:else if timerState.kind === 'bedtime'}
     <div class="row-label night"><Moon size={18} weight="duotone" /> Couché à {timerState.bedtime} · bonne nuit 🌙</div>
   {/if}
@@ -184,6 +255,37 @@
     display: inline-flex;
     align-items: center;
     gap: var(--s-1);
+  }
+  .nap-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--s-1);
+  }
+  .pause-inline {
+    margin-top: var(--s-2);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .pause-inline-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-1);
+    font-size: var(--fs-sm);
+    color: var(--c-text-muted);
+  }
+  .pause-input {
+    width: 90px;
+    text-align: center;
+  }
+  .pause-trigger {
+    align-self: center;
+  }
+  .pause-cancel {
+    padding: var(--s-1) var(--s-2);
   }
   .toast {
     margin-top: var(--s-2);

@@ -45,12 +45,20 @@ export const actions: Actions = {
       'nap3_start', 'nap3_end',
       'nap4_start', 'nap4_end',
       'bedtime'] as const;
-    const patch: Record<string, string | null> = {};
+    const patch: Record<string, string | number | null> = {};
     for (const f of fields) {
       const v = String(form.get(f) ?? '').trim();
       if (v === '') patch[camel(f)] = null;
       else if (!isValidHHMM(v)) return fail(400, { error: `Heure invalide (${f}): ${v}` });
       else patch[camel(f)] = v;
+    }
+    const pauseFields = ['nap1_pause_min', 'nap2_pause_min', 'nap3_pause_min', 'nap4_pause_min'] as const;
+    for (const f of pauseFields) {
+      const raw = String(form.get(f) ?? '').trim();
+      if (raw === '') { patch[camel(f)] = null; continue; }
+      const n = Number(raw);
+      if (!Number.isFinite(n) || n < 0 || n > 600) return fail(400, { error: `Pause invalide (${f}): ${raw}` });
+      patch[camel(f)] = Math.round(n) || null;
     }
     const notes = String(form.get('notes') ?? '').trim();
     patch.notes = notes || null;

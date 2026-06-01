@@ -54,6 +54,10 @@ export type CalendarEntry = {
   nap3End: string | null;
   nap4Start: string | null;
   nap4End: string | null;
+  nap1PauseMin?: number | null;
+  nap2PauseMin?: number | null;
+  nap3PauseMin?: number | null;
+  nap4PauseMin?: number | null;
   bedtime: string | null;
   nightRating?: string | null;
 };
@@ -154,7 +158,16 @@ export function computeDayMetrics(
   const recommendedMin = Math.round((ageParams.daySleepH + ageParams.nightSleepH) * 60);
 
   const segments = buildTimelineSegments(entry);
-  const totalSleepMin = segments.reduce((acc, s) => acc + (s.endMin - s.startMin), 0);
+  // Pauses don't change the visual segments (we don't have start/end of each pause),
+  // but they reduce the actual sleep total used for the heatmap ratio.
+  const pauseMin = entry
+    ? (entry.nap1PauseMin ?? 0) + (entry.nap2PauseMin ?? 0) +
+      (entry.nap3PauseMin ?? 0) + (entry.nap4PauseMin ?? 0)
+    : 0;
+  const totalSleepMin = Math.max(
+    0,
+    segments.reduce((acc, s) => acc + (s.endMin - s.startMin), 0) - pauseMin
+  );
 
   const hasAnyData = !!entry && segments.length > 0;
   const isComplete = !!entry?.bedtime && !!entry?.wakeTime;

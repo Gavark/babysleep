@@ -160,7 +160,7 @@ describe('deriveTimerState', () => {
       }),
       at('09:30')
     );
-    expect(state).toEqual({ kind: 'napping', napIdx: 0, elapsedMin: 30 });
+    expect(state).toEqual({ kind: 'napping', napIdx: 0, elapsedMin: 30, pauseMin: 0 });
   });
 
   it('returns napping with napIdx=2 when only nap3 is in progress', () => {
@@ -176,7 +176,7 @@ describe('deriveTimerState', () => {
       }),
       at('15:45')
     );
-    expect(state).toEqual({ kind: 'napping', napIdx: 2, elapsedMin: 45 });
+    expect(state).toEqual({ kind: 'napping', napIdx: 2, elapsedMin: 45, pauseMin: 0 });
   });
 
   it('returns bedtime even when a nap is technically in progress', () => {
@@ -204,6 +204,22 @@ describe('deriveTimerState', () => {
       }),
       at('13:00')
     );
-    expect(state).toEqual({ kind: 'napping', napIdx: 0, elapsedMin: 0 });
+    expect(state).toEqual({ kind: 'napping', napIdx: 0, elapsedMin: 0, pauseMin: 0 });
+  });
+
+  it('surfaces accumulated pause minutes in napping state', () => {
+    const state = deriveTimerState(
+      mkInput({
+        wakeTime: '07:00',
+        naps: [
+          { start: '09:00', end: '', pauseMin: 15 },
+          { start: '', end: '' },
+          { start: '', end: '' },
+          { start: '', end: '' }
+        ]
+      }),
+      at('09:30')
+    );
+    expect(state).toEqual({ kind: 'napping', napIdx: 0, elapsedMin: 30, pauseMin: 15 });
   });
 });
