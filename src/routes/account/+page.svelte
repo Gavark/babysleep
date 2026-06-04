@@ -5,6 +5,7 @@
   import SignOut from 'phosphor-svelte/lib/SignOut';
   import FloppyDisk from 'phosphor-svelte/lib/FloppyDisk';
   import Trash from 'phosphor-svelte/lib/Trash';
+  import { formatDate, formatDateTime } from '$lib/format';
   let { data, form } = $props();
 </script>
 
@@ -62,7 +63,7 @@
     <li class="card session-row">
       <div>
         <strong>{s.userAgent}</strong>{#if s.isCurrent} <span class="badge badge-success">cet appareil</span>{/if}
-        <p class="page-meta" style="margin:0;">Dernière activité : {new Date(s.lastUsedAt * 1000).toLocaleString('fr-FR')} · expire le {new Date(s.expiresAt * 1000).toLocaleDateString('fr-FR')}</p>
+        <p class="page-meta" style="margin:0;">Dernière activité : {formatDateTime(s.lastUsedAt * 1000, data.locale)} · expire le {formatDate(s.expiresAt * 1000, data.locale)}</p>
       </div>
       {#if !s.isCurrent}
         <form method="POST" action="/account/sessions/{s.id}" use:enhance>

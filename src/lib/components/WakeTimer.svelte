@@ -1,6 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import type { AgeParams } from '$lib/age-params';
+  import type { Locale } from '$lib/server/auth/locale';
+  import { formatDate } from '$lib/format';
   import { formatDuration } from '$lib/sleep-calc';
   import { deriveTimerState, nextEmptyNapSlot, inProgressNapSlot, type TimerInput, type TimerState } from '$lib/wake-timer';
   import Sun from 'phosphor-svelte/lib/Sun';
@@ -19,11 +21,12 @@
     bedtime: string;
     ageParams: AgeParams;
     effectiveTz: string;
+    locale: Locale;
     onNapStart: (slotIdx: number, hhmm: string) => void;
     onNapEnd: (slotIdx: number, hhmm: string) => void;
     onAddPause?: (slotIdx: number, deltaMin: number) => void;
   };
-  let { wakeTime, naps, bedtime, ageParams, effectiveTz, onNapStart, onNapEnd, onAddPause }: Props = $props();
+  let { wakeTime, naps, bedtime, ageParams, effectiveTz, locale, onNapStart, onNapEnd, onAddPause }: Props = $props();
 
   let now: Date = $state(new Date());
 
@@ -49,11 +52,10 @@
   let toastVisible = $state(false);
 
   function formatNowHHMM(tz: string): string {
-    const fmt = new Intl.DateTimeFormat('fr-FR', {
+    // Both supported locales render "HH:mm" with hour12:false.
+    return formatDate(new Date(), locale, {
       timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false
     });
-    // fr-FR formats as "14:30" already
-    return fmt.format(new Date());
   }
 
   function showToast(message: string) {

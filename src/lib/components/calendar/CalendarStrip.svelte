@@ -1,20 +1,22 @@
 <script lang="ts">
   import type { DayMetrics } from '$lib/calendar';
+  import type { Locale } from '$lib/server/auth/locale';
   import DayCell from './DayCell.svelte';
 
   type Props = {
     cells: DayMetrics[];
     babyId: number;
+    locale: Locale;
     onSelect?: (date: string) => void;
   };
-  let { cells, babyId, onSelect }: Props = $props();
+  let { cells, babyId, locale, onSelect }: Props = $props();
 
   const inMonthCells = $derived(cells.filter((c) => c.inMonth));
 </script>
 
 <ul class="cal-strip" aria-label="Liste des journées du mois">
   {#each inMonthCells as cell (cell.date)}
-    <li><DayCell metrics={cell} {babyId} mode="strip" {onSelect} /></li>
+    <li><DayCell metrics={cell} {babyId} mode="strip" {locale} {onSelect} /></li>
   {/each}
 </ul>
 

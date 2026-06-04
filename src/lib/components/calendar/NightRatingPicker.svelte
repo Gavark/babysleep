@@ -7,14 +7,17 @@
   import PencilSimple from 'phosphor-svelte/lib/PencilSimple';
   import X from 'phosphor-svelte/lib/X';
   import type { NightRating } from '$lib/calendar';
+  import type { Locale } from '$lib/server/auth/locale';
+  import { formatDate } from '$lib/format';
 
   type Props = {
     date: string;
     currentRating: NightRating | null;
     babyId: number;
+    locale: Locale;
     onClose: () => void;
   };
-  let { date, currentRating, babyId, onClose }: Props = $props();
+  let { date, currentRating, babyId, locale, onClose }: Props = $props();
 
   let submitting = $state(false);
 
@@ -22,7 +25,7 @@
 
   function formatLongDay(iso: string): string {
     const [y, m, d] = iso.split('-').map(Number);
-    return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString('fr-FR', {
+    return formatDate(new Date(Date.UTC(y, m - 1, d)), locale, {
       weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC'
     });
   }

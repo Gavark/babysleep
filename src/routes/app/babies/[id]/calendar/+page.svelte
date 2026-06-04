@@ -7,6 +7,7 @@
   import CaretRight from 'phosphor-svelte/lib/CaretRight';
   import { ageInMonths, formatDuration } from '$lib/sleep-calc';
   import { paramsForAge } from '$lib/age-params';
+  import { formatDate } from '$lib/format';
 
   let { data } = $props();
 
@@ -34,7 +35,7 @@
   const quotaNightMin = $derived(Math.round(ap.nightSleepH * 60));
 
   function formatMonth(y: number, m: number): string {
-    return new Date(Date.UTC(y, m - 1, 15)).toLocaleDateString('fr-FR', {
+    return formatDate(new Date(Date.UTC(y, m - 1, 15)), data.locale, {
       month: 'long', year: 'numeric', timeZone: 'UTC'
     });
   }
@@ -65,14 +66,15 @@
   <a class="btn btn-secondary btn-sm today-btn" href={todayHref}>Aujourd'hui</a>
 </nav>
 
-<div class="cal-desktop"><CalendarGrid cells={data.cells} babyId={data.baby.id} onSelect={(d) => pickerDate = d} /></div>
-<div class="cal-mobile"><CalendarStrip cells={data.cells} babyId={data.baby.id} onSelect={(d) => pickerDate = d} /></div>
+<div class="cal-desktop"><CalendarGrid cells={data.cells} babyId={data.baby.id} locale={data.locale} onSelect={(d) => pickerDate = d} /></div>
+<div class="cal-mobile"><CalendarStrip cells={data.cells} babyId={data.baby.id} locale={data.locale} onSelect={(d) => pickerDate = d} /></div>
 
 {#if pickerCell}
   <NightRatingPicker
     date={pickerCell.date}
     currentRating={pickerCell.nightRating}
     babyId={data.baby.id}
+    locale={data.locale}
     onClose={() => pickerDate = null}
   />
 {/if}

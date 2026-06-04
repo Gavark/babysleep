@@ -3,6 +3,7 @@
   import ArrowLeft from 'phosphor-svelte/lib/ArrowLeft';
   import Plus from 'phosphor-svelte/lib/Plus';
   import Copy from 'phosphor-svelte/lib/Copy';
+  import { formatDate } from '$lib/format';
   let { data } = $props();
 
   function statusOf(inv: any): string {
@@ -41,8 +42,8 @@
         {#each data.invitations as inv}
           {@const st = statusOf(inv)}
           <tr>
-            <td>{new Date(inv.createdAt * 1000).toLocaleDateString('fr-FR')}</td>
-            <td>{new Date(inv.expiresAt * 1000).toLocaleDateString('fr-FR')}</td>
+            <td>{formatDate(inv.createdAt * 1000, data.locale)}</td>
+            <td>{formatDate(inv.expiresAt * 1000, data.locale)}</td>
             <td><span class={badgeClass(st)}>{st}</span></td>
             <td>
               <button type="button" class="btn btn-ghost btn-sm" onclick={() => copy(inv.link)} title={inv.link}>

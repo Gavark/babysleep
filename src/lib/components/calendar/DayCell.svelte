@@ -1,6 +1,8 @@
 <script lang="ts">
   import type { DayMetrics } from '$lib/calendar';
   import { heatmapClass } from '$lib/calendar';
+  import type { Locale } from '$lib/server/auth/locale';
+  import { formatDate } from '$lib/format';
   import { formatDuration } from '$lib/sleep-calc';
   import CheckCircle from 'phosphor-svelte/lib/CheckCircle';
   import MinusCircle from 'phosphor-svelte/lib/MinusCircle';
@@ -10,9 +12,10 @@
     metrics: DayMetrics;
     babyId: number;
     mode: 'grid' | 'strip';
+    locale: Locale;
     onSelect?: (date: string) => void;
   };
-  let { metrics, babyId: _babyId, mode, onSelect }: Props = $props();
+  let { metrics, babyId: _babyId, mode, locale, onSelect }: Props = $props();
 
   const dayNum = $derived(Number(metrics.date.slice(8, 10)));
   const dayLabel = $derived(formatLongDay(metrics.date));
@@ -25,7 +28,7 @@
 
   function formatLongDay(iso: string): string {
     const [y, m, d] = iso.split('-').map(Number);
-    return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString('fr-FR', {
+    return formatDate(new Date(Date.UTC(y, m - 1, d)), locale, {
       weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC'
     });
   }

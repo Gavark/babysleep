@@ -149,6 +149,7 @@
   {bedtime}
   ageParams={data.ageParams}
   effectiveTz={data.effectiveTz}
+  locale={data.locale}
   onNapStart={handleNapStart}
   onNapEnd={handleNapEnd}
   onAddPause={handleAddPause}

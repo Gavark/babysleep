@@ -1,13 +1,15 @@
 <script lang="ts">
   import type { DayMetrics } from '$lib/calendar';
+  import type { Locale } from '$lib/server/auth/locale';
   import DayCell from './DayCell.svelte';
 
   type Props = {
     cells: DayMetrics[];
     babyId: number;
+    locale: Locale;
     onSelect?: (date: string) => void;
   };
-  let { cells, babyId, onSelect }: Props = $props();
+  let { cells, babyId, locale, onSelect }: Props = $props();
 
   const weeks = $derived(
     Array.from({ length: Math.ceil(cells.length / 7) }, (_, i) => cells.slice(i * 7, i * 7 + 7))
@@ -30,7 +32,7 @@
     {#each weeks as week, weekIdx (weekIdx)}
       <tr>
         {#each week as cell (cell.date)}
-          <td><DayCell metrics={cell} {babyId} mode="grid" {onSelect} /></td>
+          <td><DayCell metrics={cell} {babyId} mode="grid" {locale} {onSelect} /></td>
         {/each}
       </tr>
     {/each}
