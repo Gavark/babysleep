@@ -2,10 +2,11 @@ import { error, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { getDb } from '$lib/server/db';
 import { createInvitation, listInvitations } from '$lib/server/auth/invitations';
+import * as m from '$paraglide/messages';
 
 function requireAdmin(locals: App.Locals) {
   if (!locals.user) throw redirect(303, '/login');
-  if (!locals.user.isAdmin) throw error(403, 'Réservé aux administrateurs');
+  if (!locals.user.isAdmin) throw error(403, m.admin_invitations_forbidden());
 }
 
 export const load: PageServerLoad = ({ locals, url }) => {

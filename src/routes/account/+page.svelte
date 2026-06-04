@@ -6,68 +6,69 @@
   import FloppyDisk from 'phosphor-svelte/lib/FloppyDisk';
   import Trash from 'phosphor-svelte/lib/Trash';
   import { formatDate, formatDateTime } from '$lib/format';
+  import * as m from '$paraglide/messages';
   let { data, form } = $props();
 </script>
 
-<p class="back"><a href="/app"><ArrowLeft size={14} /> Application</a></p>
+<p class="back"><a href="/app"><ArrowLeft size={14} /> {m.account_back_to_app()}</a></p>
 
-<h1>Mon compte</h1>
-<p class="page-meta">Connecté en tant que <strong>{data.account.email}</strong>{#if data.account.isAdmin} <span class="badge">admin</span>{/if}</p>
+<h1>{m.account_title()}</h1>
+<p class="page-meta">{m.account_connected_as()} <strong>{data.account.email}</strong>{#if data.account.isAdmin} <span class="badge">{m.account_badge_admin()}</span>{/if}</p>
 
-<h2>Fuseau horaire par défaut</h2>
+<h2>{m.account_timezone_title()}</h2>
 {#if form?.error}<p class="error" role="alert">{form.error}</p>{/if}
 {#if form?.success}<p class="ok">{form.success}</p>{/if}
 <form method="POST" action="?/updateTimezone" use:enhance class="card tz-form">
   <label class="field">
-    <span class="field-label">Fuseau</span>
+    <span class="field-label">{m.account_timezone_label()}</span>
     <select class="field-select" name="timezone">
       {#each COMMON_TIMEZONES as tz}
         <option value={tz} selected={data.userTimezone === tz}>{tz}</option>
       {/each}
     </select>
   </label>
-  <button type="submit" class="btn btn-primary"><FloppyDisk size={16} /> Enregistrer</button>
+  <button type="submit" class="btn btn-primary"><FloppyDisk size={16} /> {m.common_btn_save()}</button>
 </form>
 
-<h2>Langue</h2>
+<h2>{m.account_locale_title()}</h2>
 {#if form?.localeError}<p class="error" role="alert">{form.localeError}</p>{/if}
 {#if form?.localeSuccess}<p class="ok">{form.localeSuccess}</p>{/if}
 <form method="POST" action="?/updateLocale" use:enhance class="card tz-form">
   <label class="field">
-    <span class="field-label">Langue de l'interface</span>
+    <span class="field-label">{m.account_locale_label()}</span>
     <select class="field-select" name="locale" autocomplete="off">
-      <option value="fr" selected={data.userLocale === 'fr'}>Français</option>
-      <option value="en" selected={data.userLocale === 'en'}>English</option>
+      <option value="fr" selected={data.userLocale === 'fr'}>{m.account_locale_option_fr()}</option>
+      <option value="en" selected={data.userLocale === 'en'}>{m.account_locale_option_en()}</option>
     </select>
   </label>
-  <button type="submit" class="btn btn-primary"><FloppyDisk size={16} /> Enregistrer</button>
+  <button type="submit" class="btn btn-primary"><FloppyDisk size={16} /> {m.common_btn_save()}</button>
 </form>
 
-<h2>Changer mon mot de passe</h2>
+<h2>{m.account_password_title()}</h2>
 <form method="POST" action="?/changePassword" use:enhance class="card pw-form">
-  <label class="field"><span class="field-label">Mot de passe actuel</span>
+  <label class="field"><span class="field-label">{m.account_password_current_label()}</span>
     <input class="field-input" type="password" name="current_password" required autocomplete="current-password" />
   </label>
-  <label class="field"><span class="field-label">Nouveau (≥ 10 caractères)</span>
+  <label class="field"><span class="field-label">{m.account_password_new_label()}</span>
     <input class="field-input" type="password" name="new_password" required minlength="10" autocomplete="new-password" />
   </label>
-  <label class="field"><span class="field-label">Confirmer</span>
+  <label class="field"><span class="field-label">{m.account_password_confirm_label()}</span>
     <input class="field-input" type="password" name="confirm" required minlength="10" autocomplete="new-password" />
   </label>
-  <button type="submit" class="btn btn-primary"><FloppyDisk size={16} /> Modifier le mot de passe</button>
+  <button type="submit" class="btn btn-primary"><FloppyDisk size={16} /> {m.account_password_submit()}</button>
 </form>
 
-<h2>Sessions actives</h2>
+<h2>{m.account_sessions_title()}</h2>
 <ul class="sessions">
   {#each data.sessions as s}
     <li class="card session-row">
       <div>
-        <strong>{s.userAgent}</strong>{#if s.isCurrent} <span class="badge badge-success">cet appareil</span>{/if}
-        <p class="page-meta" style="margin:0;">Dernière activité : {formatDateTime(s.lastUsedAt * 1000, data.locale)} · expire le {formatDate(s.expiresAt * 1000, data.locale)}</p>
+        <strong>{s.userAgent}</strong>{#if s.isCurrent} <span class="badge badge-success">{m.account_sessions_current_device()}</span>{/if}
+        <p class="page-meta" style="margin:0;">{m.account_sessions_last_used({ when: formatDateTime(s.lastUsedAt * 1000, data.locale) })} · {m.account_sessions_expires_on({ when: formatDate(s.expiresAt * 1000, data.locale) })}</p>
       </div>
       {#if !s.isCurrent}
         <form method="POST" action="/account/sessions/{s.id}" use:enhance>
-          <button type="submit" class="btn btn-ghost btn-sm"><Trash size={14} /> Révoquer</button>
+          <button type="submit" class="btn btn-ghost btn-sm"><Trash size={14} /> {m.account_sessions_revoke()}</button>
         </form>
       {/if}
     </li>
@@ -75,7 +76,7 @@
 </ul>
 
 <form method="POST" action="/logout" style="margin-top: var(--s-4);">
-  <button type="submit" class="btn btn-secondary"><SignOut size={16} /> Se déconnecter</button>
+  <button type="submit" class="btn btn-secondary"><SignOut size={16} /> {m.account_logout()}</button>
 </form>
 
 <style>
