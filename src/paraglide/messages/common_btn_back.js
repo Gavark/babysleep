@@ -22,9 +22,8 @@ const en_common_btn_back = /** @type {(inputs: Common_Btn_BackInputs) => Localiz
 * @param {{ locale?: "fr" | "en" }} options
 * @returns {LocalizedString}
 */
-const common_btn_back = /** @type {((inputs?: Common_Btn_BackInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Common_Btn_BackInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
+export const common_btn_back = /** @type {((inputs?: Common_Btn_BackInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Common_Btn_BackInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
 	if (locale === "fr") return fr_common_btn_back(inputs)
 	return en_common_btn_back(inputs)
 });
-export { common_btn_back as "common.btn.back" }

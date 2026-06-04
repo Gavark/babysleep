@@ -22,9 +22,8 @@ const en_common_btn_delete = /** @type {(inputs: Common_Btn_DeleteInputs) => Loc
 * @param {{ locale?: "fr" | "en" }} options
 * @returns {LocalizedString}
 */
-const common_btn_delete = /** @type {((inputs?: Common_Btn_DeleteInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Common_Btn_DeleteInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
+export const common_btn_delete = /** @type {((inputs?: Common_Btn_DeleteInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Common_Btn_DeleteInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
 	if (locale === "fr") return fr_common_btn_delete(inputs)
 	return en_common_btn_delete(inputs)
 });
-export { common_btn_delete as "common.btn.delete" }

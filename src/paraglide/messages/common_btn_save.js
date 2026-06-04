@@ -22,9 +22,8 @@ const en_common_btn_save = /** @type {(inputs: Common_Btn_SaveInputs) => Localiz
 * @param {{ locale?: "fr" | "en" }} options
 * @returns {LocalizedString}
 */
-const common_btn_save = /** @type {((inputs?: Common_Btn_SaveInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Common_Btn_SaveInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
+export const common_btn_save = /** @type {((inputs?: Common_Btn_SaveInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Common_Btn_SaveInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
 	if (locale === "fr") return fr_common_btn_save(inputs)
 	return en_common_btn_save(inputs)
 });
-export { common_btn_save as "common.btn.save" }

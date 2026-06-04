@@ -22,9 +22,8 @@ const en_common_btn_cancel = /** @type {(inputs: Common_Btn_CancelInputs) => Loc
 * @param {{ locale?: "fr" | "en" }} options
 * @returns {LocalizedString}
 */
-const common_btn_cancel = /** @type {((inputs?: Common_Btn_CancelInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Common_Btn_CancelInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
+export const common_btn_cancel = /** @type {((inputs?: Common_Btn_CancelInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Common_Btn_CancelInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
 	if (locale === "fr") return fr_common_btn_cancel(inputs)
 	return en_common_btn_cancel(inputs)
 });
-export { common_btn_cancel as "common.btn.cancel" }

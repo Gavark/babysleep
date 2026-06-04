@@ -22,9 +22,8 @@ const en_common_btn_confirm = /** @type {(inputs: Common_Btn_ConfirmInputs) => L
 * @param {{ locale?: "fr" | "en" }} options
 * @returns {LocalizedString}
 */
-const common_btn_confirm = /** @type {((inputs?: Common_Btn_ConfirmInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Common_Btn_ConfirmInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
+export const common_btn_confirm = /** @type {((inputs?: Common_Btn_ConfirmInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Common_Btn_ConfirmInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
 	if (locale === "fr") return fr_common_btn_confirm(inputs)
 	return en_common_btn_confirm(inputs)
 });
-export { common_btn_confirm as "common.btn.confirm" }

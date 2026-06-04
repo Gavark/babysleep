@@ -22,9 +22,8 @@ const en_common_error_generic = /** @type {(inputs: Common_Error_GenericInputs) 
 * @param {{ locale?: "fr" | "en" }} options
 * @returns {LocalizedString}
 */
-const common_error_generic = /** @type {((inputs?: Common_Error_GenericInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Common_Error_GenericInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
+export const common_error_generic = /** @type {((inputs?: Common_Error_GenericInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Common_Error_GenericInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
 	if (locale === "fr") return fr_common_error_generic(inputs)
 	return en_common_error_generic(inputs)
 });
-export { common_error_generic as "common.error.generic" }

@@ -22,9 +22,8 @@ const en_common_btn_update = /** @type {(inputs: Common_Btn_UpdateInputs) => Loc
 * @param {{ locale?: "fr" | "en" }} options
 * @returns {LocalizedString}
 */
-const common_btn_update = /** @type {((inputs?: Common_Btn_UpdateInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Common_Btn_UpdateInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
+export const common_btn_update = /** @type {((inputs?: Common_Btn_UpdateInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Common_Btn_UpdateInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
 	if (locale === "fr") return fr_common_btn_update(inputs)
 	return en_common_btn_update(inputs)
 });
-export { common_btn_update as "common.btn.update" }
