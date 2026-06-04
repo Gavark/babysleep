@@ -2,6 +2,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { getDb } from '$lib/server/db';
 import { hasNoUsers, createFirstAdmin } from '$lib/server/auth/bootstrap';
+import { parseAcceptLanguage, SUPPORTED_LOCALES } from '$lib/server/auth/locale';
 
 export const load: PageServerLoad = () => {
   const { db } = getDb();
@@ -23,7 +24,12 @@ export const actions: Actions = {
       return fail(400, { error: 'Les mots de passe ne correspondent pas.', email });
     }
 
-    const res = await createFirstAdmin(db, { email, password });
+    const locale = parseAcceptLanguage(
+      request.headers.get('accept-language'),
+      SUPPORTED_LOCALES,
+      'fr'
+    );
+    const res = await createFirstAdmin(db, { email, password, locale });
     if (!res.ok) {
       const msg = ({
         'already-setup': 'Un compte existe déjà. Recharge la page.',

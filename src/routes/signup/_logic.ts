@@ -13,7 +13,7 @@ export type SignupResult =
 
 export async function signupWithToken(
   db: DB,
-  input: { token: string; email: string; password: string }
+  input: { token: string; email: string; password: string; locale?: 'fr' | 'en' }
 ): Promise<SignupResult> {
   const token = String(input.token ?? '');
   const email = normalizeEmail(input.email);
@@ -25,6 +25,7 @@ export async function signupWithToken(
   // Hash outside the transaction (argon2id is slow + async; better-sqlite3 transactions are sync).
   const hash = await hashPassword(password);
   const t = Math.floor(Date.now() / 1000);
+  const locale = input.locale ?? 'fr';
 
   // Atomic critical section: re-check invitation + duplicate email + insert + mark-used.
   // SQLite serialises transactions, so two concurrent calls with the same token
@@ -37,7 +38,7 @@ export async function signupWithToken(
     if (existing) return { ok: false, reason: 'duplicate-email' as const };
 
     const row = tx.insert(schema.users).values({
-      email, passwordHash: hash, isAdmin: 0, createdAt: t, updatedAt: t
+      email, passwordHash: hash, isAdmin: 0, locale, createdAt: t, updatedAt: t
     }).returning().all()[0];
     markInvitationUsed(tx, inv.id, row.id);
     return { ok: true, userId: row.id };

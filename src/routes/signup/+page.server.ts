@@ -2,6 +2,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { getDb } from '$lib/server/db';
 import { findUsableInvitation } from '$lib/server/auth/invitations';
+import { parseAcceptLanguage, SUPPORTED_LOCALES } from '$lib/server/auth/locale';
 import { signupWithToken } from './_logic';
 
 export const load: PageServerLoad = ({ url, locals }) => {
@@ -29,7 +30,12 @@ export const actions: Actions = {
       return fail(400, { error: 'Les mots de passe ne correspondent pas.', email });
     }
     const { db } = getDb();
-    const res = await signupWithToken(db, { token, email, password });
+    const locale = parseAcceptLanguage(
+      request.headers.get('accept-language'),
+      SUPPORTED_LOCALES,
+      'fr'
+    );
+    const res = await signupWithToken(db, { token, email, password, locale });
     if (!res.ok) {
       const msg = ({
         'bad-token': 'Lien d\'invitation invalide ou expiré.',

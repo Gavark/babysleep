@@ -38,7 +38,7 @@ export type CreateFirstAdminResult =
  */
 export async function createFirstAdmin(
   db: DB,
-  input: { email: string; password: string }
+  input: { email: string; password: string; locale?: 'fr' | 'en' }
 ): Promise<CreateFirstAdminResult> {
   if (!hasNoUsers(db)) return { ok: false, reason: 'already-setup' };
   const email = normalizeEmail(input.email);
@@ -48,6 +48,7 @@ export async function createFirstAdmin(
 
   const hash = await hashPassword(password);
   const t = Math.floor(Date.now() / 1000);
+  const locale = input.locale ?? 'fr';
 
   // SQLite serialises the transaction so two parallel POSTs cannot both
   // create a user. The hasNoUsers re-check inside protects against a race
@@ -55,7 +56,7 @@ export async function createFirstAdmin(
   return db.transaction((tx) => {
     if (!hasNoUsers(tx)) return { ok: false, reason: 'already-setup' as const };
     const row = tx.insert(schema.users).values({
-      email, passwordHash: hash, isAdmin: 1, createdAt: t, updatedAt: t
+      email, passwordHash: hash, isAdmin: 1, locale, createdAt: t, updatedAt: t
     }).returning().all()[0];
     return { ok: true, userId: row.id };
   });
