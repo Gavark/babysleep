@@ -1,1 +1,19 @@
-{}
+{
+  "$schema": "https://inlang.com/schema/inlang-message-format",
+  "common.btn.save": "Save",
+  "common.btn.cancel": "Cancel",
+  "common.btn.delete": "Delete",
+  "common.btn.add": "Add",
+  "common.btn.back": "Back",
+  "common.btn.confirm": "Confirm",
+  "common.btn.update": "Update",
+  "common.btn.create": "Create",
+  "common.btn.disconnect": "Disconnect",
+  "common.btn.filter": "Filter",
+  "common.btn.previous": "‹ Previous",
+  "common.btn.next": "Next ›",
+  "common.field.required": "This field is required.",
+  "common.error.network": "Network error, please retry.",
+  "common.error.generic": "Something went wrong.",
+  "common.label.optional": "(optional)"
+}
