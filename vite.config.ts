@@ -10,7 +10,12 @@ export default defineConfig({
       outdir: './src/paraglide',
       // Don't auto-emit src/paraglide/.gitignore — we commit the generated dir
       // (stable IDE types + CI works without a pre-step).
-      emitGitIgnore: false
+      emitGitIgnore: false,
+      // Pin the output layout so `npm run dev` and `npm run paraglide` (CLI)
+      // produce byte-identical files. Without this, the plugin's dev mode
+      // can drift to `locale-modules` and create noisy diffs in src/paraglide
+      // every time a contributor starts the dev server.
+      outputStructure: 'message-modules'
     }),
     sveltekit(),
     SvelteKitPWA({
