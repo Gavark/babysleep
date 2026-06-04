@@ -14,7 +14,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx src/lib/server/db/migrate.ts",
     "reset-password": "tsx scripts/reset-password.ts",
-    "start": "node build/index.js"
+    "start": "node build/index.js",
+    "paraglide": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide --no-emit-git-ignore"
   },
   "dependencies": {
     "@fontsource-variable/nunito": "^5.2.7",

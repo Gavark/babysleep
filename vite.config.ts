@@ -1,9 +1,17 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vitest/config';
 import { SvelteKitPWA } from '@vite-pwa/sveltekit';
+import { paraglideVitePlugin } from '@inlang/paraglide-js';
 
 export default defineConfig({
   plugins: [
+    paraglideVitePlugin({
+      project: './project.inlang',
+      outdir: './src/paraglide',
+      // Don't auto-emit src/paraglide/.gitignore — we commit the generated dir
+      // (stable IDE types + CI works without a pre-step).
+      emitGitIgnore: false
+    }),
     sveltekit(),
     SvelteKitPWA({
       registerType: 'autoUpdate',
