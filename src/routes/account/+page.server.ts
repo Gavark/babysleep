@@ -3,6 +3,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { getDb, schema } from '$lib/server/db';
 import { listSessionsForUser } from '$lib/server/auth/session';
 import { isValidTimezone } from '$lib/tz';
+import { SUPPORTED_LOCALES, type Locale } from '$lib/server/auth/locale';
 import { eq } from 'drizzle-orm';
 
 export const load: PageServerLoad = ({ locals }) => {
@@ -18,7 +19,8 @@ export const load: PageServerLoad = ({ locals }) => {
   return {
     account: { email: locals.user.email, isAdmin: !!locals.user.isAdmin },
     sessions,
-    userTimezone: locals.user.timezone ?? 'Europe/Paris'
+    userTimezone: locals.user.timezone ?? 'Europe/Paris',
+    userLocale: locals.user.locale
   };
 };
 
@@ -55,5 +57,29 @@ export const actions: Actions = {
     const t = Math.floor(Date.now() / 1000);
     db.update(schema.users).set({ timezone: tz, updatedAt: t }).where(eq(schema.users.id, locals.user.id)).run();
     return { tzSuccess: 'Fuseau horaire mis à jour.' };
+  },
+
+  updateLocale: async ({ request, locals, cookies }) => {
+    if (!locals.user) throw redirect(303, '/login');
+    const form = await request.formData();
+    const value = String(form.get('locale') ?? '').trim();
+    if (!(SUPPORTED_LOCALES as readonly string[]).includes(value)) {
+      return fail(400, { localeError: 'Locale invalide.' });
+    }
+    const typed = value as Locale;
+    const { db } = getDb();
+    const t = Math.floor(Date.now() / 1000);
+    db.update(schema.users)
+      .set({ locale: typed, updatedAt: t })
+      .where(eq(schema.users.id, locals.user.id))
+      .run();
+    cookies.set('locale', typed, {
+      path: '/',
+      httpOnly: false,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 60 * 60 * 24 * 365
+    });
+    return { localeSuccess: 'Langue mise à jour.' };
   }
 };

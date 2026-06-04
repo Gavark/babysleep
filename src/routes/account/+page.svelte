@@ -28,6 +28,20 @@
   <button type="submit" class="btn btn-primary"><FloppyDisk size={16} /> Enregistrer</button>
 </form>
 
+<h2>Langue</h2>
+{#if form?.localeError}<p class="error" role="alert">{form.localeError}</p>{/if}
+{#if form?.localeSuccess}<p class="ok">{form.localeSuccess}</p>{/if}
+<form method="POST" action="?/updateLocale" use:enhance class="card tz-form">
+  <label class="field">
+    <span class="field-label">Langue de l'interface</span>
+    <select class="field-select" name="locale" autocomplete="off">
+      <option value="fr" selected={data.userLocale === 'fr'}>Français</option>
+      <option value="en" selected={data.userLocale === 'en'}>English</option>
+    </select>
+  </label>
+  <button type="submit" class="btn btn-primary"><FloppyDisk size={16} /> Enregistrer</button>
+</form>
+
 <h2>Changer mon mot de passe</h2>
 <form method="POST" action="?/changePassword" use:enhance class="card pw-form">
   <label class="field"><span class="field-label">Mot de passe actuel</span>
