@@ -14,6 +14,7 @@
   import Pause from 'phosphor-svelte/lib/Pause';
   import Plus from 'phosphor-svelte/lib/Plus';
   import X from 'phosphor-svelte/lib/X';
+  import * as m from '$paraglide/messages';
 
   type Props = {
     wakeTime: string;
@@ -70,7 +71,7 @@
     submitting = true;
     const hhmm = formatNowHHMM(effectiveTz);
     onNapStart(emptySlot, hhmm);
-    showToast(`Sieste ${emptySlot + 1} démarrée à ${hhmm}`);
+    showToast(m.wake_timer_toast_nap_started({ n: emptySlot + 1, at: hhmm }));
     setTimeout(() => { submitting = false; }, 2000);
   }
 
@@ -80,7 +81,7 @@
     submitting = true;
     const hhmm = formatNowHHMM(effectiveTz);
     onNapEnd(progressSlot, hhmm);
-    showToast(`Sieste ${progressSlot + 1} terminée à ${hhmm}`);
+    showToast(m.wake_timer_toast_nap_ended({ n: progressSlot + 1, at: hhmm }));
     setTimeout(() => { submitting = false; }, 2000);
   }
 
@@ -95,32 +96,32 @@
     if (!Number.isFinite(n) || n <= 0 || n > 600) return;
     submitting = true;
     onAddPause(progressSlot, n);
-    showToast(`+${n} min de pause sur sieste ${progressSlot + 1}`);
+    showToast(m.wake_timer_toast_pause_added({ min: n, n: progressSlot + 1 }));
     pauseOpen = false;
     pauseInputMin = 10;
     setTimeout(() => { submitting = false; }, 2000);
   }
 </script>
 
-<section class="wake-timer-card" aria-label="Timer fenêtre d'éveil">
+<section class="wake-timer-card" aria-label={m.wake_timer_aria_label()}>
   {#if timerState.kind === 'empty'}
     <p class="msg-empty">
-      Saisis l'heure de réveil pour démarrer le suivi.
+      {m.wake_timer_empty()}
     </p>
   {:else if timerState.kind === 'awake'}
-    <div class="row-label"><Sun size={18} weight="duotone" /> Éveillé depuis</div>
+    <div class="row-label"><Sun size={18} weight="duotone" /> {m.wake_timer_awake_since()}</div>
     <div class="counter primary">{formatDuration(timerState.elapsedMin)}</div>
     {#if emptySlot === null}
       <div class="row-sub muted">
-        <Moon size={14} weight="duotone" /> En attente du coucher
+        <Moon size={14} weight="duotone" /> {m.wake_timer_waiting_bedtime()}
       </div>
     {:else if timerState.overWindow}
       <div class="row-sub danger">
-        <Warning size={14} weight="fill" /> Fenêtre dépassée de {formatDuration(-timerState.remainingMin)}
+        <Warning size={14} weight="fill" /> {m.wake_timer_window_exceeded({ duration: formatDuration(-timerState.remainingMin) })}
       </div>
     {:else}
       <div class="row-sub muted">
-        Prochaine sieste dans {formatDuration(timerState.remainingMin)} (à {timerState.nextNapAt})
+        {m.wake_timer_next_nap_in({ remaining: formatDuration(timerState.remainingMin), at: timerState.nextNapAt })}
       </div>
     {/if}
     {#if emptySlot !== null}
@@ -129,18 +130,18 @@
         class="btn btn-secondary action-btn"
         onclick={handleStart}
         disabled={submitting}
-        title="Démarrer une sieste maintenant"
+        title={m.wake_timer_start_nap_title()}
       >
-        <Play size={16} weight="fill" /> Démarrer sieste maintenant
+        <Play size={16} weight="fill" /> {m.wake_timer_start_nap()}
       </button>
     {/if}
   {:else if timerState.kind === 'napping'}
-    <div class="row-label honey"><Cloud size={18} weight="duotone" /> En sieste depuis</div>
+    <div class="row-label honey"><Cloud size={18} weight="duotone" /> {m.wake_timer_napping_since()}</div>
     <div class="counter honey">{formatDuration(timerState.elapsedMin)}</div>
     <div class="row-sub muted">
-      Sieste {timerState.napIdx + 1}
+      {m.wake_timer_napping_slot({ n: timerState.napIdx + 1 })}
       {#if timerState.pauseMin > 0}
-        · dont {formatDuration(timerState.pauseMin)} de pause
+        · {m.wake_timer_napping_pause_suffix({ duration: formatDuration(timerState.pauseMin) })}
       {/if}
     </div>
     <div class="nap-actions">
@@ -150,7 +151,7 @@
         onclick={handleEnd}
         disabled={submitting}
       >
-        <Check size={16} weight="bold" /> Terminer sieste maintenant
+        <Check size={16} weight="bold" /> {m.wake_timer_end_nap()}
       </button>
       {#if onAddPause}
         {#if !pauseOpen}
@@ -159,14 +160,14 @@
             class="btn btn-secondary btn-sm pause-trigger"
             onclick={() => { pauseOpen = true; }}
             disabled={submitting}
-            title="Ajouter du temps de pause (réveil court pendant la sieste)"
+            title={m.wake_timer_add_pause_title()}
           >
-            <Pause size={14} weight="fill" /> Ajouter une pause
+            <Pause size={14} weight="fill" /> {m.wake_timer_add_pause()}
           </button>
         {:else}
           <div class="pause-inline">
             <label class="pause-inline-label" for="pause-min-input">
-              <Pause size={14} weight="fill" /> Pause (min) :
+              <Pause size={14} weight="fill" /> {m.wake_timer_pause_label()}
             </label>
             <input
               id="pause-min-input"
@@ -179,16 +180,16 @@
               class="btn btn-primary btn-sm"
               onclick={handleAddPauseSubmit}
               disabled={submitting}
-              title="Ajouter cette pause à la sieste en cours"
+              title={m.wake_timer_pause_add_title()}
             >
-              <Plus size={14} weight="bold" /> Ajouter
+              <Plus size={14} weight="bold" /> {m.wake_timer_pause_add_btn()}
             </button>
             <button
               type="button"
               class="btn btn-secondary btn-sm pause-cancel"
               onclick={() => { pauseOpen = false; }}
-              aria-label="Annuler"
-              title="Annuler"
+              aria-label={m.wake_timer_pause_cancel_label()}
+              title={m.wake_timer_pause_cancel_label()}
             >
               <X size={14} />
             </button>
@@ -197,7 +198,7 @@
       {/if}
     </div>
   {:else if timerState.kind === 'bedtime'}
-    <div class="row-label night"><Moon size={18} weight="duotone" /> Couché à {timerState.bedtime} · bonne nuit 🌙</div>
+    <div class="row-label night"><Moon size={18} weight="duotone" /> {m.wake_timer_bedtime_at({ time: timerState.bedtime })}</div>
   {/if}
 
   {#if toastVisible}

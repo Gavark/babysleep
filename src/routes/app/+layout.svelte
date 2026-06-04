@@ -6,6 +6,7 @@
   import UserCircle from 'phosphor-svelte/lib/UserCircle';
   import Envelope from 'phosphor-svelte/lib/Envelope';
   import ArrowLeft from 'phosphor-svelte/lib/ArrowLeft';
+  import * as m from '$paraglide/messages';
 
   let { children, data } = $props();
 
@@ -27,14 +28,14 @@
   </a>
   <div class="header-right">
     <nav class="nav-row">
-      <a class="nav-pill" href="/app/babies">Bébés</a>
+      <a class="nav-pill" href="/app/babies">{m.app_nav_babies()}</a>
       {#if data.isAdmin}
         <a class="nav-pill" href="/admin/invitations">
-          <Envelope size={14} /> Invitations
+          <Envelope size={14} /> {m.app_nav_invitations()}
         </a>
       {/if}
       <a class="nav-pill" href="/account">
-        <UserCircle size={14} /> Compte
+        <UserCircle size={14} /> {m.app_nav_account()}
       </a>
     </nav>
     <LocaleSwitcher current={data.locale} />
@@ -49,13 +50,13 @@
 </div>
 
 {#if data.currentBabyId}
-  <p class="back"><a href="/app/babies"><ArrowLeft size={14} /> Tous les bébés</a></p>
+  <p class="back"><a href="/app/babies"><ArrowLeft size={14} /> {m.app_nav_all_babies()}</a></p>
   <nav class="sub-nav">
-    <a class={subActive('today')}    href="/app/babies/{data.currentBabyId}/today">Aujourd'hui</a>
-    <a class={subActive('history')}  href="/app/babies/{data.currentBabyId}/history">Historique</a>
-    <a class={subActive('calendar')} href="/app/babies/{data.currentBabyId}/calendar">Calendrier</a>
-    <a class={subActive('stats')}    href="/app/babies/{data.currentBabyId}/stats">Stats</a>
-    <a class={subActive('edit')}     href="/app/babies/{data.currentBabyId}">Éditer</a>
+    <a class={subActive('today')}    href="/app/babies/{data.currentBabyId}/today">{m.app_nav_today()}</a>
+    <a class={subActive('history')}  href="/app/babies/{data.currentBabyId}/history">{m.app_nav_history()}</a>
+    <a class={subActive('calendar')} href="/app/babies/{data.currentBabyId}/calendar">{m.app_nav_calendar()}</a>
+    <a class={subActive('stats')}    href="/app/babies/{data.currentBabyId}/stats">{m.app_nav_stats()}</a>
+    <a class={subActive('edit')}     href="/app/babies/{data.currentBabyId}">{m.app_nav_edit()}</a>
   </nav>
 {/if}
 

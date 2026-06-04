@@ -2,6 +2,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { getDb } from '$lib/server/db';
 import { createBaby, listBabies } from '$lib/server/babies';
+import * as m from '$paraglide/messages';
 
 export const load: PageServerLoad = ({ locals }) => {
   if (!locals.user) throw redirect(303, '/login');
@@ -20,7 +21,7 @@ export const actions: Actions = {
     const desiredWakeRaw = String(form.get('desired_wake') ?? '').trim();
     const desiredWakeTime = desiredWakeRaw === '' ? null : desiredWakeRaw;
     if (!name || !/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) {
-      return fail(400, { error: 'Nom et date de naissance requis (YYYY-MM-DD).' });
+      return fail(400, { error: m.babies_form_error_name_required() });
     }
     try {
       const { db } = getDb();
@@ -28,7 +29,7 @@ export const actions: Actions = {
       throw redirect(303, `/app/babies/${baby.id}/today`);
     } catch (e) {
       if ((e as any)?.status === 303) throw e;
-      return fail(400, { error: 'Échec de création.' });
+      return fail(400, { error: m.babies_form_error_create_failed() });
     }
   }
 };

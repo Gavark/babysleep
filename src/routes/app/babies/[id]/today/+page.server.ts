@@ -7,6 +7,7 @@ import { ageInMonths } from '$lib/sleep-calc';
 import { paramsForAge } from '$lib/age-params';
 import { isValidHHMM } from '$lib/time';
 import { todayISOInTZ, resolveTimezone, isValidTimezone } from '$lib/tz';
+import * as m from '$paraglide/messages';
 
 function addDays(iso: string, n: number): string {
   const [y, m, d] = iso.split('-').map(Number);
@@ -49,7 +50,7 @@ export const actions: Actions = {
     for (const f of fields) {
       const v = String(form.get(f) ?? '').trim();
       if (v === '') patch[camel(f)] = null;
-      else if (!isValidHHMM(v)) return fail(400, { error: `Heure invalide (${f}): ${v}` });
+      else if (!isValidHHMM(v)) return fail(400, { error: m.today_entry_invalid_time({ field: f, value: v }) });
       else patch[camel(f)] = v;
     }
     const pauseFields = ['nap1_pause_min', 'nap2_pause_min', 'nap3_pause_min', 'nap4_pause_min'] as const;
@@ -57,7 +58,7 @@ export const actions: Actions = {
       const raw = String(form.get(f) ?? '').trim();
       if (raw === '') { patch[camel(f)] = null; continue; }
       const n = Number(raw);
-      if (!Number.isFinite(n) || n < 0 || n > 600) return fail(400, { error: `Pause invalide (${f}): ${raw}` });
+      if (!Number.isFinite(n) || n < 0 || n > 600) return fail(400, { error: m.today_entry_invalid_pause({ field: f, value: raw }) });
       patch[camel(f)] = Math.round(n) || null;
     }
     const notes = String(form.get('notes') ?? '').trim();
@@ -72,7 +73,7 @@ export const actions: Actions = {
     const effectiveTz = resolveTimezone(entryTz, baby.timezone, userTimezone);
     const date = String(form.get('date') ?? todayISOInTZ(effectiveTz));
     upsertEntry(db, baby.id, date, patch as any);
-    return { success: 'Journée enregistrée.' };
+    return { success: m.today_entry_saved() };
   }
 };
 
