@@ -35,3 +35,44 @@ describe('parseAcceptLanguage', () => {
     expect(parseAcceptLanguage(';q=0.9,en', SUPPORTED, 'fr')).toBe('en');
   });
 });
+
+import { resolveLocale } from '../../src/lib/server/auth/locale';
+
+type Input = {
+  urlLang?: string | null;
+  cookie?: string | null;
+  userLocale?: string | null;
+  acceptLanguage?: string | null;
+};
+
+function r(input: Input) {
+  return resolveLocale({
+    urlLang: input.urlLang ?? null,
+    cookieLocale: input.cookie ?? null,
+    userLocale: input.userLocale ?? null,
+    acceptLanguage: input.acceptLanguage ?? null
+  });
+}
+
+describe('resolveLocale fallback chain', () => {
+  it('URL ?lang wins over everything', () => {
+    expect(r({ urlLang: 'en', cookie: 'fr', userLocale: 'fr', acceptLanguage: 'fr' })).toBe('en');
+  });
+  it('user.locale wins over cookie when both differ', () => {
+    expect(r({ cookie: 'fr', userLocale: 'en' })).toBe('en');
+  });
+  it('cookie used when user.locale is null', () => {
+    expect(r({ cookie: 'en', userLocale: null })).toBe('en');
+  });
+  it('Accept-Language used when no cookie and no user.locale', () => {
+    expect(r({ acceptLanguage: 'en-US,en;q=0.9,fr;q=0.7' })).toBe('en');
+  });
+  it('fr fallback when nothing matches', () => {
+    expect(r({ acceptLanguage: 'de-DE' })).toBe('fr');
+    expect(r({})).toBe('fr');
+  });
+  it('ignores unsupported values in any layer', () => {
+    expect(r({ urlLang: 'zh', cookie: 'fr' })).toBe('fr');
+    expect(r({ userLocale: 'pt-BR', cookie: 'en' })).toBe('en');
+  });
+});

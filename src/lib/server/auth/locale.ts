@@ -29,3 +29,38 @@ export function parseAcceptLanguage<L extends string>(
   }
   return fallback;
 }
+
+export type ResolveInput = {
+  urlLang: string | null;
+  cookieLocale: string | null;
+  userLocale: string | null;
+  acceptLanguage: string | null;
+};
+
+function asSupported(v: string | null | undefined): Locale | null {
+  if (!v) return null;
+  return (SUPPORTED_LOCALES as readonly string[]).includes(v) ? (v as Locale) : null;
+}
+
+/**
+ * 5-step fallback chain — first match wins:
+ *   1. ?lang= URL param (one-shot override, useful for sharing/testing)
+ *   2. users.locale (authoritative when logged in)
+ *   3. `locale` cookie (set by the switcher)
+ *   4. Accept-Language header
+ *   5. 'fr' fallback
+ *
+ * Order rationale: user.locale comes BEFORE cookie so a logged-in
+ * user's server-side preference can't be silently overridden by a
+ * stale cookie from another browser or session. The caller is
+ * responsible for re-setting the cookie when the resolved locale
+ * doesn't match what's already there.
+ */
+export function resolveLocale(input: ResolveInput): Locale {
+  return (
+    asSupported(input.urlLang) ??
+    asSupported(input.userLocale) ??
+    asSupported(input.cookieLocale) ??
+    parseAcceptLanguage(input.acceptLanguage, SUPPORTED_LOCALES, 'fr')
+  );
+}
