@@ -7,6 +7,7 @@
   import CheckCircle from 'phosphor-svelte/lib/CheckCircle';
   import MinusCircle from 'phosphor-svelte/lib/MinusCircle';
   import XCircle from 'phosphor-svelte/lib/XCircle';
+  import * as m from '$paraglide/messages';
 
   type Props = {
     metrics: DayMetrics;
@@ -33,21 +34,22 @@
     });
   }
 
-  function buildAriaLabel(m: DayMetrics, day: string): string {
-    if (!m.hasAnyData) return `${day} — aucune donnée`;
-    const parts = [day, `${formatDuration(m.totalSleepMin)} de sommeil`];
-    if (m.isComplete) parts.push(`${Math.round(m.ratio * 100)} pourcent du quota recommandé`);
-    else parts.push('journée incomplète');
+  function buildAriaLabel(metrics: DayMetrics, day: string): string {
+    if (!metrics.hasAnyData) return `${day} — ${m.calendar_cell_no_data()}`;
+    const parts = [day, m.calendar_cell_total_sleep({ duration: formatDuration(metrics.totalSleepMin) })];
+    if (metrics.isComplete) parts.push(m.calendar_cell_pct_of_quota({ pct: Math.round(metrics.ratio * 100) }));
+    else parts.push(m.calendar_cell_incomplete());
     return parts.join(' — ');
   }
 
-  function buildTooltip(m: DayMetrics, day: string, pctVal: number): string {
-    if (!m.hasAnyData) return `${day} — aucune donnée`;
+  function buildTooltip(metrics: DayMetrics, day: string, pctVal: number): string {
+    if (!metrics.hasAnyData) return `${day} — ${m.calendar_cell_no_data()}`;
     const bits: string[] = [day];
-    if (m.wakeTime) bits.push(`Lever ${m.wakeTime}`);
-    bits.push(`${m.napCount} sieste${m.napCount > 1 ? 's' : ''}`);
-    if (m.bedtime) bits.push(`Coucher ${m.bedtime}`);
-    bits.push(`Total ${formatDuration(m.totalSleepMin)}${m.isComplete ? ` (${pctVal}% du quota)` : ''}`);
+    if (metrics.wakeTime) bits.push(m.calendar_cell_wake_prefix({ time: metrics.wakeTime }));
+    bits.push(m.today_page_meta_naps({ count: metrics.napCount }));
+    if (metrics.bedtime) bits.push(m.calendar_cell_bedtime_prefix({ time: metrics.bedtime }));
+    const totalPart = m.calendar_cell_total_prefix({ duration: formatDuration(metrics.totalSleepMin) });
+    bits.push(`${totalPart}${metrics.isComplete ? m.calendar_cell_pct_suffix({ pct: pctVal }) : ''}`);
     return bits.join(' · ');
   }
 </script>

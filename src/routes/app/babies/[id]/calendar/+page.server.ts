@@ -5,6 +5,7 @@ import { getBabyForUser } from '$lib/server/babies';
 import { listEntriesInRange, setNightRating, type NightRating } from '$lib/server/sleep-entries';
 import { buildMonthGrid, computeDayMetrics, type DayMetrics } from '$lib/calendar';
 import { resolveTimezone, todayISOInTZ } from '$lib/tz';
+import * as m from '$paraglide/messages';
 
 function parseMonth(raw: string | null, todayISO: string): { year: number; month: number } {
   if (raw && /^\d{4}-\d{2}$/.test(raw)) {
@@ -62,12 +63,12 @@ export const actions: Actions = {
     const date = String(form.get('date') ?? '');
     const ratingRaw = String(form.get('rating') ?? '');
 
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return fail(400, { error: 'date invalide' });
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return fail(400, { error: m.day_invalid_date() });
 
     let rating: NightRating | null;
     if (ratingRaw === '') rating = null;
     else if (ratingRaw === 'good' || ratingRaw === 'medium' || ratingRaw === 'bad') rating = ratingRaw;
-    else return fail(400, { error: 'note invalide' });
+    else return fail(400, { error: m.calendar_rate_invalid_rating() });
 
     setNightRating(db, baby.id, date, rating);
     return { success: true };

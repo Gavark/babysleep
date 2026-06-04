@@ -8,6 +8,7 @@
   import { ageInMonths, formatDuration } from '$lib/sleep-calc';
   import { paramsForAge } from '$lib/age-params';
   import { formatDate } from '$lib/format';
+  import * as m from '$paraglide/messages';
 
   let { data } = $props();
 
@@ -57,13 +58,13 @@
 
 <svelte:window on:keydown={onKeydown} />
 
-<h1>Calendrier — {data.baby.name}</h1>
+<h1>{m.calendar_title({ name: data.baby.name })}</h1>
 
-<nav class="cal-nav" aria-label="Navigation mensuelle">
-  <a class="btn btn-ghost btn-sm" href={prevHref} aria-label="Mois précédent"><CaretLeft size={16} /></a>
+<nav class="cal-nav" aria-label={m.calendar_nav_label()}>
+  <a class="btn btn-ghost btn-sm" href={prevHref} aria-label={m.calendar_month_previous()}><CaretLeft size={16} /></a>
   <span class="month">{monthLabel}</span>
-  <a class="btn btn-ghost btn-sm" href={nextHref} aria-label="Mois suivant"><CaretRight size={16} /></a>
-  <a class="btn btn-secondary btn-sm today-btn" href={todayHref}>Aujourd'hui</a>
+  <a class="btn btn-ghost btn-sm" href={nextHref} aria-label={m.calendar_month_next()}><CaretRight size={16} /></a>
+  <a class="btn btn-secondary btn-sm today-btn" href={todayHref}>{m.app_nav_today()}</a>
 </nav>
 
 <div class="cal-desktop"><CalendarGrid cells={data.cells} babyId={data.baby.id} locale={data.locale} onSelect={(d) => pickerDate = d} /></div>
@@ -79,27 +80,30 @@
   />
 {/if}
 
-<footer class="cal-legend" aria-label="Légende">
+<footer class="cal-legend" aria-label={m.calendar_legend_label()}>
   <p class="legend-quota">
-    Quota recommandé pour <strong>{ageMonths} mois</strong> :
-    <strong>{formatDuration(quotaTotalMin)}</strong>
-    ({formatDuration(quotaDayMin)} siestes + {formatDuration(quotaNightMin)} nuit)
+    {m.calendar_legend_quota({
+      months: ageMonths,
+      total: formatDuration(quotaTotalMin),
+      day: formatDuration(quotaDayMin),
+      night: formatDuration(quotaNightMin)
+    })}
   </p>
 
-  <p class="legend-label">Couleur du jour = % du quota de sommeil atteint</p>
+  <p class="legend-label">{m.calendar_legend_heatmap_label()}</p>
   <div class="legend-row">
-    <span class="legend-item"><span class="swatch heat-good"></span>Bon (≥ 90%)</span>
-    <span class="legend-item"><span class="swatch heat-ok"></span>Correct (70-90%)</span>
-    <span class="legend-item"><span class="swatch heat-meh"></span>Faible (50-70%)</span>
-    <span class="legend-item"><span class="swatch heat-bad"></span>Très faible (&lt; 50%)</span>
-    <span class="legend-item"><span class="swatch heat-none"></span>Aucune donnée</span>
-    <span class="legend-item"><span class="swatch heat-partial"></span>Journée incomplète (…)</span>
+    <span class="legend-item"><span class="swatch heat-good"></span>{m.calendar_heat_good()}</span>
+    <span class="legend-item"><span class="swatch heat-ok"></span>{m.calendar_heat_ok()}</span>
+    <span class="legend-item"><span class="swatch heat-meh"></span>{m.calendar_heat_meh()}</span>
+    <span class="legend-item"><span class="swatch heat-bad"></span>{m.calendar_heat_bad()}</span>
+    <span class="legend-item"><span class="swatch heat-none"></span>{m.calendar_heat_none()}</span>
+    <span class="legend-item"><span class="swatch heat-partial"></span>{m.calendar_heat_partial()}</span>
   </div>
 
-  <p class="legend-label">Segments dans la barre 24h</p>
+  <p class="legend-label">{m.calendar_legend_segments_label()}</p>
   <div class="legend-row">
-    <span class="legend-item"><span class="swatch seg-nap"></span>Sieste</span>
-    <span class="legend-item"><span class="swatch seg-night"></span>Nuit (00→lever et coucher→24)</span>
+    <span class="legend-item"><span class="swatch seg-nap"></span>{m.calendar_seg_nap()}</span>
+    <span class="legend-item"><span class="swatch seg-night"></span>{m.calendar_seg_night()}</span>
   </div>
 </footer>
 

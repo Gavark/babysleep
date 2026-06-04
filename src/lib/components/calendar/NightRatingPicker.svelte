@@ -9,6 +9,7 @@
   import type { NightRating } from '$lib/calendar';
   import type { Locale } from '$lib/server/auth/locale';
   import { formatDate } from '$lib/format';
+  import * as m from '$paraglide/messages';
 
   type Props = {
     date: string;
@@ -24,8 +25,8 @@
   const formattedDate = $derived(formatLongDay(date));
 
   function formatLongDay(iso: string): string {
-    const [y, m, d] = iso.split('-').map(Number);
-    return formatDate(new Date(Date.UTC(y, m - 1, d)), locale, {
+    const [y, mo, d] = iso.split('-').map(Number);
+    return formatDate(new Date(Date.UTC(y, mo - 1, d)), locale, {
       weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC'
     });
   }
@@ -43,9 +44,9 @@
 <div class="backdrop" onclick={onBackdropClick} role="presentation">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="picker-title">
     <header>
-      <h2 id="picker-title">Note de la nuit</h2>
+      <h2 id="picker-title">{m.calendar_picker_title()}</h2>
       <p class="date">{formattedDate}</p>
-      <button type="button" class="close" onclick={onClose} aria-label="Fermer">
+      <button type="button" class="close" onclick={onClose} aria-label={m.common_btn_close()}>
         <X size={18} weight="bold" />
       </button>
     </header>
@@ -68,34 +69,34 @@
           class="opt opt-good {currentRating === 'good' ? 'active' : ''}"
           disabled={submitting}>
           <CheckCircle size={32} weight="fill" />
-          <span>Bonne</span>
+          <span>{m.calendar_picker_opt_good()}</span>
         </button>
         <button type="submit" name="rating" value="medium"
           class="opt opt-medium {currentRating === 'medium' ? 'active' : ''}"
           disabled={submitting}>
           <MinusCircle size={32} weight="fill" />
-          <span>Moyenne</span>
+          <span>{m.calendar_picker_opt_medium()}</span>
         </button>
         <button type="submit" name="rating" value="bad"
           class="opt opt-bad {currentRating === 'bad' ? 'active' : ''}"
           disabled={submitting}>
           <XCircle size={32} weight="fill" />
-          <span>Mauvaise</span>
+          <span>{m.calendar_picker_opt_bad()}</span>
         </button>
       </div>
 
       {#if currentRating}
         <button type="submit" name="rating" value="" class="btn btn-ghost btn-sm clear-btn" disabled={submitting}>
-          <Eraser size={14} /> Effacer la note
+          <Eraser size={14} /> {m.calendar_picker_clear()}
         </button>
       {/if}
     </form>
 
     <footer>
       <a class="btn btn-secondary btn-sm" href="/app/babies/{babyId}/day/{date}">
-        <PencilSimple size={14} /> Éditer la journée complète
+        <PencilSimple size={14} /> {m.calendar_picker_edit_day()}
       </a>
-      <button type="button" class="btn btn-ghost btn-sm" onclick={onClose}>Fermer</button>
+      <button type="button" class="btn btn-ghost btn-sm" onclick={onClose}>{m.common_btn_close()}</button>
     </footer>
   </div>
 </div>

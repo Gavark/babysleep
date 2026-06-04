@@ -2,6 +2,7 @@
   import type { DayMetrics } from '$lib/calendar';
   import type { Locale } from '$lib/server/auth/locale';
   import DayCell from './DayCell.svelte';
+  import * as m from '$paraglide/messages';
 
   type Props = {
     cells: DayMetrics[];
@@ -16,16 +17,16 @@
   );
 </script>
 
-<table class="cal-grid" aria-label="Calendrier mensuel">
+<table class="cal-grid" aria-label={m.calendar_grid_label()}>
   <thead>
     <tr>
-      <th scope="col">Lun</th>
-      <th scope="col">Mar</th>
-      <th scope="col">Mer</th>
-      <th scope="col">Jeu</th>
-      <th scope="col">Ven</th>
-      <th scope="col">Sam</th>
-      <th scope="col">Dim</th>
+      <th scope="col">{m.calendar_weekday_mon_short()}</th>
+      <th scope="col">{m.calendar_weekday_tue_short()}</th>
+      <th scope="col">{m.calendar_weekday_wed_short()}</th>
+      <th scope="col">{m.calendar_weekday_thu_short()}</th>
+      <th scope="col">{m.calendar_weekday_fri_short()}</th>
+      <th scope="col">{m.calendar_weekday_sat_short()}</th>
+      <th scope="col">{m.calendar_weekday_sun_short()}</th>
     </tr>
   </thead>
   <tbody>

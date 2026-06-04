@@ -2,6 +2,7 @@
   import type { DayMetrics } from '$lib/calendar';
   import type { Locale } from '$lib/server/auth/locale';
   import DayCell from './DayCell.svelte';
+  import * as m from '$paraglide/messages';
 
   type Props = {
     cells: DayMetrics[];
@@ -14,7 +15,7 @@
   const inMonthCells = $derived(cells.filter((c) => c.inMonth));
 </script>
 
-<ul class="cal-strip" aria-label="Liste des journées du mois">
+<ul class="cal-strip" aria-label={m.calendar_strip_label()}>
   {#each inMonthCells as cell (cell.date)}
     <li><DayCell metrics={cell} {babyId} mode="strip" {locale} {onSelect} /></li>
   {/each}
