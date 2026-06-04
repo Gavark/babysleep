@@ -4,6 +4,9 @@ import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
 
 export default defineConfig({
+  // Plugin order matters: paraglideVitePlugin must run before sveltekit() so
+  // its codegen output in src/paraglide/ is in place when SvelteKit scans the
+  // source tree. Reordering breaks $paraglide imports at build time.
   plugins: [
     paraglideVitePlugin({
       project: './project.inlang',
