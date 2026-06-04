@@ -23,4 +23,15 @@ describe('parseAcceptLanguage', () => {
   it('tolerates malformed q-values and extra whitespace', () => {
     expect(parseAcceptLanguage(' en ; q=abc , fr ', SUPPORTED, 'fr')).toBe('en');
   });
+  it('treats wildcard "*" as unsupported and falls back', () => {
+    // RFC 9110 §12.5.4 says `*` means "any language acceptable", but we
+    // prefer the caller's explicit fallback over picking a supported one
+    // arbitrarily — pinned here so the choice is intentional and stable.
+    expect(parseAcceptLanguage('*', SUPPORTED, 'fr')).toBe('fr');
+    expect(parseAcceptLanguage('de,*;q=0.5', SUPPORTED, 'fr')).toBe('fr');
+    expect(parseAcceptLanguage('*,en', SUPPORTED, 'fr')).toBe('en');
+  });
+  it('skips semicolon-only entries without crashing', () => {
+    expect(parseAcceptLanguage(';q=0.9,en', SUPPORTED, 'fr')).toBe('en');
+  });
 });
