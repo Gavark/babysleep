@@ -1,19 +1,19 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
   import Sparkle from 'phosphor-svelte/lib/Sparkle';
+  import * as m from '$paraglide/messages';
   let { form } = $props();
 </script>
 
-<svelte:head><title>Bienvenue — BabySleep</title></svelte:head>
+<svelte:head><title>{m.auth_setup_page_title()}</title></svelte:head>
 
 <main class="setup">
   <div class="card">
     <header>
       <Sparkle size={24} weight="duotone" />
-      <h1>Bienvenue sur BabySleep</h1>
+      <h1>{m.auth_setup_title()}</h1>
       <p class="subtitle">
-        Crée le premier compte administrateur. C'est lui qui pourra ensuite générer
-        des invitations pour les autres utilisateurs.
+        {m.auth_setup_intro()}
       </p>
     </header>
 
@@ -21,18 +21,18 @@
 
     <form method="POST" use:enhance autocomplete="off">
       <label class="field">
-        <span class="field-label">Email</span>
+        <span class="field-label">{m.auth_email_label()}</span>
         <input class="field-input" name="email" type="email" required value={form?.email ?? ''} autocomplete="username" />
       </label>
       <label class="field">
-        <span class="field-label">Mot de passe (≥ 10 caractères)</span>
+        <span class="field-label">{m.auth_password_label_with_min()}</span>
         <input class="field-input" name="password" type="password" required minlength="10" autocomplete="new-password" />
       </label>
       <label class="field">
-        <span class="field-label">Confirmer le mot de passe</span>
+        <span class="field-label">{m.auth_setup_confirm_label()}</span>
         <input class="field-input" name="confirm" type="password" required minlength="10" autocomplete="new-password" />
       </label>
-      <button type="submit" class="btn btn-primary btn-block">Créer le compte</button>
+      <button type="submit" class="btn btn-primary btn-block">{m.auth_setup_submit()}</button>
     </form>
   </div>
 </main>

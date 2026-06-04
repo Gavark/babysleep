@@ -4,6 +4,7 @@ import { getDb } from '$lib/server/db';
 import { findUsableInvitation } from '$lib/server/auth/invitations';
 import { parseAcceptLanguage, SUPPORTED_LOCALES } from '$lib/server/auth/locale';
 import { signupWithToken } from './_logic';
+import * as m from '$paraglide/messages';
 
 export const load: PageServerLoad = ({ url, locals }) => {
   if (locals.user) throw redirect(303, '/app');
@@ -19,7 +20,7 @@ export const load: PageServerLoad = ({ url, locals }) => {
 export const actions: Actions = {
   default: async ({ request, url }) => {
     if (process.env.DISABLE_SIGNUP === 'true') {
-      return fail(403, { error: 'L\'inscription est désactivée.', email: '' });
+      return fail(403, { error: m.auth_signup_disabled(), email: '' });
     }
     const form = await request.formData();
     const token = String(form.get('token') ?? url.searchParams.get('token') ?? '');
@@ -27,7 +28,7 @@ export const actions: Actions = {
     const password = String(form.get('password') ?? '');
     const confirm = String(form.get('confirm') ?? '');
     if (password !== confirm) {
-      return fail(400, { error: 'Les mots de passe ne correspondent pas.', email });
+      return fail(400, { error: m.auth_password_mismatch(), email });
     }
     const { db } = getDb();
     const locale = parseAcceptLanguage(
@@ -38,10 +39,10 @@ export const actions: Actions = {
     const res = await signupWithToken(db, { token, email, password, locale });
     if (!res.ok) {
       const msg = ({
-        'bad-token': 'Lien d\'invitation invalide ou expiré.',
-        'weak-password': 'Mot de passe trop court (≥ 10 caractères).',
-        'duplicate-email': 'Un compte existe déjà avec cet email.',
-        'invalid-email': 'Email invalide.'
+        'bad-token': m.auth_signup_bad_token(),
+        'weak-password': m.auth_password_too_short(),
+        'duplicate-email': m.auth_signup_duplicate_email(),
+        'invalid-email': m.auth_invalid_email()
       })[res.reason];
       return fail(400, { error: msg, email });
     }

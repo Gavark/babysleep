@@ -3,6 +3,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { getDb } from '$lib/server/db';
 import { attemptLogin } from './_logic';
 import { setSessionCookie } from '../../hooks.server';
+import * as m from '$paraglide/messages';
 
 export const load: PageServerLoad = ({ locals }) => {
   if (locals.user) throw redirect(303, '/app');
@@ -17,7 +18,7 @@ export const actions: Actions = {
     const ua = request.headers.get('user-agent') ?? null;
     const { db } = getDb();
     const res = await attemptLogin(db, { email, password }, ua);
-    if (!res.ok) return fail(400, { error: 'Identifiants invalides.', email });
+    if (!res.ok) return fail(400, { error: m.auth_login_invalid(), email });
     setSessionCookie(cookies, res.session.id);
     throw redirect(303, '/app');
   }

@@ -3,6 +3,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { getDb } from '$lib/server/db';
 import { hasNoUsers, createFirstAdmin } from '$lib/server/auth/bootstrap';
 import { parseAcceptLanguage, SUPPORTED_LOCALES } from '$lib/server/auth/locale';
+import * as m from '$paraglide/messages';
 
 export const load: PageServerLoad = () => {
   const { db } = getDb();
@@ -21,7 +22,7 @@ export const actions: Actions = {
     const confirm = String(form.get('confirm') ?? '');
 
     if (password !== confirm) {
-      return fail(400, { error: 'Les mots de passe ne correspondent pas.', email });
+      return fail(400, { error: m.auth_password_mismatch(), email });
     }
 
     const locale = parseAcceptLanguage(
@@ -32,9 +33,9 @@ export const actions: Actions = {
     const res = await createFirstAdmin(db, { email, password, locale });
     if (!res.ok) {
       const msg = ({
-        'already-setup': 'Un compte existe déjà. Recharge la page.',
-        'invalid-email': 'Email invalide.',
-        'weak-password': 'Mot de passe trop court (≥ 10 caractères).'
+        'already-setup': m.auth_setup_already_setup(),
+        'invalid-email': m.auth_invalid_email(),
+        'weak-password': m.auth_password_too_short()
       })[res.reason];
       return fail(400, { error: msg, email });
     }
