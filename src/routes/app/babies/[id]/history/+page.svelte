@@ -12,6 +12,7 @@
   import CheckCircle from 'phosphor-svelte/lib/CheckCircle';
   import MinusCircle from 'phosphor-svelte/lib/MinusCircle';
   import XCircle from 'phosphor-svelte/lib/XCircle';
+  import * as m from '$paraglide/messages';
   let { data } = $props();
 
   function napCount(r: any) {
@@ -44,42 +45,42 @@
   }
 </script>
 
-<h1>Historique — {data.baby.name}</h1>
+<h1>{m.history_title({ name: data.baby.name })}</h1>
 
 <form method="GET" class="filter-row">
   <label class="field">
-    <span class="field-label"><Calendar size={12} /> De</span>
+    <span class="field-label"><Calendar size={12} /> {m.history_filter_from()}</span>
     <input class="field-input" type="date" name="from" value={data.from} />
   </label>
   <label class="field">
-    <span class="field-label"><Calendar size={12} /> À</span>
+    <span class="field-label"><Calendar size={12} /> {m.history_filter_to()}</span>
     <input class="field-input" type="date" name="to" value={data.to} />
   </label>
-  <button type="submit" class="btn btn-secondary">Filtrer</button>
+  <button type="submit" class="btn btn-secondary">{m.common_btn_filter()}</button>
   <a class="btn btn-primary" href="/api/babies/{data.baby.id}/export.csv?from={data.from}&to={data.to}">
-    <Download size={16} /> CSV
+    <Download size={16} /> {m.history_csv_btn()}
   </a>
 </form>
 
 <section class="summary-strip">
-  <div><CalendarBlank size={16} /> <strong>{data.summary.entryCount}</strong> jour(s)</div>
-  <div><Sun size={16} /> Réveil moyen <strong>{data.summary.meanWakeHHMM || '—'}</strong></div>
-  <div><Moon size={16} /> Coucher moyen <strong>{data.summary.meanBedtimeHHMM || '—'}</strong></div>
-  <div><Bed size={16} /> Nuit moyenne <strong>{data.summary.meanPrevNightHHMM || '—'}</strong></div>
-  <div><Cloud size={16} /> Jour moyen <strong>{data.summary.meanDaySleepHHMM || '—'}</strong></div>
-  <div><Coffee size={16} /> Siestes/jour <strong>{data.summary.meanNaps}</strong></div>
+  <div><CalendarBlank size={16} /> <strong>{data.summary.entryCount}</strong> {m.history_summary_entries({ count: data.summary.entryCount })}</div>
+  <div><Sun size={16} /> {m.history_summary_mean_wake()} <strong>{data.summary.meanWakeHHMM || m.today_value_empty()}</strong></div>
+  <div><Moon size={16} /> {m.history_summary_mean_bedtime()} <strong>{data.summary.meanBedtimeHHMM || m.today_value_empty()}</strong></div>
+  <div><Bed size={16} /> {m.history_summary_mean_prev_night()} <strong>{data.summary.meanPrevNightHHMM || m.today_value_empty()}</strong></div>
+  <div><Cloud size={16} /> {m.history_summary_mean_day_sleep()} <strong>{data.summary.meanDaySleepHHMM || m.today_value_empty()}</strong></div>
+  <div><Coffee size={16} /> {m.history_summary_mean_naps()} <strong>{data.summary.meanNaps}</strong></div>
 </section>
 
 {#if data.entries.length === 0}
-  <p class="empty">Aucune entrée sur cette période.</p>
+  <p class="empty">{m.history_empty()}</p>
 {:else}
   <div class="card history-card">
     <table class="history-table">
       <thead>
         <tr>
-          <th>Date</th><th>Note</th><th>Σ Siestes</th><th>Réveil</th>
-          <th>S1</th><th>S2</th><th>S3</th><th>S4</th>
-          <th>Coucher</th><th>Nuit préc.</th><th>Nb</th><th class="notes-col">Notes</th>
+          <th>{m.history_table_date()}</th><th>{m.history_table_rating()}</th><th>{m.history_table_naps_total()}</th><th>{m.history_table_wake()}</th>
+          <th>{m.history_table_nap_short_n({ n: 1 })}</th><th>{m.history_table_nap_short_n({ n: 2 })}</th><th>{m.history_table_nap_short_n({ n: 3 })}</th><th>{m.history_table_nap_short_n({ n: 4 })}</th>
+          <th>{m.history_table_bedtime()}</th><th>{m.history_table_prev_night()}</th><th>{m.history_table_naps_count()}</th><th class="notes-col">{m.history_table_notes()}</th>
         </tr>
       </thead>
       <tbody>
@@ -87,9 +88,9 @@
           <tr>
             <td><a href="/app/babies/{data.baby.id}/day/{r.date}"><strong>{r.date}</strong></a></td>
             <td class="rating-cell">
-              {#if r.nightRating === 'good'}<span class="rating rating-good" title="Bonne nuit"><CheckCircle size={16} weight="fill" /></span>
-              {:else if r.nightRating === 'medium'}<span class="rating rating-medium" title="Nuit moyenne"><MinusCircle size={16} weight="fill" /></span>
-              {:else if r.nightRating === 'bad'}<span class="rating rating-bad" title="Mauvaise nuit"><XCircle size={16} weight="fill" /></span>
+              {#if r.nightRating === 'good'}<span class="rating rating-good" title={m.history_rating_good_title()}><CheckCircle size={16} weight="fill" /></span>
+              {:else if r.nightRating === 'medium'}<span class="rating rating-medium" title={m.history_rating_medium_title()}><MinusCircle size={16} weight="fill" /></span>
+              {:else if r.nightRating === 'bad'}<span class="rating rating-bad" title={m.history_rating_bad_title()}><XCircle size={16} weight="fill" /></span>
               {/if}
             </td>
             <td>{totalNapsMin(r) > 0 ? formatDuration(totalNapsMin(r)) : ''}</td>
@@ -111,11 +112,11 @@
   {#if data.totalPages > 1}
     <nav class="pager">
       {#if data.page > 1}
-        <a class="btn btn-ghost btn-sm" href="?from={data.from}&to={data.to}&page={data.page - 1}">‹ Précédent</a>
+        <a class="btn btn-ghost btn-sm" href="?from={data.from}&to={data.to}&page={data.page - 1}">{m.common_btn_previous()}</a>
       {/if}
-      <span class="tz-info">Page {data.page} / {data.totalPages}</span>
+      <span class="tz-info">{m.history_pager_page_of_total({ page: data.page, total: data.totalPages })}</span>
       {#if data.page < data.totalPages}
-        <a class="btn btn-ghost btn-sm" href="?from={data.from}&to={data.to}&page={data.page + 1}">Suivant ›</a>
+        <a class="btn btn-ghost btn-sm" href="?from={data.from}&to={data.to}&page={data.page + 1}">{m.common_btn_next()}</a>
       {/if}
     </nav>
   {/if}

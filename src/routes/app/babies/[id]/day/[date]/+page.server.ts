@@ -7,6 +7,7 @@ import { ageInMonths } from '$lib/sleep-calc';
 import { paramsForAge } from '$lib/age-params';
 import { isValidHHMM } from '$lib/time';
 import { resolveTimezone } from '$lib/tz';
+import * as msg from '$paraglide/messages';
 
 function camel(s: string): string {
   return s.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
@@ -16,7 +17,7 @@ export const load: PageServerLoad = ({ locals, params }) => {
   if (!locals.user) throw redirect(303, '/login');
   const id = Number(params.id);
   const date = String(params.date);
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw error(400, 'Date invalide');
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw error(400, msg.day_invalid_date());
 
   const { db } = getDb();
   const baby = getBabyForUser(db, locals.user.id, id);
@@ -56,7 +57,7 @@ export const actions: Actions = {
     for (const f of fields) {
       const v = String(form.get(f) ?? '').trim();
       if (v === '') patch[camel(f)] = null;
-      else if (!isValidHHMM(v)) return fail(400, { error: `Heure invalide (${f}): ${v}` });
+      else if (!isValidHHMM(v)) return fail(400, { error: msg.day_entry_invalid_time({ field: f, value: v }) });
       else patch[camel(f)] = v;
     }
     const pauseFields = ['nap1_pause_min', 'nap2_pause_min', 'nap3_pause_min', 'nap4_pause_min'] as const;
@@ -64,7 +65,7 @@ export const actions: Actions = {
       const raw = String(form.get(f) ?? '').trim();
       if (raw === '') { patch[camel(f)] = null; continue; }
       const n = Number(raw);
-      if (!Number.isFinite(n) || n < 0 || n > 600) return fail(400, { error: `Pause invalide (${f}): ${raw}` });
+      if (!Number.isFinite(n) || n < 0 || n > 600) return fail(400, { error: msg.day_entry_invalid_pause({ field: f, value: raw }) });
       patch[camel(f)] = Math.round(n) || null;
     }
     const notes = String(form.get('notes') ?? '').trim();
@@ -73,7 +74,7 @@ export const actions: Actions = {
     patch.timezone = formTz || null;
 
     upsertEntry(db, baby.id, date, patch as any);
-    return { success: 'Journée mise à jour.' };
+    return { success: msg.day_saved() };
   },
 
   delete: ({ locals, params }) => {

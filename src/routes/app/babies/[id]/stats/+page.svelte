@@ -6,6 +6,7 @@
   import Bed from 'phosphor-svelte/lib/Bed';
   import Cloud from 'phosphor-svelte/lib/Cloud';
   import Coffee from 'phosphor-svelte/lib/Coffee';
+  import * as m from '$paraglide/messages';
 
   let { data } = $props();
 
@@ -55,31 +56,33 @@
   const wakeData = $derived(data.entries.map((e: any) => hhmmToHours(e.wakeTime)));
   const bedtimeData = $derived(data.entries.map((e: any) => hhmmToHours(e.bedtime)));
   const napTotalData = $derived(data.entries.map((e: any) => {
-    const m = dayNapMinutes(e);
-    return m === null ? null : m / 60;
+    const mins = dayNapMinutes(e);
+    return mins === null ? null : mins / 60;
   }));
   const napCountData = $derived(data.entries.map(napCount));
   const prevNightData = $derived(
     data.entries.map((e: any, i: number) => prevNightHours(e, i > 0 ? data.entries[i - 1] : null))
   );
 
+  const EMPTY = m.today_value_empty();
+
   function decimalToHHMM(v: number | null | undefined): string {
-    if (v === null || v === undefined || !Number.isFinite(v)) return '—';
+    if (v === null || v === undefined || !Number.isFinite(v)) return EMPTY;
     const totalMin = Math.round(v * 60);
     const safeMin = ((totalMin % 1440) + 1440) % 1440;
     const h = Math.floor(safeMin / 60);
-    const m = safeMin % 60;
-    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    const mm = safeMin % 60;
+    return `${String(h).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
   }
 
   function decimalToDuration(v: number | null | undefined): string {
-    if (v === null || v === undefined || !Number.isFinite(v)) return '—';
+    if (v === null || v === undefined || !Number.isFinite(v)) return EMPTY;
     const totalMin = Math.max(0, Math.round(v * 60));
     const h = Math.floor(totalMin / 60);
-    const m = totalMin % 60;
-    if (h === 0) return `${m} min`;
-    if (m === 0) return `${h}h`;
-    return `${h}h${String(m).padStart(2, '0')}`;
+    const mm = totalMin % 60;
+    if (h === 0) return m.stats_chart_minutes_short({ min: mm });
+    if (mm === 0) return m.stats_chart_hours_short({ h });
+    return m.stats_chart_hours_minutes_short({ h, mm: String(mm).padStart(2, '0') });
   }
 
   const timeOfDayOpts = {
@@ -119,7 +122,7 @@
     scales: {
       y: {
         beginAtZero: true,
-        title: { display: true, text: 'durée' },
+        title: { display: true, text: m.stats_chart_axis_duration() },
         ticks: {
           callback: (v: any) => decimalToDuration(Number(v))
         }
@@ -142,65 +145,65 @@
   };
 </script>
 
-<h1>Statistiques — {data.baby.name}</h1>
+<h1>{m.stats_title({ name: data.baby.name })}</h1>
 
 <form method="GET" class="period-selector">
   <div class="presets">
-    <a class="tab" class:active={data.preset === '7'} href="?preset=7">7 jours</a>
-    <a class="tab" class:active={data.preset === '14'} href="?preset=14">14 jours</a>
-    <a class="tab" class:active={data.preset === '30'} href="?preset=30">30 jours</a>
-    <a class="tab" class:active={data.preset === '90'} href="?preset=90">90 jours</a>
-    <a class="tab" class:active={data.preset === 'all'} href="?preset=all">Tout</a>
+    <a class="tab" class:active={data.preset === '7'} href="?preset=7">{m.stats_period_preset_7()}</a>
+    <a class="tab" class:active={data.preset === '14'} href="?preset=14">{m.stats_period_preset_14()}</a>
+    <a class="tab" class:active={data.preset === '30'} href="?preset=30">{m.stats_period_preset_30()}</a>
+    <a class="tab" class:active={data.preset === '90'} href="?preset=90">{m.stats_period_preset_90()}</a>
+    <a class="tab" class:active={data.preset === 'all'} href="?preset=all">{m.stats_period_preset_all()}</a>
   </div>
   <div class="custom">
-    <label class="field"><span class="field-label">De</span>
+    <label class="field"><span class="field-label">{m.stats_period_from()}</span>
       <input class="field-input" type="date" name="from" value={data.from} />
     </label>
-    <label class="field"><span class="field-label">À</span>
+    <label class="field"><span class="field-label">{m.stats_period_to()}</span>
       <input class="field-input" type="date" name="to" value={data.to} />
     </label>
     <input type="hidden" name="preset" value="custom" />
-    <button type="submit" class="btn btn-secondary">Filtrer</button>
+    <button type="submit" class="btn btn-secondary">{m.common_btn_filter()}</button>
   </div>
 </form>
 
-<p class="tz-info">Fuseau : <strong>{data.effectiveTz}</strong> · Période : {data.from} → {data.to} · {data.entries.length} jour(s)</p>
+<p class="tz-info">{m.stats_period_info({ tz: data.effectiveTz, from: data.from, to: data.to, count: data.entries.length })}</p>
 
 {#if data.entries.length === 0}
-  <p class="empty">Pas de données sur cette période.</p>
+  <p class="empty">{m.stats_empty()}</p>
 {:else}
   <section class="card chart-section">
-    <h2><Sun size={18} /> Heure de réveil</h2>
+    <h2><Sun size={18} /> {m.stats_charts_wake_time()}</h2>
     <ChartCanvas type="line"
-      data={{ labels, datasets: [{ label: 'Réveil', data: wakeData, borderColor: 'rgba(201,122,93,1)', backgroundColor: 'rgba(201,122,93,0.18)', tension: 0.2, spanGaps: true }] }}
+      data={{ labels, datasets: [{ label: m.stats_chart_label_wake(), data: wakeData, borderColor: 'rgba(201,122,93,1)', backgroundColor: 'rgba(201,122,93,0.18)', tension: 0.2, spanGaps: true }] }}
       options={timeOfDayOpts} />
   </section>
 
   <section class="card chart-section">
-    <h2><Moon size={18} /> Heure de coucher</h2>
+    <h2><Moon size={18} /> {m.stats_charts_bedtime()}</h2>
     <ChartCanvas type="line"
-      data={{ labels, datasets: [{ label: 'Coucher', data: bedtimeData, borderColor: 'rgba(184,81,74,1)', backgroundColor: 'rgba(184,81,74,0.18)', tension: 0.2, spanGaps: true }] }}
+      data={{ labels, datasets: [{ label: m.stats_chart_label_bedtime(), data: bedtimeData, borderColor: 'rgba(184,81,74,1)', backgroundColor: 'rgba(184,81,74,0.18)', tension: 0.2, spanGaps: true }] }}
       options={timeOfDayOpts} />
   </section>
 
   <section class="card chart-section">
-    <h2><Bed size={18} /> Durée nuit précédente</h2>
+    <h2><Bed size={18} /> {m.stats_charts_prev_night_hours()}</h2>
     <ChartCanvas type="line"
-      data={{ labels, datasets: [{ label: 'Nuit (h)', data: prevNightData, borderColor: 'rgba(122,154,135,1)', backgroundColor: 'rgba(122,154,135,0.18)', tension: 0.2, spanGaps: true }] }}
+      data={{ labels, datasets: [{ label: m.stats_chart_label_night_hours(), data: prevNightData, borderColor: 'rgba(122,154,135,1)', backgroundColor: 'rgba(122,154,135,0.18)', tension: 0.2, spanGaps: true }] }}
       options={hourOpts} />
   </section>
 
   <section class="card chart-section">
-    <h2><Cloud size={18} /> Sommeil total de jour</h2>
+    <h2><Cloud size={18} /> {m.stats_charts_nap_total_hours()}</h2>
     <ChartCanvas type="line"
-      data={{ labels, datasets: [{ label: 'Jour (h)', data: napTotalData, borderColor: 'rgba(232,184,110,1)', backgroundColor: 'rgba(232,184,110,0.18)', tension: 0.2, spanGaps: true }] }}
+      data={{ labels, datasets: [{ label: m.stats_chart_label_day_hours(), data: napTotalData, borderColor: 'rgba(232,184,110,1)', backgroundColor: 'rgba(232,184,110,0.18)', tension: 0.2, spanGaps: true }] }}
       options={hourOpts} />
   </section>
 
   <section class="card chart-section">
-    <h2><Coffee size={18} /> Nombre de siestes</h2>
+    <h2><Coffee size={18} /> {m.stats_charts_naps_count()}</h2>
     <ChartCanvas type="bar"
-      data={{ labels, datasets: [{ label: 'Siestes', data: napCountData, backgroundColor: 'rgba(232,184,110,0.7)' }] }}
+      data={{ labels, datasets: [{ label: m.stats_chart_label_naps(), data: napCountData, backgroundColor: 'rgba(232,184,110,0.7)' }] }}
       options={countOpts} />
   </section>
 {/if}

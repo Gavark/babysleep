@@ -14,6 +14,7 @@
   import FloppyDisk from 'phosphor-svelte/lib/FloppyDisk';
   import Cloud from 'phosphor-svelte/lib/Cloud';
   import Trash from 'phosphor-svelte/lib/Trash';
+  import * as m from '$paraglide/messages';
 
   let { data, form } = $props();
 
@@ -97,14 +98,14 @@
   }
 </script>
 
-<p class="back"><a href="/app/babies/{data.baby.id}/history"><ArrowLeft size={14} /> Historique</a></p>
+<p class="back"><a href="/app/babies/{data.baby.id}/history"><ArrowLeft size={14} /> {m.day_back_to_history()}</a></p>
 
-<h1>{data.baby.name} — {data.date}</h1>
+<h1>{m.day_title({ name: data.baby.name, date: data.date })}</h1>
 <p class="page-meta">
-  {data.entry ? "Édition" : "Création"} d'une journée · <strong>{data.ageMonths} mois</strong> à cette date ({data.ageParams.label}) ·
-  {data.ageParams.naps} sieste(s) · fenêtre {data.ageParams.awakeWindowMin} min · nuit {data.ageParams.nightSleepH}h
+  {data.entry ? m.day_page_meta_edit() : m.day_page_meta_create()} · <strong>{m.today_page_meta_months({ months: data.ageMonths })}</strong> {m.today_page_meta_label({ label: data.ageParams.label })} ·
+  {m.today_page_meta_naps({ count: data.ageParams.naps })} · {m.today_page_meta_window({ window: data.ageParams.awakeWindowMin })} · {m.today_page_meta_night({ night: data.ageParams.nightSleepH })}
 </p>
-<p class="tz-info"><Globe size={12} /> Fuseau actif : <strong>{data.effectiveTz}</strong></p>
+<p class="tz-info"><Globe size={12} /> {m.today_tz_label()} <strong>{data.effectiveTz}</strong></p>
 
 {#if form?.error}<p class="error" role="alert">{form.error}</p>{/if}
 {#if form?.success}<p class="ok">{form.success}</p>{/if}
@@ -117,7 +118,7 @@
   class="today-form"
 >
   <label class="field">
-    <span class="field-label"><Globe size={12} /> Fuseau (cette journée)</span>
+    <span class="field-label"><Globe size={12} /> {m.today_tz_field_label()}</span>
     <select
       class="field-select"
       name="timezone"
@@ -126,7 +127,7 @@
       oninput={(e) => entryTz = read(e)}
       onchange={(e) => entryTz = read(e)}
     >
-      <option value="">Hériter ({data.effectiveTz})</option>
+      <option value="">{m.today_tz_inherit_option({ tz: data.effectiveTz })}</option>
       {#each COMMON_TIMEZONES as tz}
         <option value={tz} selected={entryTz === tz}>{tz}</option>
       {/each}
@@ -135,12 +136,12 @@
 
   <div class="card row-with-save">
     <label class="field">
-      <span class="field-label"><Sun size={12} /> Réveil</span>
+      <span class="field-label"><Sun size={12} /> {m.today_wake_label()}</span>
       <input class="field-input" type="time" name="wake_time" autocomplete="off"
         value={wake}
         oninput={(e) => wake = read(e)} onchange={(e) => wake = read(e)} onblur={(e) => wake = read(e)} />
     </label>
-    <button type="submit" class="btn btn-secondary btn-sm save-inline" title="Sauvegarder le réveil" aria-label="Sauvegarder le réveil">
+    <button type="submit" class="btn btn-secondary btn-sm save-inline" title={m.today_wake_save_title()} aria-label={m.today_wake_save_title()}>
       <FloppyDisk size={14} />
     </button>
   </div>
@@ -148,18 +149,18 @@
   <section class="day-budget">
     <div class="day-budget-header">
       <Cloud size={18} weight="duotone" />
-      <strong>Sommeil de jour</strong>
+      <strong>{m.today_day_budget_title()}</strong>
     </div>
     <div class="day-budget-stats">
-      <div><span class="day-budget-label">Budget</span><span class="day-budget-value">{formatDuration(dayBudget.totalMin)}</span></div>
-      <div><span class="day-budget-label">Effectué</span><span class="day-budget-value">{formatDuration(dayBudget.completedMin)}</span></div>
-      <div><span class="day-budget-label">Restant</span><span class="day-budget-value">{formatDuration(dayBudget.remainingMin)}</span></div>
+      <div><span class="day-budget-label">{m.today_day_budget_budget()}</span><span class="day-budget-value">{formatDuration(dayBudget.totalMin)}</span></div>
+      <div><span class="day-budget-label">{m.today_day_budget_done()}</span><span class="day-budget-value">{formatDuration(dayBudget.completedMin)}</span></div>
+      <div><span class="day-budget-label">{m.today_day_budget_remaining()}</span><span class="day-budget-value">{formatDuration(dayBudget.remainingMin)}</span></div>
     </div>
     <div class="day-budget-bar" role="progressbar" aria-valuemin="0" aria-valuemax={dayBudget.totalMin} aria-valuenow={dayBudget.completedMin}>
       <div class="day-budget-fill" style="width: {Math.min(100, dayBudget.ratio * 100)}%; background: {dayBudget.ratio > 1 ? 'var(--c-danger)' : 'var(--c-accent-honey)'};"></div>
     </div>
     {#if dayBudget.ratio > 1}
-      <p class="day-budget-warn">Budget dépassé de {formatDuration(dayBudget.completedMin - dayBudget.totalMin)}.</p>
+      <p class="day-budget-warn">{m.today_day_budget_exceeded({ amount: formatDuration(dayBudget.completedMin - dayBudget.totalMin) })}</p>
     {/if}
   </section>
 
@@ -170,67 +171,67 @@
     { idx: 4, suggValue: sugg4, endSuggValue: napEndSugg4, startVal: nap4Start, endVal: nap4End, pauseVal: nap4Pause, setStart: (v: string) => nap4Start = v, setEnd: (v: string) => nap4End = v, setPause: (v: number) => nap4Pause = v }
   ] as nap (nap.idx)}
     <div class="nap-block">
-      <div class="nap-title"><Sun size={16} weight="regular" /> Sieste {nap.idx}</div>
-      <div class="hint">Suggérée vers <strong>{nap.suggValue || '—'}</strong></div>
+      <div class="nap-title"><Sun size={16} weight="regular" /> {m.today_nap_label_n({ n: nap.idx })}</div>
+      <div class="hint">{m.today_nap_suggested_at()} <strong>{nap.suggValue || m.today_value_empty()}</strong></div>
       <div class="pair pair-with-pause">
         <label class="field">
-          <span class="field-label">Début</span>
+          <span class="field-label">{m.today_nap_start_label()}</span>
           <input class="field-input" type="time" name="nap{nap.idx}_start" autocomplete="off"
             value={nap.startVal}
             oninput={(e) => nap.setStart(read(e))} onchange={(e) => nap.setStart(read(e))} onblur={(e) => nap.setStart(read(e))} />
         </label>
         <label class="field">
-          <span class="field-label">Fin</span>
+          <span class="field-label">{m.today_nap_end_label()}</span>
           <input class="field-input" type="time" name="nap{nap.idx}_end" autocomplete="off"
             value={nap.endVal}
             oninput={(e) => nap.setEnd(read(e))} onchange={(e) => nap.setEnd(read(e))} onblur={(e) => nap.setEnd(read(e))} />
         </label>
         <label class="field field-pause">
-          <span class="field-label">Pause (min)</span>
+          <span class="field-label">{m.today_nap_pause_label()}</span>
           <input class="field-input" type="number" min="0" step="5" name="nap{nap.idx}_pause_min" autocomplete="off"
             value={nap.pauseVal || ''} placeholder="0"
             oninput={(e) => nap.setPause(Number(read(e)) || 0)} onchange={(e) => nap.setPause(Number(read(e)) || 0)} />
         </label>
       </div>
       {#if nap.endSuggValue && nap.startVal && !nap.endVal}
-        <div class="hint" style="margin-top: var(--s-1);">Fin suggérée vers <strong>{nap.endSuggValue}</strong></div>
+        <div class="hint" style="margin-top: var(--s-1);">{m.today_nap_end_suggested_at()} <strong>{nap.endSuggValue}</strong></div>
       {/if}
-      <button type="submit" class="btn btn-secondary btn-sm save-inline-block" title="Sauvegarder cette sieste" aria-label="Sauvegarder cette sieste">
-        <FloppyDisk size={14} /> Sauvegarder
+      <button type="submit" class="btn btn-secondary btn-sm save-inline-block" title={m.today_nap_save_title()} aria-label={m.today_nap_save_title()}>
+        <FloppyDisk size={14} /> {m.today_nap_save_btn()}
       </button>
     </div>
   {/each}
 
   <div class="key-box">
     <div class="key-meta">
-      <span class="key-label"><Star size={12} weight="fill" /> Coucher idéal</span>
-      <span class="key-sub">Pour réveil souhaité {data.baby.desiredWakeTime ?? '—'}</span>
+      <span class="key-label"><Star size={12} weight="fill" /> {m.today_ideal_bedtime_label()}</span>
+      <span class="key-sub">{m.today_ideal_bedtime_sub({ time: data.baby.desiredWakeTime ?? m.today_value_empty() })}</span>
     </div>
-    <span class="key-value">{ideal || '—'}</span>
+    <span class="key-value">{ideal || m.today_value_empty()}</span>
   </div>
 
   <div class="key-box">
     <div class="key-meta">
-      <span class="key-label"><Star size={12} weight="fill" /> Coucher suggéré</span>
-      <span class="key-sub">Basé sur les siestes saisies</span>
+      <span class="key-label"><Star size={12} weight="fill" /> {m.today_suggested_bedtime_label()}</span>
+      <span class="key-sub">{m.today_suggested_bedtime_sub()}</span>
     </div>
-    <span class="key-value">{suggBed || '—'}</span>
+    <span class="key-value">{suggBed || m.today_value_empty()}</span>
   </div>
 
   <div class="card row-with-save">
     <label class="field">
-      <span class="field-label"><Moon size={12} /> Coucher effectif</span>
+      <span class="field-label"><Moon size={12} /> {m.today_bedtime_label()}</span>
       <input class="field-input" type="time" name="bedtime" autocomplete="off"
         value={bedtime}
         oninput={(e) => bedtime = read(e)} onchange={(e) => bedtime = read(e)} onblur={(e) => bedtime = read(e)} />
     </label>
-    <button type="submit" class="btn btn-secondary btn-sm save-inline" title="Sauvegarder le coucher" aria-label="Sauvegarder le coucher">
+    <button type="submit" class="btn btn-secondary btn-sm save-inline" title={m.today_bedtime_save_title()} aria-label={m.today_bedtime_save_title()}>
       <FloppyDisk size={14} />
     </button>
   </div>
 
   <label class="field">
-    <span class="field-label">Notes</span>
+    <span class="field-label">{m.today_notes_label()}</span>
     <textarea class="field-textarea" name="notes" autocomplete="off" rows="2"
       value={notes}
       oninput={(e) => notes = read(e)}></textarea>
@@ -238,16 +239,16 @@
 
   <button type="submit" class="btn btn-primary btn-block">
     <FloppyDisk size={18} weight="regular" />
-    {data.entry ? 'Mettre à jour la journée' : 'Créer la journée'}
+    {data.entry ? m.day_submit_update() : m.day_submit_create()}
   </button>
 </form>
 
 {#if data.entry}
 <form method="POST" action="?/delete" use:enhance
-  onsubmit={(e) => { if (!confirm('Supprimer définitivement cette journée ?')) e.preventDefault(); }}
+  onsubmit={(e) => { if (!confirm(m.day_delete_confirm())) e.preventDefault(); }}
   style="margin-top: var(--s-4);"
 >
-  <button type="submit" class="btn btn-danger"><Trash size={16} /> Supprimer cette journée</button>
+  <button type="submit" class="btn btn-danger"><Trash size={16} /> {m.day_delete_btn()}</button>
 </form>
 {/if}
 
