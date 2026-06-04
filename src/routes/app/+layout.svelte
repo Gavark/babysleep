@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from '$app/state';
   import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+  import LocaleSwitcher from '$lib/components/LocaleSwitcher.svelte';
   import Bed from 'phosphor-svelte/lib/Bed';
   import UserCircle from 'phosphor-svelte/lib/UserCircle';
   import Envelope from 'phosphor-svelte/lib/Envelope';
@@ -36,6 +37,7 @@
         <UserCircle size={14} /> Compte
       </a>
     </nav>
+    <LocaleSwitcher current={data.locale} />
     <ThemeToggle initial={data.theme ?? 'auto'} />
   </div>
 </header>

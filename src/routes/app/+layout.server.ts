@@ -21,6 +21,7 @@ export const load: LayoutServerLoad = async ({ locals, cookies, params, parent }
     babies,
     currentBabyId: currentId || null,
     isAdmin: !!locals.user.isAdmin,
-    theme: parentData.theme
+    theme: parentData.theme,
+    locale: locals.locale
   };
 };

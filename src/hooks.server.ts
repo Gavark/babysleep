@@ -62,10 +62,13 @@ export const handle: Handle = async ({ event, resolve }) => {
   // While the database has no user, force the visitor through the wizard.
   // Whitelist: /setup itself, the Docker healthcheck, SvelteKit assets, and
   // any path with a file extension (favicon, icons, manifest, fonts).
+  // Also allow /api/locale so the LocaleSwitcher works on the public /setup
+  // page before any user exists (otherwise the POST gets 303'd to /setup).
   if (
     isInSetupMode() &&
     path !== '/setup' &&
     path !== '/healthz' &&
+    path !== '/api/locale' &&
     !path.startsWith('/_app/') &&
     !/\.[a-z0-9]+$/i.test(path)
   ) {
