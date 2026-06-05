@@ -86,6 +86,46 @@ export const sleepEntries = sqliteTable(
   })
 );
 
+export const appConfig = sqliteTable('app_config', {
+  key: text('key').primaryKey(),
+  value: text('value').notNull(),
+  updatedAt: integer('updated_at').notNull().default(sql`(unixepoch())`)
+});
+
+export const pushSubscriptions = sqliteTable(
+  'push_subscriptions',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    userId: integer('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+    endpoint: text('endpoint').notNull().unique(),
+    p256dh: text('p256dh').notNull(),
+    auth: text('auth').notNull(),
+    userAgent: text('user_agent'),
+    createdAt: integer('created_at').notNull().default(sql`(unixepoch())`),
+    lastSeenAt: integer('last_seen_at').notNull().default(sql`(unixepoch())`)
+  },
+  (t) => ({
+    userIdx: index('push_subscriptions_user_id').on(t.userId)
+  })
+);
+
+export const scheduledPushes = sqliteTable(
+  'scheduled_pushes',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    babyId: integer('baby_id').notNull().references(() => babies.id, { onDelete: 'cascade' }),
+    kind: text('kind').notNull(),
+    fireAt: integer('fire_at').notNull(),
+    firedAt: integer('fired_at'),
+    cancelledAt: integer('cancelled_at'),
+    createdAt: integer('created_at').notNull().default(sql`(unixepoch())`)
+  },
+  (t) => ({
+    pendingFireAtIdx: index('scheduled_pushes_pending_fire_at').on(t.fireAt),
+    babyIdx: index('scheduled_pushes_baby_id').on(t.babyId)
+  })
+);
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Session = typeof sessions.$inferSelect;
@@ -94,3 +134,6 @@ export type Baby = typeof babies.$inferSelect;
 export type NewBaby = typeof babies.$inferInsert;
 export type SleepEntry = typeof sleepEntries.$inferSelect;
 export type NewSleepEntry = typeof sleepEntries.$inferInsert;
+export type AppConfig = typeof appConfig.$inferSelect;
+export type PushSubscription = typeof pushSubscriptions.$inferSelect;
+export type ScheduledPush = typeof scheduledPushes.$inferSelect;
