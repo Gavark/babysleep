@@ -44,7 +44,8 @@ a single SQLite file on a Docker volume you control.
 - **Simple schema** — straightforward CSV import if you're migrating from
   another tracker.
 
-UI is French at the moment. EN is on the roadmap.
+Bilingual UI (FR / EN), auto-detected from the browser's Accept-Language
+header at first login, switchable from the header (🌐) or /account.
 
 ---
 
@@ -199,8 +200,6 @@ stability until `v1.0`.
 
 Things I want to add (no firm ETA):
 
-- English UI (i18n)
-- Native arm64 image (Raspberry Pi without rebuilding from source)
 - Web Push notifications when the wake window is over
 - "Share with co-parent" with read-only / read-write distinction
 - Optional tags per day (sick, daycare, vacation)

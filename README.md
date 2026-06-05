@@ -48,7 +48,8 @@ dans un fichier SQLite unique sur un volume Docker que tu contrôles.
 - **Fuseaux horaires** — overrides par utilisateur, par bébé et par entrée.
 - **Schéma simple** — facile à migrer depuis un autre tracker via CSV.
 
-UI en français pour l'instant. EN dans la roadmap.
+UI bilingue FR / EN, auto-détection navigateur (Accept-Language) au premier
+login, modifiable depuis le header (🌐) ou /account.
 
 ---
 
@@ -228,8 +229,6 @@ pas sur la stabilité de l'API avant `v1.0`.
 
 Ce que je veux ajouter (pas d'ETA ferme) :
 
-- UI anglaise (i18n)
-- Image arm64 native (Raspberry Pi sans rebuild depuis les sources)
 - Notifications Web Push quand la fenêtre d'éveil est dépassée
 - Partage co-parent avec distinction lecture-seule / lecture-écriture
 - Tags optionnels par jour (malade, crèche, vacances)
