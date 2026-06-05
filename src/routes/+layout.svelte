@@ -11,9 +11,15 @@
   <link rel="manifest" href="/manifest.webmanifest" />
 </svelte:head>
 
-<header class="public-topbar">
-  <LocaleSwitcher current={data.locale} />
-</header>
+<!-- Topbar with locale switcher is rendered ONLY for anonymous visitors
+     (login / signup / setup / public error pages). Once logged in, the
+     app layout renders its own switcher inside the app header — so we
+     skip this one to avoid showing the globe icon twice. -->
+{#if !data.user}
+  <header class="public-topbar">
+    <LocaleSwitcher current={data.locale} />
+  </header>
+{/if}
 
 <main>
   {@render children()}
