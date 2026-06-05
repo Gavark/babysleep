@@ -45,6 +45,9 @@ dans un fichier SQLite unique sur un volume Docker que tu contrôles.
   limitée ; auth par mot de passe avec hash argon2id.
 - **PWA** — installable depuis le navigateur ; mode standalone iOS avec
   apple-touch-icon et metas dédiées.
+- **Notifications Web Push** — alerte opt-in par appareil quand la fenêtre
+  d'éveil est dépassée ; fonctionne sur Chrome/Firefox/Edge desktop et mobile,
+  Safari iOS 16.4+ (PWA installée à l'écran d'accueil).
 - **Fuseaux horaires** — overrides par utilisateur, par bébé et par entrée.
 - **Schéma simple** — facile à migrer depuis un autre tracker via CSV.
 
@@ -120,6 +123,7 @@ Toute la config passe par des variables d'environnement. Voir
 | `DISABLE_SIGNUP` | non | `true` pour bloquer `/signup`. Les invitations marchent quand même. |
 | `ORIGIN` | oui si derrière un proxy | URL publique HTTPS pour les checks CSRF/Origin. |
 | `TZ` | non | Fuseau horaire du container. Défaut `Europe/Paris`. |
+| `VAPID_SUBJECT` | non | Override du sujet VAPID (défaut : `mailto:admin@<host>` dérivé d'`ORIGIN`). |
 
 Les sessions sont protégées par des IDs aléatoires de 256 bits stockés dans
 des cookies `HttpOnly` + `Secure` + `SameSite=Lax` et validés en base à
@@ -141,6 +145,27 @@ docker compose -f docker-compose.full.yml exec backup sh /usr/local/bin/run-back
 
 Si tu utilises le compose minimal, apporte ton propre outil de backup
 (restic, borg, …) pointé sur le volume Docker `babysleep_data`.
+
+---
+
+## Notifications Web Push
+
+L'appli sait t'envoyer une notification quand la fenêtre d'éveil d'un bébé
+est dépassée. C'est opt-in par appareil : tu actives depuis `/account/notifications`
+ou directement depuis la page Aujourd'hui.
+
+- Les clés VAPID sont générées automatiquement au premier démarrage du serveur
+  et stockées en base (pas besoin de variable d'environnement pour démarrer).
+- Si tu utilises Caddy (ou n'importe quel reverse proxy avec HTTPS), tu n'as
+  rien à faire de plus — les notifications nécessitent HTTPS.
+- Tu peux gérer la liste de tes appareils abonnés et les révoquer un par un
+  depuis `/account/notifications`.
+- Sur iPhone, il faut d'abord installer l'app à l'écran d'accueil (Partager →
+  "Sur l'écran d'accueil") puis ré-ouvrir l'app installée pour activer les alertes.
+
+Si tu vois `VAPID_SUBJECT` mentionné dans `.env.example`, c'est un override
+optionnel pour les services push (Mozilla autopush en particulier) qui sont
+stricts sur le `mailto:` dans le header VAPID.
 
 ---
 
@@ -229,7 +254,6 @@ pas sur la stabilité de l'API avant `v1.0`.
 
 Ce que je veux ajouter (pas d'ETA ferme) :
 
-- Notifications Web Push quand la fenêtre d'éveil est dépassée
 - Partage co-parent avec distinction lecture-seule / lecture-écriture
 - Tags optionnels par jour (malade, crèche, vacances)
 

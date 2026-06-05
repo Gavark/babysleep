@@ -40,6 +40,9 @@ a single SQLite file on a Docker volume you control.
   auth with argon2id hashing.
 - **PWA** — installable from the browser; iOS standalone-capable with the
   proper apple-touch-icon and metas.
+- **Web Push notifications** — opt-in per device, fires when the wake window
+  is exceeded; works on Chrome/Firefox/Edge desktop and mobile, plus iOS
+  Safari 16.4+ (PWA installed to the home screen).
 - **Timezone-aware** — per-user, per-baby, and per-entry overrides.
 - **Simple schema** — straightforward CSV import if you're migrating from
   another tracker.
@@ -115,6 +118,7 @@ for the full annotated list. Highlights:
 | `DISABLE_SIGNUP` | no | `true` to block `/signup` entirely. Invitations still work. |
 | `ORIGIN` | yes if behind a proxy | Public HTTPS URL for CSRF/Origin checks. |
 | `TZ` | no | Container timezone. Default `Europe/Paris`. |
+| `VAPID_SUBJECT` | no | Override the VAPID subject (default: `mailto:admin@<host>` derived from `ORIGIN`). |
 
 Sessions are secured by 256-bit random IDs stored in `HttpOnly` + `Secure` +
 `SameSite=Lax` cookies and validated against the database on every request —
@@ -136,6 +140,27 @@ docker compose -f docker-compose.full.yml exec backup sh /usr/local/bin/run-back
 
 If you use the minimal compose, bring your own backup tooling (restic, borg, …)
 pointed at the `babysleep_data` Docker volume.
+
+---
+
+## Web Push notifications
+
+The app can send you a push notification when a baby's wake window is exceeded.
+It's opt-in per device: enable it from `/account/notifications` or directly
+from the Today page.
+
+- VAPID keys are generated automatically on first server start and stored in
+  the database (no environment variable needed to bootstrap).
+- If you use Caddy (or any reverse proxy with HTTPS), there's nothing extra
+  to configure — push notifications require HTTPS.
+- You can review the list of subscribed devices and revoke them one by one
+  from `/account/notifications`.
+- On iPhone, you must first install the app to the home screen (Share →
+  "Add to Home Screen") then reopen the installed app to enable alerts.
+
+If you see `VAPID_SUBJECT` mentioned in `.env.example`, it's an optional
+override for push services (Mozilla autopush in particular) that are strict
+about the `mailto:` in the VAPID header.
 
 ---
 
@@ -200,7 +225,6 @@ stability until `v1.0`.
 
 Things I want to add (no firm ETA):
 
-- Web Push notifications when the wake window is over
 - "Share with co-parent" with read-only / read-write distinction
 - Optional tags per day (sick, daycare, vacation)
 
