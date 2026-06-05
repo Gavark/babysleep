@@ -11,6 +11,7 @@ import {
 } from '$lib/server/auth/session';
 import { bootstrapAdmin, hasNoUsers } from '$lib/server/auth/bootstrap';
 import { resolveLocale, type Locale } from '$lib/server/auth/locale';
+import { scanAndFire, purgeStaleScheduledPushes } from '$lib/server/push/scheduler';
 import { overwriteGetLocale, overwriteServerAsyncLocalStorage } from '$paraglide/runtime';
 
 const { db } = getDb();
@@ -54,6 +55,16 @@ setInterval(() => purgeExpiredSessions(db), 3600 * 1000);
 // IP that ever hit /login or /signup keeps a bucket alive — under spray
 // attacks from many IPs the Map would grow unbounded.
 setInterval(() => purgeExpiredBuckets(), 3600 * 1000);
+
+// Web Push: scan the queue every 30 s and fire any due push.
+// Single-instance assumption — multi-instance scaling would require leader
+// election or SQLite BEGIN IMMEDIATE row locking; not in scope.
+setInterval(() => {
+  scanAndFire(db).catch((e) => console.error('[push] scanAndFire failed', e));
+}, 30_000);
+
+// Hourly cleanup of old fired/cancelled push rows (30-day retention).
+setInterval(() => purgeStaleScheduledPushes(db), 3600 * 1000);
 
 export const handle: Handle = async ({ event, resolve }) => {
   await maybeBootstrap();
