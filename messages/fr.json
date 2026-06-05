@@ -274,5 +274,11 @@
   "calendar_picker_opt_bad": "Mauvaise",
   "calendar_picker_clear": "Effacer la note",
   "calendar_picker_edit_day": "Éditer la journée complète",
-  "calendar_rate_invalid_rating": "Note invalide"
+  "calendar_rate_invalid_rating": "Note invalide",
+  "error_title": "Erreur {status}",
+  "error_generic_message": "Une erreur est survenue.",
+  "error_home_link": "Retour à l'accueil",
+  "theme_label_auto": "Thème : automatique (clic pour clair)",
+  "theme_label_light": "Thème : clair (clic pour sombre)",
+  "theme_label_dark": "Thème : sombre (clic pour automatique)"
 }

@@ -2,6 +2,7 @@
   import CircleHalf from 'phosphor-svelte/lib/CircleHalf';
   import Sun from 'phosphor-svelte/lib/Sun';
   import Moon from 'phosphor-svelte/lib/Moon';
+  import * as m from '$paraglide/messages';
 
   type ThemeValue = 'auto' | 'light' | 'dark';
 
@@ -32,9 +33,9 @@
   }
 
   function label(t: ThemeValue): string {
-    if (t === 'auto') return 'Thème : automatique (clic pour clair)';
-    if (t === 'light') return 'Thème : clair (clic pour sombre)';
-    return 'Thème : sombre (clic pour automatique)';
+    if (t === 'auto') return m.theme_label_auto();
+    if (t === 'light') return m.theme_label_light();
+    return m.theme_label_dark();
   }
 </script>
 
