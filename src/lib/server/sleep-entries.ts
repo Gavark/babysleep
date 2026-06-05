@@ -2,6 +2,7 @@ import { and, eq, gte, lte, lt, desc } from 'drizzle-orm';
 import type { drizzle } from 'drizzle-orm/better-sqlite3';
 import * as schema from './db/schema';
 import { parseHHMM, formatHHMM } from '$lib/time';
+import { recomputeNextPush } from './push/schedule';
 
 type DB = ReturnType<typeof drizzle<typeof schema>>;
 
@@ -56,6 +57,11 @@ export function upsertEntry(db: DB, babyId: number, date: string, patch: EntryPa
     db.update(schema.sleepEntries).set({ ...patch, updatedAt: t })
       .where(eq(schema.sleepEntries.id, existing.id)).run();
   }
+  // Reconcile the push queue after any write. recomputeNextPush is idempotent
+  // and inexpensive (single SELECT + at most 2 writes), so calling it on
+  // every upsert (including night_rating changes that don't affect the
+  // timer) is acceptable.
+  recomputeNextPush(db, babyId, date);
 }
 
 export function deleteEntry(db: DB, entryId: number) {
