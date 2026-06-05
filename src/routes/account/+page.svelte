@@ -44,6 +44,11 @@
   <button type="submit" class="btn btn-primary"><FloppyDisk size={16} /> {m.common_btn_save()}</button>
 </form>
 
+<h2>Notifications</h2>
+<p class="page-meta">
+  Manage push subscriptions per device. <a href="/account/notifications">Open notifications settings →</a>
+</p>
+
 <h2>{m.account_password_title()}</h2>
 {#if form?.error}<p class="error" role="alert">{form.error}</p>{/if}
 {#if form?.success}<p class="ok">{form.success}</p>{/if}

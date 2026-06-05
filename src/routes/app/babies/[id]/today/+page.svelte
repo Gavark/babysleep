@@ -12,8 +12,24 @@
   import Cloud from 'phosphor-svelte/lib/Cloud';
   import WakeTimer from '$lib/components/WakeTimer.svelte';
   import * as m from '$paraglide/messages';
+  import { onMount } from 'svelte';
+  import EnablePushButton from '$lib/components/EnablePushButton.svelte';
 
   let { data, form } = $props();
+
+  let pushHighlighted = $state(false);
+
+  onMount(() => {
+    if (!('serviceWorker' in navigator)) return;
+    const handler = (event: MessageEvent) => {
+      if (event.data?.type === 'wake-window-exceeded' && event.data.payload?.babyId === data.baby.id) {
+        pushHighlighted = true;
+        setTimeout(() => { pushHighlighted = false; }, 8000);
+      }
+    };
+    navigator.serviceWorker.addEventListener('message', handler);
+    return () => navigator.serviceWorker.removeEventListener('message', handler);
+  });
 
   let wake       = $state('');
   let nap1Start  = $state('');
@@ -143,6 +159,10 @@
   {m.today_page_meta_naps({ count: data.ageParams.naps })} · {m.today_page_meta_window({ window: data.ageParams.awakeWindowMin })} · {m.today_page_meta_night({ night: data.ageParams.nightSleepH })}
 </p>
 <p class="tz-info"><Globe size={12} /> {m.today_tz_label()} <strong>{data.effectiveTz}</strong></p>
+
+<div class="push-area" class:push-highlight={pushHighlighted}>
+  <EnablePushButton />
+</div>
 
 <WakeTimer
   wakeTime={wake}
@@ -392,5 +412,19 @@
     color: var(--c-danger);
     font-size: var(--fs-sm);
     margin: 0;
+  }
+  .push-area {
+    margin-bottom: var(--s-2);
+    transition: background 0.2s ease;
+    padding: var(--s-1) var(--s-2);
+    border-radius: var(--r-sm);
+  }
+  .push-highlight {
+    background: var(--c-accent-honey);
+    animation: pulse 1s ease-in-out 3;
+  }
+  @keyframes pulse {
+    0%, 100% { background: var(--c-accent-honey); }
+    50% { background: transparent; }
   }
 </style>
