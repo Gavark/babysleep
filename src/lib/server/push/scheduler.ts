@@ -2,6 +2,7 @@ import { eq, and, isNull, lte, gte, lt, or, isNotNull } from 'drizzle-orm';
 import type { BaseSQLiteDatabase } from 'drizzle-orm/sqlite-core';
 import * as schema from '../db/schema';
 import { sendOne, type PushPayload } from './send';
+import * as m from '$paraglide/messages';
 
 type DB = BaseSQLiteDatabase<'sync', unknown, typeof schema>;
 
@@ -47,8 +48,8 @@ async function fireOne(db: DB, row: typeof schema.scheduledPushes.$inferSelect):
     babyId: baby.id,
     babyName: baby.name,
     locale: localeNarrow,
-    title: buildTitle(localeNarrow, baby.name),
-    body: buildBody(localeNarrow, baby.name),
+    title: m.push_payload_title({ name: baby.name }, { locale: localeNarrow }),
+    body: m.push_payload_body({ name: baby.name }, { locale: localeNarrow }),
     url: `/app/babies/${baby.id}/today`
   };
 
@@ -58,16 +59,6 @@ async function fireOne(db: DB, row: typeof schema.scheduledPushes.$inferSelect):
     .set({ firedAt: Math.floor(Date.now() / 1000) })
     .where(eq(schema.scheduledPushes.id, row.id))
     .run();
-}
-
-function buildTitle(locale: 'fr' | 'en', name: string): string {
-  if (locale === 'en') return `${name}: wake window exceeded`;
-  return `${name} : fenêtre d'éveil dépassée`;
-}
-
-function buildBody(locale: 'fr' | 'en', name: string): string {
-  if (locale === 'en') return `Time to start ${name}'s next nap.`;
-  return `Il est temps de commencer la prochaine sieste de ${name}.`;
 }
 
 /**

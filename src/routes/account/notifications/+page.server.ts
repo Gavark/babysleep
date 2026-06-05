@@ -2,6 +2,7 @@ import { redirect, fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { getDb } from '$lib/server/db';
 import { listSubscriptionsForUser, revokeSubscription } from '$lib/server/push/subscribe';
+import * as m from '$paraglide/messages';
 
 export const load: PageServerLoad = ({ locals }) => {
   if (!locals.user) throw redirect(303, '/login');
@@ -21,10 +22,10 @@ export const actions: Actions = {
     if (!locals.user) throw redirect(303, '/login');
     const form = await request.formData();
     const id = Number(form.get('id'));
-    if (!Number.isInteger(id)) return fail(400, { error: 'Invalid id' });
+    if (!Number.isInteger(id)) return fail(400, { error: m.notif_error_invalid_id() });
     const { db } = getDb();
     const ok = revokeSubscription(db, locals.user.id, id);
-    if (!ok) return fail(404, { error: 'Subscription not found' });
+    if (!ok) return fail(404, { error: m.notif_error_not_found() });
     return { ok: true };
   }
 };

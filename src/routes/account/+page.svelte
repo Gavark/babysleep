@@ -44,9 +44,9 @@
   <button type="submit" class="btn btn-primary"><FloppyDisk size={16} /> {m.common_btn_save()}</button>
 </form>
 
-<h2>Notifications</h2>
+<h2>{m.account_notifications_title()}</h2>
 <p class="page-meta">
-  Manage push subscriptions per device. <a href="/account/notifications">Open notifications settings →</a>
+  {m.account_notifications_intro()} <a href="/account/notifications">{m.account_notifications_link()}</a>
 </p>
 
 <h2>{m.account_password_title()}</h2>

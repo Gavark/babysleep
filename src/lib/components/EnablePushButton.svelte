@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import Bell from 'phosphor-svelte/lib/Bell';
+  import * as m from '$paraglide/messages';
 
   type PushState = 'idle' | 'checking' | 'subscribing' | 'active' | 'denied' | 'unsupported';
   let pushState = $state<PushState>('checking');
@@ -74,13 +75,13 @@
 {#if pushState === 'checking'}
   <!-- silent — avoid flicker -->
 {:else if pushState === 'unsupported'}
-  <p class="hint">Notifications not supported on this browser.</p>
+  <p class="hint">{m.notif_btn_unsupported()}</p>
 {:else if pushState === 'denied'}
-  <p class="hint">Notifications blocked — enable them from your browser settings to receive alerts.</p>
+  <p class="hint">{m.notif_btn_denied()}</p>
 {:else if pushState === 'active'}
-  <p class="ok"><Bell size={14} weight="fill" /> Alerts active on this device.</p>
+  <p class="ok"><Bell size={14} weight="fill" /> {m.notif_btn_active()}</p>
 {:else if isIOS && !isStandalonePwa}
-  <p class="hint">On iPhone: add BabySleep to your home screen first, then come back here to enable alerts.</p>
+  <p class="hint">{m.notif_btn_ios_hint()}</p>
 {:else}
   <button
     type="button"
@@ -88,7 +89,7 @@
     onclick={enable}
     disabled={pushState === 'subscribing'}
   >
-    <Bell size={14} /> Enable wake-window alerts
+    <Bell size={14} /> {m.notif_btn_enable()}
   </button>
 {/if}
 
