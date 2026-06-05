@@ -22,7 +22,7 @@ export const baseLocale = "fr";
  */
 export const locales = /** @type {const} */ (["fr","en"]);
 /** @type {string} */
-export const cookieName = "PARAGLIDE_LOCALE";
+export const cookieName = "locale";
 /** @type {number} */
 export const cookieMaxAge = 34560000;
 /** @type {string} */
@@ -34,7 +34,7 @@ export const localStorageKey = "PARAGLIDE_LOCALE";
  */
 export const strategy = [
   "cookie",
-  "globalVariable",
+  "preferredLanguage",
   "baseLocale"
 ];
 /**
@@ -165,8 +165,8 @@ export function overwriteServerAsyncLocalStorage(value) {
 }
 const TREE_SHAKE_COOKIE_STRATEGY_USED = true;
 const TREE_SHAKE_URL_STRATEGY_USED = false;
-const TREE_SHAKE_GLOBAL_VARIABLE_STRATEGY_USED = true;
-const TREE_SHAKE_PREFERRED_LANGUAGE_STRATEGY_USED = false;
+const TREE_SHAKE_GLOBAL_VARIABLE_STRATEGY_USED = false;
+const TREE_SHAKE_PREFERRED_LANGUAGE_STRATEGY_USED = true;
 const TREE_SHAKE_DEFAULT_URL_PATTERN_USED = true;
 const TREE_SHAKE_LOCAL_STORAGE_STRATEGY_USED = false;
 

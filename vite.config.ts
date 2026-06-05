@@ -18,7 +18,18 @@ export default defineConfig({
       // produce byte-identical files. Without this, the plugin's dev mode
       // can drift to `locale-modules` and create noisy diffs in src/paraglide
       // every time a contributor starts the dev server.
-      outputStructure: 'message-modules'
+      outputStructure: 'message-modules',
+      // Tell the client-side runtime to read the locale from the SAME cookie
+      // hooks.server.ts sets ('locale'), with Accept-Language as a fallback
+      // for first visits. Without this, the client default strategy is
+      // ['baseLocale'] which means EVERY client-side re-render falls back
+      // to 'fr' even when the server resolved 'en' — the page hydrates in
+      // EN then reverts to FR after Svelte rebinds the message functions.
+      // The server still uses our AsyncLocalStorage override (set in
+      // hooks.server.ts via overwriteGetLocale), so this only affects
+      // browser-side rendering.
+      strategy: ['cookie', 'preferredLanguage', 'baseLocale'],
+      cookieName: 'locale'
     }),
     sveltekit(),
     SvelteKitPWA({
