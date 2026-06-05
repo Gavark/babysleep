@@ -34,7 +34,12 @@ export default defineConfig({
     sveltekit(),
     SvelteKitPWA({
       registerType: 'autoUpdate',
-      strategies: 'generateSW',
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'service-worker.ts',
+      injectManifest: {
+        globPatterns: ['client/**/*.{js,css,ico,png,svg,webp,woff2}']
+      },
       manifest: {
         name: 'BabySleep',
         short_name: 'BabySleep',
@@ -48,10 +53,6 @@ export default defineConfig({
           { src: '/icon-512.png', sizes: '512x512', type: 'image/png' },
           { src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
         ]
-      },
-      workbox: {
-        navigateFallback: '/login',
-        globPatterns: ['client/**/*.{js,css,ico,png,svg,webp,woff2}']
       }
     })
   ],
