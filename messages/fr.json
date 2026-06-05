@@ -280,5 +280,16 @@
   "error_home_link": "Retour à l'accueil",
   "theme_label_auto": "Thème : automatique (clic pour clair)",
   "theme_label_light": "Thème : clair (clic pour sombre)",
-  "theme_label_dark": "Thème : sombre (clic pour automatique)"
+  "theme_label_dark": "Thème : sombre (clic pour automatique)",
+  "csv_header_date": "Date",
+  "csv_header_wake": "Réveil",
+  "csv_header_nap_start": "S{n} début",
+  "csv_header_nap_end": "S{n} fin",
+  "csv_header_nap_pause": "S{n} pause (min)",
+  "csv_header_nap_duration": "S{n} durée",
+  "csv_header_bedtime": "Coucher",
+  "csv_header_naps_count": "Nb siestes",
+  "csv_header_prev_night_duration": "Durée nuit préc.",
+  "csv_header_day_duration": "Durée jour",
+  "csv_header_notes": "Notes"
 }

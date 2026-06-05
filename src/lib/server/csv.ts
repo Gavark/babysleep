@@ -1,4 +1,6 @@
 import { parseHHMM, formatHHMM } from '$lib/time';
+import type { Locale } from '$lib/server/auth/locale';
+import * as m from '$paraglide/messages';
 
 type Row = {
   date: string;
@@ -77,16 +79,37 @@ function durationPrevNight(curr: Row, prev: Row | null): string {
   return formatHHMM(dur);
 }
 
-export function buildSleepCsv(rows: Row[], _babyName: string, opts: { priorEntry?: Row | null } = {}): string {
+export function buildSleepCsv(
+  rows: Row[],
+  _babyName: string,
+  locale: Locale,
+  opts: { priorEntry?: Row | null } = {}
+): string {
+  // Pass `{ locale }` explicitly to every message call: the CSV builder runs
+  // server-side but isn't always inside the Paraglide AsyncLocalStorage scope
+  // (e.g. unit tests call it directly). Explicit locale = no global-state magic.
+  const o = { locale };
+  const napHeaders = (n: number) => [
+    m.csv_header_nap_start({ n }, o),
+    m.csv_header_nap_end({ n }, o),
+    m.csv_header_nap_pause({ n }, o),
+    m.csv_header_nap_duration({ n }, o)
+  ];
+
   const sortedDesc = [...rows].sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
   const lines: string[] = [];
   lines.push([
-    'Date', 'Réveil',
-    'S1 début', 'S1 fin', 'S1 pause (min)', 'S1 durée',
-    'S2 début', 'S2 fin', 'S2 pause (min)', 'S2 durée',
-    'S3 début', 'S3 fin', 'S3 pause (min)', 'S3 durée',
-    'S4 début', 'S4 fin', 'S4 pause (min)', 'S4 durée',
-    'Coucher', 'Nb siestes', 'Durée nuit préc.', 'Durée jour', 'Notes'
+    m.csv_header_date({}, o),
+    m.csv_header_wake({}, o),
+    ...napHeaders(1),
+    ...napHeaders(2),
+    ...napHeaders(3),
+    ...napHeaders(4),
+    m.csv_header_bedtime({}, o),
+    m.csv_header_naps_count({}, o),
+    m.csv_header_prev_night_duration({}, o),
+    m.csv_header_day_duration({}, o),
+    m.csv_header_notes({}, o)
   ].join(';'));
   for (let i = 0; i < sortedDesc.length; i++) {
     const cur = sortedDesc[i];

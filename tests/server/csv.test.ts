@@ -3,7 +3,7 @@ import { buildSleepCsv } from '../../src/lib/server/csv';
 
 describe('buildSleepCsv', () => {
   it('produces UTF-8 BOM + ; separator', () => {
-    const out = buildSleepCsv([], 'Léa');
+    const out = buildSleepCsv([], 'Léa', 'fr');
     expect(out.startsWith('﻿')).toBe(true);
     const firstLine = out.split('\r\n')[0].slice(1);
     expect(firstLine.split(';')).toEqual([
@@ -23,7 +23,7 @@ describe('buildSleepCsv', () => {
       nap3Start: null, nap3End: null, nap4Start: null, nap4End: null,
       bedtime: '20:00', notes: 'note avec ; et "guillemets"'
     }];
-    const out = buildSleepCsv(rows, 'X');
+    const out = buildSleepCsv(rows, 'X', 'fr');
     expect(out).toContain('"note avec ; et ""guillemets"""');
   });
 
@@ -34,7 +34,7 @@ describe('buildSleepCsv', () => {
       nap3Start: null, nap3End: null, nap4Start: null, nap4End: null,
       bedtime: '20:00', notes: null
     }];
-    const out = buildSleepCsv(rows, 'X');
+    const out = buildSleepCsv(rows, 'X', 'fr');
     const line = out.split('\r\n')[1].split(';');
     // columns: Date(0) Réveil(1)
     //   S1: début(2) fin(3) pause(4) durée(5)
@@ -50,7 +50,7 @@ describe('buildSleepCsv', () => {
       { date: '2025-07-16', wakeTime: '07:00', nap1Start: null, nap1End: null, nap2Start: null, nap2End: null, nap3Start: null, nap3End: null, nap4Start: null, nap4End: null, bedtime: '20:30', notes: null },
       { date: '2025-07-15', wakeTime: '06:30', nap1Start: null, nap1End: null, nap2Start: null, nap2End: null, nap3Start: null, nap3End: null, nap4Start: null, nap4End: null, bedtime: '20:00', notes: null }
     ];
-    const out = buildSleepCsv(rows, 'X');
+    const out = buildSleepCsv(rows, 'X', 'fr');
     const lines = out.split('\r\n').filter(Boolean);
     expect(lines[1].split(';')[20]).toBe('11:00');
     expect(lines[2].split(';')[20]).toBe('');
@@ -61,7 +61,7 @@ describe('buildSleepCsv', () => {
       { date: '2025-07-16', wakeTime: '07:00', nap1Start: null, nap1End: null, nap2Start: null, nap2End: null, nap3Start: null, nap3End: null, nap4Start: null, nap4End: null, bedtime: '20:30', notes: null }
     ];
     const prior = { date: '2025-07-15', wakeTime: '06:30', nap1Start: null, nap1End: null, nap2Start: null, nap2End: null, nap3Start: null, nap3End: null, nap4Start: null, nap4End: null, bedtime: '20:00', notes: null };
-    const out = buildSleepCsv(rows, 'X', { priorEntry: prior });
+    const out = buildSleepCsv(rows, 'X', 'fr', { priorEntry: prior });
     const lines = out.split('\r\n').filter(Boolean);
     expect(lines[1].split(';')[20]).toBe('11:00');
   });
@@ -74,7 +74,7 @@ describe('buildSleepCsv', () => {
       nap3Start: null, nap3End: null, nap4Start: null, nap4End: null,
       bedtime: '20:00', notes: null
     }];
-    const out = buildSleepCsv(rows, 'X');
+    const out = buildSleepCsv(rows, 'X', 'fr');
     const line = out.split('\r\n')[1].split(';');
     expect(line[5]).toBe('01:00');   // S1 durée
     expect(line[9]).toBe('01:30');   // S2 durée
@@ -101,7 +101,8 @@ describe('buildSleepCsv', () => {
           nap3Start: null, nap3End: null, nap4Start: null, nap4End: null,
           bedtime: '20:00', notes: payload
         }],
-        'X'
+        'X',
+        'fr'
       );
       const line = out.split('\r\n')[1];
       // Last column is Notes (col index 22). The first character of the cell
@@ -122,10 +123,24 @@ describe('buildSleepCsv', () => {
         nap3Start: null, nap3End: null, nap4Start: null, nap4End: null,
         bedtime: '20:00', notes: 'Bonne nuit, rien à signaler.'
       }],
-      'X'
+      'X',
+      'fr'
     );
     const notesCell = out.split('\r\n')[1].split(';').pop();
     expect(notesCell).toBe('Bonne nuit, rien à signaler.');
+  });
+
+  it('emits English headers when locale=en', () => {
+    const out = buildSleepCsv([], 'X', 'en');
+    const firstLine = out.split('\r\n')[0].slice(1); // strip BOM
+    expect(firstLine.split(';')).toEqual([
+      'Date', 'Wake-up',
+      'S1 start', 'S1 end', 'S1 pause (min)', 'S1 duration',
+      'S2 start', 'S2 end', 'S2 pause (min)', 'S2 duration',
+      'S3 start', 'S3 end', 'S3 pause (min)', 'S3 duration',
+      'S4 start', 'S4 end', 'S4 pause (min)', 'S4 duration',
+      'Bedtime', 'Nap count', 'Prev. night duration', 'Day duration', 'Notes'
+    ]);
   });
 
   it('subtracts pause minutes from per-nap durée and from Durée jour', () => {
@@ -137,7 +152,7 @@ describe('buildSleepCsv', () => {
       nap1PauseMin: 15, nap2PauseMin: 30, nap3PauseMin: null, nap4PauseMin: null,
       bedtime: '20:00', notes: null
     }];
-    const out = buildSleepCsv(rows, 'X');
+    const out = buildSleepCsv(rows, 'X', 'fr');
     const line = out.split('\r\n')[1].split(';');
     expect(line[4]).toBe('15');      // S1 pause (min)
     expect(line[5]).toBe('00:45');   // S1 durée nette

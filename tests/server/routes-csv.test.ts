@@ -13,7 +13,7 @@ describe('CSV export pipeline', () => {
     const b = Number(tdb.sqlite.prepare("INSERT INTO babies (user_id, name, birth_date, created_at, updated_at) VALUES (?, 'Léa', '2025-01-15', ?, ?)").run(u, t, t).lastInsertRowid);
     upsertEntry(tdb.db, b, '2025-07-15', { wakeTime: '07:00', bedtime: '20:00' });
     const rows = listEntriesInRange(tdb.db, b, '2025-07-01', '2025-07-31');
-    const csv = buildSleepCsv(rows, 'Léa');
+    const csv = buildSleepCsv(rows, 'Léa', 'fr');
     expect(csv).toContain('2025-07-15');
     expect(csv).toContain('07:00');
   });

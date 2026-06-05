@@ -16,8 +16,8 @@
 <p class="page-meta">{m.account_connected_as()} <strong>{data.account.email}</strong>{#if data.account.isAdmin} <span class="badge">{m.account_badge_admin()}</span>{/if}</p>
 
 <h2>{m.account_timezone_title()}</h2>
-{#if form?.error}<p class="error" role="alert">{form.error}</p>{/if}
-{#if form?.success}<p class="ok">{form.success}</p>{/if}
+{#if form?.tzError}<p class="error" role="alert">{form.tzError}</p>{/if}
+{#if form?.tzSuccess}<p class="ok">{form.tzSuccess}</p>{/if}
 <form method="POST" action="?/updateTimezone" use:enhance class="card tz-form">
   <label class="field">
     <span class="field-label">{m.account_timezone_label()}</span>
@@ -45,6 +45,8 @@
 </form>
 
 <h2>{m.account_password_title()}</h2>
+{#if form?.error}<p class="error" role="alert">{form.error}</p>{/if}
+{#if form?.success}<p class="ok">{form.success}</p>{/if}
 <form method="POST" action="?/changePassword" use:enhance class="card pw-form">
   <label class="field"><span class="field-label">{m.account_password_current_label()}</span>
     <input class="field-input" type="password" name="current_password" required autocomplete="current-password" />
