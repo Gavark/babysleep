@@ -11,7 +11,14 @@ function seed(tdb: ReturnType<typeof makeTestDb>) {
   // birth date such that the baby is in the 6-9 month bracket TODAY:
   // 6 months ago = today - 180 days approx
   const birth = new Date(Date.now() - 200 * 86_400_000).toISOString().slice(0, 10);
-  const b = Number(tdb.sqlite.prepare("INSERT INTO babies (user_id, name, birth_date, created_at, updated_at) VALUES (?, 'L', ?, ?, ?)").run(u, birth, t, t).lastInsertRowid);
+  // Pin baby.timezone to the test host's process TZ so that wake_time HH:MM
+  // values built from `new Date().getHours()` (process TZ) get interpreted
+  // consistently by recomputeNextPush. Without this, CI hosts on UTC and
+  // dev hosts on local TZ would compute fire_at against the user default
+  // (Europe/Paris) and the existing "fire_at must be in the future" checks
+  // would flip sign depending on which side of Paris the host sits.
+  const hostTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const b = Number(tdb.sqlite.prepare("INSERT INTO babies (user_id, name, birth_date, timezone, created_at, updated_at) VALUES (?, 'L', ?, ?, ?, ?)").run(u, birth, hostTz, t, t).lastInsertRowid);
   return { userId: u, babyId: b };
 }
 
@@ -135,5 +142,50 @@ describe('recomputeNextPush', () => {
     recomputeNextPush(tdb.db, babyId, today);
     recomputeNextPush(tdb.db, babyId, today);
     expect(pendingFor(tdb, babyId).length).toBe(1);
+  });
+
+  it('honours baby.timezone when computing fire_at (America/Guadeloupe, UTC-4)', () => {
+    // Lock the age bracket to 6-9 mois (firstAwakeWindowMin = 135) regardless
+    // of the futureDate chosen below — without this, a far-future date would
+    // age the baby past every bracket and silently pick a different window.
+    tdb.sqlite.prepare("UPDATE babies SET timezone = 'America/Guadeloupe', age_override_months = 7 WHERE id = ?").run(babyId);
+
+    const futureDate = '2099-06-15';
+    upsertEntry(tdb.db, babyId, futureDate, { wakeTime: '07:00' });
+    recomputeNextPush(tdb.db, babyId, futureDate);
+
+    const pending = pendingFor(tdb, babyId);
+    expect(pending.length).toBe(1);
+    // 07:00 Guadeloupe (UTC-4) + 135 min = 09:15 Guadeloupe = 13:15 UTC.
+    const expected = Math.floor(Date.UTC(2099, 5, 15, 13, 15, 0) / 1000);
+    expect(pending[0].fireAt).toBe(expected);
+  });
+
+  it('falls back to user.timezone when baby.timezone is null', () => {
+    tdb.sqlite.prepare("UPDATE babies SET timezone = NULL, age_override_months = 7 WHERE id = ?").run(babyId);
+    tdb.sqlite.prepare("UPDATE users SET timezone = 'America/Guadeloupe' WHERE id = (SELECT user_id FROM babies WHERE id = ?)").run(babyId);
+
+    const futureDate = '2099-06-15';
+    upsertEntry(tdb.db, babyId, futureDate, { wakeTime: '07:00' });
+    recomputeNextPush(tdb.db, babyId, futureDate);
+
+    const pending = pendingFor(tdb, babyId);
+    expect(pending.length).toBe(1);
+    const expected = Math.floor(Date.UTC(2099, 5, 15, 13, 15, 0) / 1000);
+    expect(pending[0].fireAt).toBe(expected);
+  });
+
+  it('uses entry.timezone override when set', () => {
+    tdb.sqlite.prepare("UPDATE babies SET timezone = 'Europe/Paris', age_override_months = 7 WHERE id = ?").run(babyId);
+
+    const futureDate = '2099-06-15';
+    upsertEntry(tdb.db, babyId, futureDate, { wakeTime: '07:00', timezone: 'America/Guadeloupe' });
+    recomputeNextPush(tdb.db, babyId, futureDate);
+
+    const pending = pendingFor(tdb, babyId);
+    expect(pending.length).toBe(1);
+    // entry.timezone (Guadeloupe) must win over baby.timezone (Paris).
+    const expected = Math.floor(Date.UTC(2099, 5, 15, 13, 15, 0) / 1000);
+    expect(pending[0].fireAt).toBe(expected);
   });
 });

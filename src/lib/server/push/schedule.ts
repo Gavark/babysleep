@@ -8,6 +8,7 @@ import * as schema from '../db/schema';
 import { ageInMonths } from '../../sleep-calc';
 import { paramsForAge } from '../../age-params';
 import { parseHHMM, isValidHHMM } from '../../time';
+import { resolveTimezone, localHHMMToEpoch } from '../../tz';
 
 type DB = BaseSQLiteDatabase<'sync', unknown, typeof schema>;
 
@@ -90,11 +91,18 @@ export function recomputeNextPush(db: DB, babyId: number, date: string): void {
   const windowMin = lastEventIndex === -1 ? ageParams.firstAwakeWindowMin : ageParams.awakeWindowMin;
   const fireAtLocalMinutes = lastEventMinutes + windowMin;
 
-  // Build absolute fire_at (unix seconds). Treat date+HH:MM as local time.
-  const [y, m, d] = date.split('-').map(Number);
+  // Resolve the baby's wall-clock timezone (entry override → baby default →
+  // user default → Europe/Paris fallback). Without this, fire_at would be
+  // computed in the process TZ and silently land in the past for any baby
+  // outside the container's zone.
+  const user = db.select().from(schema.users)
+    .where(eq(schema.users.id, baby.userId))
+    .all()[0];
+  const effectiveTz = resolveTimezone(entry.timezone, baby.timezone, user?.timezone ?? null);
   const hh = Math.floor(fireAtLocalMinutes / 60);
   const mm = fireAtLocalMinutes % 60;
-  const fireAt = Math.floor(new Date(y, m - 1, d, hh, mm, 0).getTime() / 1000);
+  const fireAtHHMM = `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
+  const fireAt = localHHMMToEpoch(date, fireAtHHMM, effectiveTz);
 
   const now = Math.floor(Date.now() / 1000);
   if (fireAt <= now) return; // already past
