@@ -254,7 +254,6 @@ pas sur la stabilité de l'API avant `v1.0`.
 
 Ce que je veux ajouter (pas d'ETA ferme) :
 
-- Partage co-parent avec distinction lecture-seule / lecture-écriture
 - Tags optionnels par jour (malade, crèche, vacances)
 
 ---

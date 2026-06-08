@@ -225,7 +225,6 @@ stability until `v1.0`.
 
 Things I want to add (no firm ETA):
 
-- "Share with co-parent" with read-only / read-write distinction
 - Optional tags per day (sick, daycare, vacation)
 
 ---
