@@ -149,6 +149,7 @@
   "today_notes_label": "Notes",
   "today_submit_save_day": "Enregistrer la journée",
   "today_entry_saved": "Journée enregistrée.",
+  "today_entry_save_failed": "Échec de l'enregistrement. Vérifie ta connexion et réessaie.",
   "today_entry_invalid_time": "Heure invalide ({field}) : {value}",
   "today_entry_invalid_pause": "Pause invalide ({field}) : {value}",
   "today_recent_title": "7 derniers jours",

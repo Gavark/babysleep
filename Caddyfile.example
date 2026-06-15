@@ -2,5 +2,12 @@
 # `Caddyfile` is gitignored so your real config stays local.
 your-domain.example.com {
     encode gzip
+    log {
+        output file /data/access.log {
+            roll_size 10mb
+            roll_keep 5
+        }
+        format json
+    }
     reverse_proxy app:3000
 }

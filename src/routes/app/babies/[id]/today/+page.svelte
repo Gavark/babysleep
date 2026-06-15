@@ -18,6 +18,7 @@
   let { data, form } = $props();
 
   let pushHighlighted = $state(false);
+  let saveError = $state<string | null>(null);
 
   onMount(() => {
     if (!('serviceWorker' in navigator)) return;
@@ -176,6 +177,7 @@
   onAddPause={handleAddPause}
 />
 
+{#if saveError}<p class="error" role="alert">{saveError}</p>{/if}
 {#if form?.error}<p class="error" role="alert">{form.error}</p>{/if}
 {#if form?.success}<p class="ok">{form.success}</p>{/if}
 
@@ -183,7 +185,10 @@
   bind:this={formEl}
   method="POST"
   action="?/save"
-  use:enhance={() => async ({ update }) => update({ reset: false })}
+  use:enhance={() => async ({ result, update }) => {
+    saveError = result.type === 'error' ? m.today_entry_save_failed() : null;
+    await update({ reset: false });
+  }}
   autocomplete="off"
   class="today-form"
 >

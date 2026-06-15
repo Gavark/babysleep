@@ -72,8 +72,16 @@ export const actions: Actions = {
     const userTimezone = locals.user.timezone ?? 'Europe/Paris';
     const effectiveTz = resolveTimezone(entryTz, baby.timezone, userTimezone);
     const date = String(form.get('date') ?? todayISOInTZ(effectiveTz));
-    upsertEntry(db, baby.id, date, patch as any);
-    return { success: m.today_entry_saved() };
+    const t0 = Date.now();
+    const fieldsTouched = Object.entries(patch).filter(([, v]) => v !== null && v !== undefined).map(([k]) => k).join(',') || '(none)';
+    try {
+      upsertEntry(db, baby.id, date, patch as any);
+      console.log(`[save] ok user=${locals.user.id} baby=${baby.id} date=${date} fields=[${fieldsTouched}] dt=${Date.now() - t0}ms`);
+      return { success: m.today_entry_saved() };
+    } catch (e) {
+      console.error(`[save] FAIL user=${locals.user.id} baby=${baby.id} date=${date} fields=[${fieldsTouched}]`, e);
+      return fail(500, { error: m.today_entry_save_failed() });
+    }
   }
 };
 

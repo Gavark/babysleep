@@ -149,6 +149,7 @@
   "today_notes_label": "Notes",
   "today_submit_save_day": "Save day",
   "today_entry_saved": "Day saved.",
+  "today_entry_save_failed": "Save failed. Check your connection and try again.",
   "today_entry_invalid_time": "Invalid time ({field}): {value}",
   "today_entry_invalid_pause": "Invalid pause ({field}): {value}",
   "today_recent_title": "Last 7 days",
