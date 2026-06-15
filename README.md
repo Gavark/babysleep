@@ -4,6 +4,11 @@ Une PWA auto-hébergée pour suivre le sommeil, les siestes et les nuits de ton
 bébé. Pensée pour les parents qui veulent garder leurs données de famille sur
 leur propre serveur.
 
+[![License: AGPL v3](https://img.shields.io/badge/license-AGPL_v3-blue.svg)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/Gavark/babysleep)](https://github.com/Gavark/babysleep/releases)
+[![Docker image](https://img.shields.io/badge/docker-ghcr.io%2Fgavark%2Fbabysleep-blue)](https://github.com/Gavark/babysleep/pkgs/container/babysleep)
+[![CI](https://github.com/Gavark/babysleep/actions/workflows/ci.yml/badge.svg)](https://github.com/Gavark/babysleep/actions/workflows/ci.yml)
+
 🇬🇧 [Read in English](./README.en.md)
 
 ![Vue calendrier mensuelle](./docs/screenshots/1.png)

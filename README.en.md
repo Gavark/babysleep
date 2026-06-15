@@ -3,6 +3,11 @@
 A self-hosted PWA for tracking your baby's sleep, naps, and night-time patterns.
 Built for parents who want to keep their family data on their own server.
 
+[![License: AGPL v3](https://img.shields.io/badge/license-AGPL_v3-blue.svg)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/Gavark/babysleep)](https://github.com/Gavark/babysleep/releases)
+[![Docker image](https://img.shields.io/badge/docker-ghcr.io%2Fgavark%2Fbabysleep-blue)](https://github.com/Gavark/babysleep/pkgs/container/babysleep)
+[![CI](https://github.com/Gavark/babysleep/actions/workflows/ci.yml/badge.svg)](https://github.com/Gavark/babysleep/actions/workflows/ci.yml)
+
 🇫🇷 [Readme en français](./README.md)
 
 ![Calendar month view](./docs/screenshots/1.png)
