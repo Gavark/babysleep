@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { AGE_PARAMS, paramsForAge } from '$lib/age-params';
+import { AGE_PARAMS, paramsForAge, findCurrentBracketIdx } from '$lib/age-params';
 
 describe('AGE_PARAMS', () => {
   it('has 8 tiers', () => {
@@ -48,5 +48,33 @@ describe('paramsForAge', () => {
   it('returns the right tier at the boundary (Sheets parity: ascending match-≤)', () => {
     // 12 should match 12-18 (boundary inclusive on min, like VLOOKUP TRUE)
     expect(paramsForAge(12).label).toBe('12-18 mois');
+  });
+});
+
+describe('findCurrentBracketIdx', () => {
+  it('returns 0 for newborn (0 months)', () => {
+    expect(findCurrentBracketIdx(0)).toBe(0);
+  });
+
+  it('returns the 4-6 bracket index for 5 months', () => {
+    const idx = findCurrentBracketIdx(5);
+    expect(AGE_PARAMS[idx].label).toBe('4-6 mois');
+  });
+
+  it('returns the 9-12 bracket index for 10 months', () => {
+    const idx = findCurrentBracketIdx(10);
+    expect(AGE_PARAMS[idx].label).toBe('9-12 mois');
+  });
+
+  it('returns the last bracket index for ages past the table (e.g. 100 months)', () => {
+    const idx = findCurrentBracketIdx(100);
+    expect(idx).toBe(AGE_PARAMS.length - 1);
+  });
+
+  it('matches the bracket returned by paramsForAge', () => {
+    for (const months of [0, 2, 5, 10, 15, 24, 36, 60]) {
+      const idx = findCurrentBracketIdx(months);
+      expect(AGE_PARAMS[idx]).toBe(paramsForAge(months));
+    }
   });
 });

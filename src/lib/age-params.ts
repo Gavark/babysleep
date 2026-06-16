@@ -38,3 +38,19 @@ export function paramsForAge(months: number): AgeParams {
   }
   return chosen;
 }
+
+/**
+ * Return the index in AGE_PARAMS of the bracket matching the given age in months.
+ * Mirrors paramsForAge's selection logic so the index points at the same row.
+ * Returns the LAST bracket's index for ages past the table.
+ */
+export function findCurrentBracketIdx(months: number): number {
+  if (!Number.isFinite(months)) return 0;
+  if (months < AGE_PARAMS[0].ageMinMonths) return 0;
+  let chosen = 0;
+  for (let i = 0; i < AGE_PARAMS.length; i++) {
+    if (AGE_PARAMS[i].ageMinMonths <= months) chosen = i;
+    else break;
+  }
+  return chosen;
+}
