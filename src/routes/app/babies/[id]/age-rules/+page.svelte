@@ -147,8 +147,9 @@
     padding: 2px var(--s-1);
     border-radius: var(--r-sm);
     background: var(--c-accent-honey);
-    color: var(--c-bg);
+    color: #3D2E25; /* dark brown, invariant — high contrast on both honey shades (light/dark themes) */
     margin-left: var(--s-1);
+    font-weight: 600;
   }
   .bracket-card { padding: var(--s-3); }
   .bracket-current { border-color: var(--c-accent-honey); }
