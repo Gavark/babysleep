@@ -2,7 +2,7 @@
 
 > Auto-generated i18n message functions. Import `messages.js` to use translated strings.
 
-Compiled from: `./project.inlang`
+Compiled from: `D:\Dev\Gavark\CalculateurSommeilBebe\project.inlang`
 
 
 ## What is this folder?
