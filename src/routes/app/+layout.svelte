@@ -56,6 +56,7 @@
     <a class={subActive('history')}  href="/app/babies/{data.currentBabyId}/history">{m.app_nav_history()}</a>
     <a class={subActive('calendar')} href="/app/babies/{data.currentBabyId}/calendar">{m.app_nav_calendar()}</a>
     <a class={subActive('stats')}    href="/app/babies/{data.currentBabyId}/stats">{m.app_nav_stats()}</a>
+    <a class={subActive('age-rules')} href="/app/babies/{data.currentBabyId}/age-rules">{m.app_nav_age_rules()}</a>
     <a class={subActive('edit')}     href="/app/babies/{data.currentBabyId}">{m.app_nav_edit()}</a>
   </nav>
 {/if}
