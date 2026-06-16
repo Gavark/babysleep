@@ -27,13 +27,50 @@
   let nap3End    = $state('');
   let nap4Start  = $state('');
   let nap4End    = $state('');
+  let nap5Start  = $state('');
+  let nap5End    = $state('');
+  let nap6Start  = $state('');
+  let nap6End    = $state('');
+  let nap7Start  = $state('');
+  let nap7End    = $state('');
+  let nap8Start  = $state('');
+  let nap8End    = $state('');
   let nap1Pause  = $state(0);
   let nap2Pause  = $state(0);
   let nap3Pause  = $state(0);
   let nap4Pause  = $state(0);
+  let nap5Pause  = $state(0);
+  let nap6Pause  = $state(0);
+  let nap7Pause  = $state(0);
+  let nap8Pause  = $state(0);
   let bedtime    = $state('');
   let notes      = $state('');
   let entryTz    = $state('');
+
+  // Past-day view: show only slots that already have data, but keep the
+  // bracket-expected count visible by default so missing-data days still
+  // surface every expected nap row for editing.
+  function computeVisibleNapsDay(): number {
+    const entry = data.entry;
+    const expected = data.ageParams.naps;
+    if (!entry) return Math.min(8, Math.max(1, expected));
+    const slots = [
+      entry.nap1Start || entry.nap1End || entry.nap1PauseMin,
+      entry.nap2Start || entry.nap2End || entry.nap2PauseMin,
+      entry.nap3Start || entry.nap3End || entry.nap3PauseMin,
+      entry.nap4Start || entry.nap4End || entry.nap4PauseMin,
+      entry.nap5Start || entry.nap5End || entry.nap5PauseMin,
+      entry.nap6Start || entry.nap6End || entry.nap6PauseMin,
+      entry.nap7Start || entry.nap7End || entry.nap7PauseMin,
+      entry.nap8Start || entry.nap8End || entry.nap8PauseMin
+    ];
+    let highest = expected;
+    for (let i = 7; i >= 0; i--) {
+      if (slots[i]) { highest = Math.max(highest, i + 1); break; }
+    }
+    return Math.min(8, Math.max(1, highest));
+  }
+  let visibleNapCount = $state(computeVisibleNapsDay());
 
   let syncedFor = $state<string | number>('__init__');
 
@@ -50,13 +87,26 @@
       nap3End   = data.entry?.nap3End   ?? '';
       nap4Start = data.entry?.nap4Start ?? '';
       nap4End   = data.entry?.nap4End   ?? '';
+      nap5Start = data.entry?.nap5Start ?? '';
+      nap5End   = data.entry?.nap5End   ?? '';
+      nap6Start = data.entry?.nap6Start ?? '';
+      nap6End   = data.entry?.nap6End   ?? '';
+      nap7Start = data.entry?.nap7Start ?? '';
+      nap7End   = data.entry?.nap7End   ?? '';
+      nap8Start = data.entry?.nap8Start ?? '';
+      nap8End   = data.entry?.nap8End   ?? '';
       nap1Pause = data.entry?.nap1PauseMin ?? 0;
       nap2Pause = data.entry?.nap2PauseMin ?? 0;
       nap3Pause = data.entry?.nap3PauseMin ?? 0;
       nap4Pause = data.entry?.nap4PauseMin ?? 0;
+      nap5Pause = data.entry?.nap5PauseMin ?? 0;
+      nap6Pause = data.entry?.nap6PauseMin ?? 0;
+      nap7Pause = data.entry?.nap7PauseMin ?? 0;
+      nap8Pause = data.entry?.nap8PauseMin ?? 0;
       bedtime   = data.entry?.bedtime   ?? '';
       notes     = data.entry?.notes     ?? '';
       entryTz   = data.entry?.timezone  ?? '';
+      visibleNapCount = computeVisibleNapsDay();
     }
   });
 
@@ -71,12 +121,20 @@
     { start: nap1Start, end: nap1End, pauseMin: nap1Pause },
     { start: nap2Start, end: nap2End, pauseMin: nap2Pause },
     { start: nap3Start, end: nap3End, pauseMin: nap3Pause },
-    { start: nap4Start, end: nap4End, pauseMin: nap4Pause }
+    { start: nap4Start, end: nap4End, pauseMin: nap4Pause },
+    { start: nap5Start, end: nap5End, pauseMin: nap5Pause },
+    { start: nap6Start, end: nap6End, pauseMin: nap6Pause },
+    { start: nap7Start, end: nap7End, pauseMin: nap7Pause },
+    { start: nap8Start, end: nap8End, pauseMin: nap8Pause }
   ]);
   const napEndSugg1 = $derived(suggestNapEnd(0, nap1Start, napsArr, data.ageParams) ?? '');
   const napEndSugg2 = $derived(suggestNapEnd(1, nap2Start, napsArr, data.ageParams) ?? '');
   const napEndSugg3 = $derived(suggestNapEnd(2, nap3Start, napsArr, data.ageParams) ?? '');
   const napEndSugg4 = $derived(suggestNapEnd(3, nap4Start, napsArr, data.ageParams) ?? '');
+  const napEndSugg5 = $derived(suggestNapEnd(4, nap5Start, napsArr, data.ageParams) ?? '');
+  const napEndSugg6 = $derived(suggestNapEnd(5, nap6Start, napsArr, data.ageParams) ?? '');
+  const napEndSugg7 = $derived(suggestNapEnd(6, nap7Start, napsArr, data.ageParams) ?? '');
+  const napEndSugg8 = $derived(suggestNapEnd(7, nap8Start, napsArr, data.ageParams) ?? '');
 
   const ideal = $derived(safeIdeal(data.baby.desiredWakeTime ?? '') || safeIdeal(wake));
   // Sieste 1 uses the shorter first-of-day window; later naps use the general one.
@@ -84,6 +142,10 @@
   const sugg2 = $derived(safeNextNap(nap1End, data.ageParams.awakeWindowMin));
   const sugg3 = $derived(safeNextNap(nap2End, data.ageParams.awakeWindowMin));
   const sugg4 = $derived(safeNextNap(nap3End, data.ageParams.awakeWindowMin));
+  const sugg5 = $derived(safeNextNap(nap4End, data.ageParams.awakeWindowMin));
+  const sugg6 = $derived(safeNextNap(nap5End, data.ageParams.awakeWindowMin));
+  const sugg7 = $derived(safeNextNap(nap6End, data.ageParams.awakeWindowMin));
+  const sugg8 = $derived(safeNextNap(nap7End, data.ageParams.awakeWindowMin));
 
   const dayBudget = $derived(computeDaySleepBudget(napsArr, data.ageParams));
 
@@ -168,8 +230,12 @@
     { idx: 1, suggValue: sugg1, endSuggValue: napEndSugg1, startVal: nap1Start, endVal: nap1End, pauseVal: nap1Pause, setStart: (v: string) => nap1Start = v, setEnd: (v: string) => nap1End = v, setPause: (v: number) => nap1Pause = v },
     { idx: 2, suggValue: sugg2, endSuggValue: napEndSugg2, startVal: nap2Start, endVal: nap2End, pauseVal: nap2Pause, setStart: (v: string) => nap2Start = v, setEnd: (v: string) => nap2End = v, setPause: (v: number) => nap2Pause = v },
     { idx: 3, suggValue: sugg3, endSuggValue: napEndSugg3, startVal: nap3Start, endVal: nap3End, pauseVal: nap3Pause, setStart: (v: string) => nap3Start = v, setEnd: (v: string) => nap3End = v, setPause: (v: number) => nap3Pause = v },
-    { idx: 4, suggValue: sugg4, endSuggValue: napEndSugg4, startVal: nap4Start, endVal: nap4End, pauseVal: nap4Pause, setStart: (v: string) => nap4Start = v, setEnd: (v: string) => nap4End = v, setPause: (v: number) => nap4Pause = v }
-  ] as nap (nap.idx)}
+    { idx: 4, suggValue: sugg4, endSuggValue: napEndSugg4, startVal: nap4Start, endVal: nap4End, pauseVal: nap4Pause, setStart: (v: string) => nap4Start = v, setEnd: (v: string) => nap4End = v, setPause: (v: number) => nap4Pause = v },
+    { idx: 5, suggValue: sugg5, endSuggValue: napEndSugg5, startVal: nap5Start, endVal: nap5End, pauseVal: nap5Pause, setStart: (v: string) => nap5Start = v, setEnd: (v: string) => nap5End = v, setPause: (v: number) => nap5Pause = v },
+    { idx: 6, suggValue: sugg6, endSuggValue: napEndSugg6, startVal: nap6Start, endVal: nap6End, pauseVal: nap6Pause, setStart: (v: string) => nap6Start = v, setEnd: (v: string) => nap6End = v, setPause: (v: number) => nap6Pause = v },
+    { idx: 7, suggValue: sugg7, endSuggValue: napEndSugg7, startVal: nap7Start, endVal: nap7End, pauseVal: nap7Pause, setStart: (v: string) => nap7Start = v, setEnd: (v: string) => nap7End = v, setPause: (v: number) => nap7Pause = v },
+    { idx: 8, suggValue: sugg8, endSuggValue: napEndSugg8, startVal: nap8Start, endVal: nap8End, pauseVal: nap8Pause, setStart: (v: string) => nap8Start = v, setEnd: (v: string) => nap8End = v, setPause: (v: number) => nap8Pause = v }
+  ].slice(0, visibleNapCount) as nap (nap.idx)}
     <div class="nap-block">
       <div class="nap-title"><Sun size={16} weight="regular" /> {m.today_nap_label_n({ n: nap.idx })}</div>
       <div class="hint">{m.today_nap_suggested_at()} <strong>{nap.suggValue || m.today_value_empty()}</strong></div>
@@ -201,6 +267,16 @@
       </button>
     </div>
   {/each}
+
+  {#if visibleNapCount < 8}
+    <button
+      type="button"
+      class="btn btn-ghost btn-sm add-nap-btn"
+      onclick={() => { visibleNapCount = Math.min(8, visibleNapCount + 1); }}
+    >
+      + {m.today_add_nap()}
+    </button>
+  {/if}
 
   <div class="key-box">
     <div class="key-meta">
@@ -266,6 +342,10 @@
   }
   .save-inline-block {
     margin-top: var(--s-2);
+    width: fit-content;
+  }
+  .add-nap-btn {
+    justify-self: start;
     width: fit-content;
   }
 

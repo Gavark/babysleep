@@ -12,6 +12,10 @@ describe('buildSleepCsv', () => {
       'S2 début', 'S2 fin', 'S2 pause (min)', 'S2 durée',
       'S3 début', 'S3 fin', 'S3 pause (min)', 'S3 durée',
       'S4 début', 'S4 fin', 'S4 pause (min)', 'S4 durée',
+      'S5 début', 'S5 fin', 'S5 pause (min)', 'S5 durée',
+      'S6 début', 'S6 fin', 'S6 pause (min)', 'S6 durée',
+      'S7 début', 'S7 fin', 'S7 pause (min)', 'S7 durée',
+      'S8 début', 'S8 fin', 'S8 pause (min)', 'S8 durée',
       'Coucher', 'Nb siestes', 'Durée nuit préc.', 'Durée jour', 'Notes'
     ]);
   });
@@ -41,8 +45,12 @@ describe('buildSleepCsv', () => {
     //   S2: début(6) fin(7) pause(8) durée(9)
     //   S3: début(10) fin(11) pause(12) durée(13)
     //   S4: début(14) fin(15) pause(16) durée(17)
-    //   Coucher(18) Nb siestes(19) Durée nuit(20) Durée jour(21) Notes(22)
-    expect(line[19]).toBe('2');
+    //   S5: début(18) fin(19) pause(20) durée(21)
+    //   S6: début(22) fin(23) pause(24) durée(25)
+    //   S7: début(26) fin(27) pause(28) durée(29)
+    //   S8: début(30) fin(31) pause(32) durée(33)
+    //   Coucher(34) Nb siestes(35) Durée nuit(36) Durée jour(37) Notes(38)
+    expect(line[35]).toBe('2');
   });
 
   it('computes durée nuit préc. across two consecutive days', () => {
@@ -52,8 +60,8 @@ describe('buildSleepCsv', () => {
     ];
     const out = buildSleepCsv(rows, 'X', 'fr');
     const lines = out.split('\r\n').filter(Boolean);
-    expect(lines[1].split(';')[20]).toBe('11:00');
-    expect(lines[2].split(';')[20]).toBe('');
+    expect(lines[1].split(';')[36]).toBe('11:00');
+    expect(lines[2].split(';')[36]).toBe('');
   });
 
   it('uses priorEntry to compute prev-night for the oldest range row', () => {
@@ -63,7 +71,7 @@ describe('buildSleepCsv', () => {
     const prior = { date: '2025-07-15', wakeTime: '06:30', nap1Start: null, nap1End: null, nap2Start: null, nap2End: null, nap3Start: null, nap3End: null, nap4Start: null, nap4End: null, bedtime: '20:00', notes: null };
     const out = buildSleepCsv(rows, 'X', 'fr', { priorEntry: prior });
     const lines = out.split('\r\n').filter(Boolean);
-    expect(lines[1].split(';')[20]).toBe('11:00');
+    expect(lines[1].split(';')[36]).toBe('11:00');
   });
 
   it('computes nap durations and total day sleep in CSV', () => {
@@ -78,7 +86,7 @@ describe('buildSleepCsv', () => {
     const line = out.split('\r\n')[1].split(';');
     expect(line[5]).toBe('01:00');   // S1 durée
     expect(line[9]).toBe('01:30');   // S2 durée
-    expect(line[21]).toBe('02:30');  // Durée jour
+    expect(line[37]).toBe('02:30');  // Durée jour
   });
 
   it('neutralises CSV formula injection in user-controlled notes', () => {
@@ -139,6 +147,10 @@ describe('buildSleepCsv', () => {
       'S2 start', 'S2 end', 'S2 pause (min)', 'S2 duration',
       'S3 start', 'S3 end', 'S3 pause (min)', 'S3 duration',
       'S4 start', 'S4 end', 'S4 pause (min)', 'S4 duration',
+      'S5 start', 'S5 end', 'S5 pause (min)', 'S5 duration',
+      'S6 start', 'S6 end', 'S6 pause (min)', 'S6 duration',
+      'S7 start', 'S7 end', 'S7 pause (min)', 'S7 duration',
+      'S8 start', 'S8 end', 'S8 pause (min)', 'S8 duration',
       'Bedtime', 'Nap count', 'Prev. night duration', 'Day duration', 'Notes'
     ]);
   });
@@ -158,6 +170,6 @@ describe('buildSleepCsv', () => {
     expect(line[5]).toBe('00:45');   // S1 durée nette
     expect(line[8]).toBe('30');      // S2 pause (min)
     expect(line[9]).toBe('01:00');   // S2 durée nette
-    expect(line[21]).toBe('01:45');  // Durée jour nette = 45+60
+    expect(line[37]).toBe('01:45');  // Durée jour nette = 45+60
   });
 });

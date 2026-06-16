@@ -153,6 +153,23 @@ describe('suggestedBedtime', () => {
     expect(suggestedBedtime({ wake: '05:00', naps }, params46)).toBe('20:21');
   });
 
+  it('accounts for nap5+ extras (off-pattern long day with 5+ naps)', () => {
+    // Bracket expects 3 naps; parent logs 5 naps. The 5th nap ends at 18:30,
+    // which is the latest. Bedtime = 18:30 + 150 = 21:00.
+    // wake=06:00, ideal = 06:00 - 11h = 19:00. MAX(19:00, 21:00) = 21:00.
+    const naps = [
+      { start: '08:00', end: '09:00' },
+      { start: '11:00', end: '12:00' },
+      { start: '14:00', end: '15:00' },
+      { start: '16:30', end: '17:00' },
+      { start: '18:00', end: '18:30' },
+      { start: '', end: '' },
+      { start: '', end: '' },
+      { start: '', end: '' }
+    ];
+    expect(suggestedBedtime({ wake: '06:00', naps }, params46)).toBe('21:00');
+  });
+
   it('ignores nap pairs missing either side', () => {
     // An orphan end without a start contributes nothing — same as the wake-only case.
     const naps = [

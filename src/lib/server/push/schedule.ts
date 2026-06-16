@@ -66,10 +66,14 @@ export function recomputeNextPush(db: DB, babyId: number, date: string): void {
     { start: entry.nap1Start, end: entry.nap1End },
     { start: entry.nap2Start, end: entry.nap2End },
     { start: entry.nap3Start, end: entry.nap3End },
-    { start: entry.nap4Start, end: entry.nap4End }
+    { start: entry.nap4Start, end: entry.nap4End },
+    { start: entry.nap5Start, end: entry.nap5End },
+    { start: entry.nap6Start, end: entry.nap6End },
+    { start: entry.nap7Start, end: entry.nap7End },
+    { start: entry.nap8Start, end: entry.nap8End }
   ];
   let lastEventMinutes = parseHHMM(entry.wakeTime);
-  let lastEventIndex = -1; // -1 = wake, 0..3 = after nap i
+  let lastEventIndex = -1; // -1 = wake, 0..7 = after nap i
 
   for (let i = 0; i < pairs.length; i++) {
     const p = pairs[i];

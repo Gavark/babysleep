@@ -175,6 +175,26 @@ describe('recomputeNextPush', () => {
     expect(pending[0].fireAt).toBe(expected);
   });
 
+  it('does not schedule a push when extras beyond ageParams.naps are already logged', () => {
+    // Force the bracket to 3 expected naps so logging 5 naps (slots 1-5) puts
+    // us past the bracket count. The "stop reminding" guard at
+    // nextNapIdx >= ageParams.naps must hold even when more nap slots exist.
+    tdb.sqlite.prepare("UPDATE babies SET age_override_months = 7 WHERE id = ?").run(babyId);
+
+    const today = new Date().toISOString().slice(0, 10);
+    upsertEntry(tdb.db, babyId, today, {
+      wakeTime: '07:00',
+      nap1Start: '09:00', nap1End: '09:30',
+      nap2Start: '11:00', nap2End: '11:30',
+      nap3Start: '13:00', nap3End: '13:30',
+      nap4Start: '15:00', nap4End: '15:30',
+      nap5Start: '17:00', nap5End: '17:30'
+    });
+    recomputeNextPush(tdb.db, babyId, today);
+
+    expect(pendingFor(tdb, babyId).length).toBe(0);
+  });
+
   it('uses entry.timezone override when set', () => {
     tdb.sqlite.prepare("UPDATE babies SET timezone = 'Europe/Paris', age_override_months = 7 WHERE id = ?").run(babyId);
 

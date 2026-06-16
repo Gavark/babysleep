@@ -45,6 +45,10 @@ export const actions: Actions = {
       'nap2_start', 'nap2_end',
       'nap3_start', 'nap3_end',
       'nap4_start', 'nap4_end',
+      'nap5_start', 'nap5_end',
+      'nap6_start', 'nap6_end',
+      'nap7_start', 'nap7_end',
+      'nap8_start', 'nap8_end',
       'bedtime'] as const;
     const patch: Record<string, string | number | null> = {};
     for (const f of fields) {
@@ -53,7 +57,10 @@ export const actions: Actions = {
       else if (!isValidHHMM(v)) return fail(400, { error: m.today_entry_invalid_time({ field: f, value: v }) });
       else patch[camel(f)] = v;
     }
-    const pauseFields = ['nap1_pause_min', 'nap2_pause_min', 'nap3_pause_min', 'nap4_pause_min'] as const;
+    const pauseFields = [
+      'nap1_pause_min', 'nap2_pause_min', 'nap3_pause_min', 'nap4_pause_min',
+      'nap5_pause_min', 'nap6_pause_min', 'nap7_pause_min', 'nap8_pause_min'
+    ] as const;
     for (const f of pauseFields) {
       const raw = String(form.get(f) ?? '').trim();
       if (raw === '') { patch[camel(f)] = null; continue; }

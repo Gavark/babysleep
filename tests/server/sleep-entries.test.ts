@@ -82,6 +82,44 @@ describe('sleep-entries', () => {
     // 45 + 60 = 105 min → 01:45
     expect(s.meanDaySleepHHMM).toBe('01:45');
   });
+
+  it('round-trips nap5-8 fields through upsertEntry', () => {
+    const { babyId } = setup(tdb);
+    upsertEntry(tdb.db, babyId, '2026-06-10', {
+      nap5Start: '15:00', nap5End: '15:30', nap5PauseMin: 5,
+      nap6Start: '17:00', nap6End: '17:20',
+      nap7Start: '18:30', nap7End: '18:45',
+      nap8Start: '19:30', nap8End: '19:45', nap8PauseMin: 10
+    });
+    const row = getEntryForBabyDate(tdb.db, babyId, '2026-06-10');
+    expect(row?.nap5Start).toBe('15:00');
+    expect(row?.nap5End).toBe('15:30');
+    expect(row?.nap5PauseMin).toBe(5);
+    expect(row?.nap6Start).toBe('17:00');
+    expect(row?.nap6End).toBe('17:20');
+    expect(row?.nap7Start).toBe('18:30');
+    expect(row?.nap7End).toBe('18:45');
+    expect(row?.nap8Start).toBe('19:30');
+    expect(row?.nap8End).toBe('19:45');
+    expect(row?.nap8PauseMin).toBe(10);
+  });
+
+  it('counts naps from all 8 slots in summariesForBaby', () => {
+    const { babyId } = setup(tdb);
+    // 5 completed naps in one day (all 8 slots populated would also work).
+    upsertEntry(tdb.db, babyId, '2026-06-11', {
+      nap1Start: '09:00', nap1End: '09:30',
+      nap2Start: '11:00', nap2End: '11:30',
+      nap3Start: '13:00', nap3End: '13:30',
+      nap4Start: '15:00', nap4End: '15:30',
+      nap5Start: '17:00', nap5End: '17:30'
+    });
+    const s = summariesForBaby(tdb.db, babyId, '2026-06-01', '2026-06-30');
+    // Mean nap count over the one entry = 5
+    expect(s.meanNaps).toBe(5);
+    // Total day sleep = 5 × 30 min = 150 min → 02:30
+    expect(s.meanDaySleepHHMM).toBe('02:30');
+  });
 });
 
 describe('addNapPause', () => {

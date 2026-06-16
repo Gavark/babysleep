@@ -140,6 +140,7 @@
   "today_nap_pause_label": "Pause (min)",
   "today_nap_save_btn": "Sauvegarder",
   "today_nap_save_title": "Sauvegarder cette sieste",
+  "today_add_nap": "Ajouter une sieste",
   "today_ideal_bedtime_label": "Coucher idéal",
   "today_ideal_bedtime_sub": "Pour réveil souhaité {time}",
   "today_suggested_bedtime_label": "Coucher suggéré",

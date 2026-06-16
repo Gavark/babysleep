@@ -24,7 +24,11 @@
       [r.nap1Start, r.nap1End, r.nap1PauseMin ?? null],
       [r.nap2Start, r.nap2End, r.nap2PauseMin ?? null],
       [r.nap3Start, r.nap3End, r.nap3PauseMin ?? null],
-      [r.nap4Start, r.nap4End, r.nap4PauseMin ?? null]
+      [r.nap4Start, r.nap4End, r.nap4PauseMin ?? null],
+      [r.nap5Start, r.nap5End, r.nap5PauseMin ?? null],
+      [r.nap6Start, r.nap6End, r.nap6PauseMin ?? null],
+      [r.nap7Start, r.nap7End, r.nap7PauseMin ?? null],
+      [r.nap8Start, r.nap8End, r.nap8PauseMin ?? null]
     ];
     for (const [s, e, pause] of triples) {
       if (s && e && /^\d{2}:\d{2}$/.test(s) && /^\d{2}:\d{2}$/.test(e)) {
@@ -37,7 +41,10 @@
   }
 
   function napCount(r: any): number {
-    return [r.nap1End, r.nap2End, r.nap3End, r.nap4End].filter(Boolean).length;
+    return [
+      r.nap1End, r.nap2End, r.nap3End, r.nap4End,
+      r.nap5End, r.nap6End, r.nap7End, r.nap8End
+    ].filter(Boolean).length;
   }
 
   // Compute previous-night duration for each entry using the previous chronological entry

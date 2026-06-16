@@ -18,10 +18,22 @@ export type EntryPatch = Partial<{
   nap3End: string | null;
   nap4Start: string | null;
   nap4End: string | null;
+  nap5Start: string | null;
+  nap5End: string | null;
+  nap6Start: string | null;
+  nap6End: string | null;
+  nap7Start: string | null;
+  nap7End: string | null;
+  nap8Start: string | null;
+  nap8End: string | null;
   nap1PauseMin: number | null;
   nap2PauseMin: number | null;
   nap3PauseMin: number | null;
   nap4PauseMin: number | null;
+  nap5PauseMin: number | null;
+  nap6PauseMin: number | null;
+  nap7PauseMin: number | null;
+  nap8PauseMin: number | null;
   bedtime: string | null;
   notes: string | null;
   timezone: string | null;
@@ -43,10 +55,22 @@ export function upsertEntry(db: DB, babyId: number, date: string, patch: EntryPa
       nap3End: patch.nap3End ?? null,
       nap4Start: patch.nap4Start ?? null,
       nap4End: patch.nap4End ?? null,
+      nap5Start: patch.nap5Start ?? null,
+      nap5End: patch.nap5End ?? null,
+      nap6Start: patch.nap6Start ?? null,
+      nap6End: patch.nap6End ?? null,
+      nap7Start: patch.nap7Start ?? null,
+      nap7End: patch.nap7End ?? null,
+      nap8Start: patch.nap8Start ?? null,
+      nap8End: patch.nap8End ?? null,
       nap1PauseMin: patch.nap1PauseMin ?? null,
       nap2PauseMin: patch.nap2PauseMin ?? null,
       nap3PauseMin: patch.nap3PauseMin ?? null,
       nap4PauseMin: patch.nap4PauseMin ?? null,
+      nap5PauseMin: patch.nap5PauseMin ?? null,
+      nap6PauseMin: patch.nap6PauseMin ?? null,
+      nap7PauseMin: patch.nap7PauseMin ?? null,
+      nap8PauseMin: patch.nap8PauseMin ?? null,
       bedtime: patch.bedtime ?? null,
       notes: patch.notes ?? null,
       timezone: patch.timezone ?? null,
@@ -73,10 +97,18 @@ export function setNightRating(db: DB, babyId: number, date: string, rating: Nig
   upsertEntry(db, babyId, date, { nightRating: rating });
 }
 
-/** Add `deltaMin` minutes of pause to nap `napIdx` (1..4) for (baby, date). Cumulative. */
-export function addNapPause(db: DB, babyId: number, date: string, napIdx: 1 | 2 | 3 | 4, deltaMin: number) {
+/** Add `deltaMin` minutes of pause to nap `napIdx` (1..8) for (baby, date). Cumulative. */
+export function addNapPause(
+  db: DB,
+  babyId: number,
+  date: string,
+  napIdx: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8,
+  deltaMin: number
+) {
   const existing = getEntryForBabyDate(db, babyId, date);
-  const key = (`nap${napIdx}PauseMin`) as 'nap1PauseMin' | 'nap2PauseMin' | 'nap3PauseMin' | 'nap4PauseMin';
+  const key = (`nap${napIdx}PauseMin`) as
+    | 'nap1PauseMin' | 'nap2PauseMin' | 'nap3PauseMin' | 'nap4PauseMin'
+    | 'nap5PauseMin' | 'nap6PauseMin' | 'nap7PauseMin' | 'nap8PauseMin';
   const current = existing?.[key] ?? 0;
   upsertEntry(db, babyId, date, { [key]: current + deltaMin });
 }
@@ -110,7 +142,10 @@ export function summariesForBaby(db: DB, babyId: number, from: string, to: strin
   const rows = listEntriesInRange(db, babyId, from, to);
   const wakes = rows.map((r) => r.wakeTime).filter((s): s is string => !!s);
   const beds = rows.map((r) => r.bedtime).filter((s): s is string => !!s);
-  const napCounts = rows.map((r) => [r.nap1End, r.nap2End, r.nap3End, r.nap4End].filter(Boolean).length);
+  const napCounts = rows.map((r) =>
+    [r.nap1End, r.nap2End, r.nap3End, r.nap4End, r.nap5End, r.nap6End, r.nap7End, r.nap8End]
+      .filter(Boolean).length
+  );
 
   const mean = (arr: string[]) => {
     if (arr.length === 0) return '';
@@ -155,7 +190,11 @@ export function summariesForBaby(db: DB, babyId: number, from: string, to: strin
       [r.nap1Start, r.nap1End, r.nap1PauseMin],
       [r.nap2Start, r.nap2End, r.nap2PauseMin],
       [r.nap3Start, r.nap3End, r.nap3PauseMin],
-      [r.nap4Start, r.nap4End, r.nap4PauseMin]
+      [r.nap4Start, r.nap4End, r.nap4PauseMin],
+      [r.nap5Start, r.nap5End, r.nap5PauseMin],
+      [r.nap6Start, r.nap6End, r.nap6PauseMin],
+      [r.nap7Start, r.nap7End, r.nap7PauseMin],
+      [r.nap8Start, r.nap8End, r.nap8PauseMin]
     ];
     for (const [s, e, pause] of pairs) {
       if (s && e && /^\d{2}:\d{2}$/.test(s) && /^\d{2}:\d{2}$/.test(e)) {

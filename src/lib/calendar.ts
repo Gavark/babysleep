@@ -54,10 +54,22 @@ export type CalendarEntry = {
   nap3End: string | null;
   nap4Start: string | null;
   nap4End: string | null;
+  nap5Start?: string | null;
+  nap5End?: string | null;
+  nap6Start?: string | null;
+  nap6End?: string | null;
+  nap7Start?: string | null;
+  nap7End?: string | null;
+  nap8Start?: string | null;
+  nap8End?: string | null;
   nap1PauseMin?: number | null;
   nap2PauseMin?: number | null;
   nap3PauseMin?: number | null;
   nap4PauseMin?: number | null;
+  nap5PauseMin?: number | null;
+  nap6PauseMin?: number | null;
+  nap7PauseMin?: number | null;
+  nap8PauseMin?: number | null;
   bedtime: string | null;
   nightRating?: string | null;
 };
@@ -91,11 +103,15 @@ export function buildTimelineSegments(entry: CalendarEntry | undefined): Timelin
     if (wakeMin > 0) segs.push({ kind: 'night', startMin: 0, endMin: wakeMin });
   }
 
-  const napPairs: [string | null, string | null][] = [
+  const napPairs: [string | null | undefined, string | null | undefined][] = [
     [entry.nap1Start, entry.nap1End],
     [entry.nap2Start, entry.nap2End],
     [entry.nap3Start, entry.nap3End],
-    [entry.nap4Start, entry.nap4End]
+    [entry.nap4Start, entry.nap4End],
+    [entry.nap5Start, entry.nap5End],
+    [entry.nap6Start, entry.nap6End],
+    [entry.nap7Start, entry.nap7End],
+    [entry.nap8Start, entry.nap8End]
   ];
   for (const [s, e] of napPairs) {
     if (s && e && isValidHHMM(s) && isValidHHMM(e)) {
@@ -162,7 +178,9 @@ export function computeDayMetrics(
   // but they reduce the actual sleep total used for the heatmap ratio.
   const pauseMin = entry
     ? (entry.nap1PauseMin ?? 0) + (entry.nap2PauseMin ?? 0) +
-      (entry.nap3PauseMin ?? 0) + (entry.nap4PauseMin ?? 0)
+      (entry.nap3PauseMin ?? 0) + (entry.nap4PauseMin ?? 0) +
+      (entry.nap5PauseMin ?? 0) + (entry.nap6PauseMin ?? 0) +
+      (entry.nap7PauseMin ?? 0) + (entry.nap8PauseMin ?? 0)
     : 0;
   const totalSleepMin = Math.max(
     0,
@@ -173,7 +191,10 @@ export function computeDayMetrics(
   const isComplete = !!entry?.bedtime && !!entry?.wakeTime;
 
   const napCount = entry
-    ? [entry.nap1End, entry.nap2End, entry.nap3End, entry.nap4End].filter(Boolean).length
+    ? [
+        entry.nap1End, entry.nap2End, entry.nap3End, entry.nap4End,
+        entry.nap5End, entry.nap6End, entry.nap7End, entry.nap8End
+      ].filter(Boolean).length
     : 0;
 
   const ratio = recommendedMin > 0 ? totalSleepMin / recommendedMin : 0;

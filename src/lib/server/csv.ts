@@ -13,10 +13,22 @@ type Row = {
   nap3End: string | null;
   nap4Start: string | null;
   nap4End: string | null;
+  nap5Start?: string | null;
+  nap5End?: string | null;
+  nap6Start?: string | null;
+  nap6End?: string | null;
+  nap7Start?: string | null;
+  nap7End?: string | null;
+  nap8Start?: string | null;
+  nap8End?: string | null;
   nap1PauseMin?: number | null;
   nap2PauseMin?: number | null;
   nap3PauseMin?: number | null;
   nap4PauseMin?: number | null;
+  nap5PauseMin?: number | null;
+  nap6PauseMin?: number | null;
+  nap7PauseMin?: number | null;
+  nap8PauseMin?: number | null;
   bedtime: string | null;
   notes: string | null;
 };
@@ -29,7 +41,7 @@ type Row = {
 // them as literal text (the quote is consumed during display).
 const FORMULA_CHARS = /^[=+\-@\t\r]/;
 
-function escape(v: string | null): string {
+function escape(v: string | null | undefined): string {
   if (v == null) return '';
   const safe = FORMULA_CHARS.test(v) ? `'${v}` : v;
   if (/[";\r\n]/.test(safe)) return `"${safe.replace(/"/g, '""')}"`;
@@ -37,10 +49,11 @@ function escape(v: string | null): string {
 }
 
 function napCount(r: Row): number {
-  return [r.nap1End, r.nap2End, r.nap3End, r.nap4End].filter(Boolean).length;
+  return [r.nap1End, r.nap2End, r.nap3End, r.nap4End, r.nap5End, r.nap6End, r.nap7End, r.nap8End]
+    .filter(Boolean).length;
 }
 
-function napDur(start: string | null, end: string | null, pauseMin?: number | null): string {
+function napDur(start: string | null | undefined, end: string | null | undefined, pauseMin?: number | null): string {
   if (!start || !end || !/^\d{2}:\d{2}$/.test(start) || !/^\d{2}:\d{2}$/.test(end)) return '';
   const wall = ((parseHHMM(end) - parseHHMM(start)) % 1440 + 1440) % 1440;
   return formatHHMM(Math.max(0, wall - (pauseMin ?? 0)));
@@ -53,11 +66,15 @@ function napPause(pauseMin?: number | null): string {
 function totalDaySleep(r: Row): string {
   let total = 0;
   let hasAny = false;
-  const triples: [string | null, string | null, number | null | undefined][] = [
+  const triples: [string | null | undefined, string | null | undefined, number | null | undefined][] = [
     [r.nap1Start, r.nap1End, r.nap1PauseMin],
     [r.nap2Start, r.nap2End, r.nap2PauseMin],
     [r.nap3Start, r.nap3End, r.nap3PauseMin],
-    [r.nap4Start, r.nap4End, r.nap4PauseMin]
+    [r.nap4Start, r.nap4End, r.nap4PauseMin],
+    [r.nap5Start, r.nap5End, r.nap5PauseMin],
+    [r.nap6Start, r.nap6End, r.nap6PauseMin],
+    [r.nap7Start, r.nap7End, r.nap7PauseMin],
+    [r.nap8Start, r.nap8End, r.nap8PauseMin]
   ];
   for (const [s, e, pause] of triples) {
     if (s && e && /^\d{2}:\d{2}$/.test(s) && /^\d{2}:\d{2}$/.test(e)) {
@@ -105,6 +122,10 @@ export function buildSleepCsv(
     ...napHeaders(2),
     ...napHeaders(3),
     ...napHeaders(4),
+    ...napHeaders(5),
+    ...napHeaders(6),
+    ...napHeaders(7),
+    ...napHeaders(8),
     m.csv_header_bedtime({}, o),
     m.csv_header_naps_count({}, o),
     m.csv_header_prev_night_duration({}, o),
@@ -121,6 +142,10 @@ export function buildSleepCsv(
       escape(cur.nap2Start), escape(cur.nap2End), napPause(cur.nap2PauseMin), napDur(cur.nap2Start, cur.nap2End, cur.nap2PauseMin),
       escape(cur.nap3Start), escape(cur.nap3End), napPause(cur.nap3PauseMin), napDur(cur.nap3Start, cur.nap3End, cur.nap3PauseMin),
       escape(cur.nap4Start), escape(cur.nap4End), napPause(cur.nap4PauseMin), napDur(cur.nap4Start, cur.nap4End, cur.nap4PauseMin),
+      escape(cur.nap5Start), escape(cur.nap5End), napPause(cur.nap5PauseMin), napDur(cur.nap5Start, cur.nap5End, cur.nap5PauseMin),
+      escape(cur.nap6Start), escape(cur.nap6End), napPause(cur.nap6PauseMin), napDur(cur.nap6Start, cur.nap6End, cur.nap6PauseMin),
+      escape(cur.nap7Start), escape(cur.nap7End), napPause(cur.nap7PauseMin), napDur(cur.nap7Start, cur.nap7End, cur.nap7PauseMin),
+      escape(cur.nap8Start), escape(cur.nap8End), napPause(cur.nap8PauseMin), napDur(cur.nap8Start, cur.nap8End, cur.nap8PauseMin),
       escape(cur.bedtime),
       String(napCount(cur)),
       durationPrevNight(cur, prev),
