@@ -118,11 +118,11 @@
     width: max-content;
     max-width: min(260px, 80vw);
     padding: var(--s-2);
-    background: var(--c-bg-elevated, var(--c-bg));
+    background: var(--c-bg-soft);
     color: var(--c-text);
     border: 1px solid var(--c-border);
     border-radius: var(--r-sm);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    box-shadow: var(--shadow-lg);
     font-size: var(--fs-xs);
     font-weight: 400;
     line-height: 1.4;
