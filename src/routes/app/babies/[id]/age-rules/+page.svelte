@@ -26,12 +26,12 @@
     <thead>
       <tr>
         <th>{m.age_rules_col_label()}</th>
-        <th>{m.age_rules_col_naps()} <span class="ttip" title={m.age_rules_tooltip_naps()}><Info size={12} /></span></th>
-        <th>{m.age_rules_col_first_window()} <span class="ttip" title={m.age_rules_tooltip_first_window()}><Info size={12} /></span></th>
-        <th>{m.age_rules_col_window()} <span class="ttip" title={m.age_rules_tooltip_window()}><Info size={12} /></span></th>
-        <th>{m.age_rules_col_before_bed()} <span class="ttip" title={m.age_rules_tooltip_before_bed()}><Info size={12} /></span></th>
-        <th>{m.age_rules_col_night_sleep()} <span class="ttip" title={m.age_rules_tooltip_night_sleep()}><Info size={12} /></span></th>
-        <th>{m.age_rules_col_day_sleep()} <span class="ttip" title={m.age_rules_tooltip_day_sleep()}><Info size={12} /></span></th>
+        <th>{m.age_rules_col_naps()} <button type="button" class="ttip" aria-label={m.age_rules_tooltip_naps()}><Info size={12} /><span class="ttip-bubble">{m.age_rules_tooltip_naps()}</span></button></th>
+        <th>{m.age_rules_col_first_window()} <button type="button" class="ttip" aria-label={m.age_rules_tooltip_first_window()}><Info size={12} /><span class="ttip-bubble">{m.age_rules_tooltip_first_window()}</span></button></th>
+        <th>{m.age_rules_col_window()} <button type="button" class="ttip" aria-label={m.age_rules_tooltip_window()}><Info size={12} /><span class="ttip-bubble">{m.age_rules_tooltip_window()}</span></button></th>
+        <th>{m.age_rules_col_before_bed()} <button type="button" class="ttip" aria-label={m.age_rules_tooltip_before_bed()}><Info size={12} /><span class="ttip-bubble">{m.age_rules_tooltip_before_bed()}</span></button></th>
+        <th>{m.age_rules_col_night_sleep()} <button type="button" class="ttip ttip-right" aria-label={m.age_rules_tooltip_night_sleep()}><Info size={12} /><span class="ttip-bubble">{m.age_rules_tooltip_night_sleep()}</span></button></th>
+        <th>{m.age_rules_col_day_sleep()} <button type="button" class="ttip ttip-right" aria-label={m.age_rules_tooltip_day_sleep()}><Info size={12} /><span class="ttip-bubble">{m.age_rules_tooltip_day_sleep()}</span></button></th>
       </tr>
     </thead>
     <tbody>
@@ -93,7 +93,52 @@
     vertical-align: top;
   }
   .age-table th { font-weight: 600; white-space: nowrap; }
-  .ttip { color: var(--c-text-muted); cursor: help; vertical-align: middle; }
+  .ttip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    color: var(--c-text-muted);
+    cursor: help;
+    vertical-align: middle;
+    outline: none;
+    font: inherit;
+  }
+  .ttip:focus-visible { outline: 2px solid var(--c-accent-honey); border-radius: var(--r-sm); }
+  .ttip-bubble {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: min(260px, 80vw);
+    padding: var(--s-2);
+    background: var(--c-bg-elevated, var(--c-bg));
+    color: var(--c-text);
+    border: 1px solid var(--c-border);
+    border-radius: var(--r-sm);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    font-size: var(--fs-xs);
+    font-weight: 400;
+    line-height: 1.4;
+    text-align: left;
+    white-space: normal;
+    z-index: 10;
+    pointer-events: none;
+    transition: opacity 0.15s ease, visibility 0.15s ease;
+  }
+  .ttip-right .ttip-bubble { left: auto; right: 0; transform: none; }
+  .ttip:hover .ttip-bubble,
+  .ttip:focus .ttip-bubble,
+  .ttip:focus-within .ttip-bubble {
+    visibility: visible;
+    opacity: 1;
+  }
   .row-current { background: color-mix(in srgb, var(--c-accent-honey) 12%, transparent); }
   .row-current td:first-child { border-left: 3px solid var(--c-accent-honey); padding-left: calc(var(--s-2) - 3px); }
   .badge-current {
