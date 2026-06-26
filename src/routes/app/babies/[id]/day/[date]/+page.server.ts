@@ -75,6 +75,15 @@ export const actions: Actions = {
       if (!Number.isFinite(n) || n < 0 || n > 600) return fail(400, { error: msg.day_entry_invalid_pause({ field: f, value: raw }) });
       patch[camel(f)] = Math.round(n) || null;
     }
+
+    // HOTFIX v0.5.5: same concurrent-write protection as Today action — drop
+    // nulls from time/nap fields so a stale form can't overwrite a value just
+    // written from another device. To explicitly clear a time field, edit it
+    // or delete the whole entry via the Delete button below.
+    for (const k of Object.keys(patch)) {
+      if (patch[k] === null) delete patch[k];
+    }
+
     const notes = String(form.get('notes') ?? '').trim();
     patch.notes = notes || null;
     const formTz = String(form.get('timezone') ?? '').trim();

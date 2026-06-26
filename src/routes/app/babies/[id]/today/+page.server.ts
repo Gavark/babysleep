@@ -68,6 +68,21 @@ export const actions: Actions = {
       if (!Number.isFinite(n) || n < 0 || n > 600) return fail(400, { error: m.today_entry_invalid_pause({ field: f, value: raw }) });
       patch[camel(f)] = Math.round(n) || null;
     }
+
+    // HOTFIX v0.5.5: drop null values from time/nap fields so a stale form
+    // (e.g. another device just wrote nap1_start that this device hasn't
+    // re-loaded yet) doesn't erase the freshly-written value. The form
+    // submits every field on every save (auto-submit on field change), so
+    // any empty input would otherwise become null in DB and clobber a
+    // concurrent edit. To explicitly clear a time field, edit it to another
+    // value or delete the whole entry from the Day Detail page.
+    const filteredNulls: string[] = [];
+    for (const k of Object.keys(patch)) {
+      if (patch[k] === null) { filteredNulls.push(k); delete patch[k]; }
+    }
+
+    // notes + timezone are kept nullable here: they're explicit dropdown /
+    // textarea choices, not race-prone time inputs.
     const notes = String(form.get('notes') ?? '').trim();
     patch.notes = notes || null;
 
@@ -83,7 +98,7 @@ export const actions: Actions = {
     const fieldsTouched = Object.entries(patch).filter(([, v]) => v !== null && v !== undefined).map(([k]) => k).join(',') || '(none)';
     try {
       upsertEntry(db, baby.id, date, patch as any);
-      console.log(`[save] ok user=${locals.user.id} baby=${baby.id} date=${date} fields=[${fieldsTouched}] dt=${Date.now() - t0}ms`);
+      console.log(`[save] ok user=${locals.user.id} baby=${baby.id} date=${date} fields=[${fieldsTouched}] dropped_nulls=${filteredNulls.length} dt=${Date.now() - t0}ms`);
       return { success: m.today_entry_saved() };
     } catch (e) {
       console.error(`[save] FAIL user=${locals.user.id} baby=${baby.id} date=${date} fields=[${fieldsTouched}]`, e);
