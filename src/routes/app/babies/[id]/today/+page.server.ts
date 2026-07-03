@@ -81,6 +81,20 @@ export const actions: Actions = {
       if (patch[k] === null) { filteredNulls.push(k); delete patch[k]; }
     }
 
+    // Explicit "clear this field" requests from the client: bypasses the
+    // null-filter above by re-adding null for each field the user explicitly
+    // asked to clear via the ✕ button. The `clear[]` form array is expected
+    // to contain snake_case field names (matching `fields` and `pauseFields`).
+    const timeFieldSet = new Set<string>([...fields, ...pauseFields] as readonly string[]);
+    const explicitClears: string[] = [];
+    for (const raw of form.getAll('clear')) {
+      const name = typeof raw === 'string' ? raw : '';
+      if (timeFieldSet.has(name)) {
+        patch[camel(name)] = null;
+        explicitClears.push(name);
+      }
+    }
+
     // notes + timezone are kept nullable here: they're explicit dropdown /
     // textarea choices, not race-prone time inputs.
     const notes = String(form.get('notes') ?? '').trim();
@@ -98,7 +112,7 @@ export const actions: Actions = {
     const fieldsTouched = Object.entries(patch).filter(([, v]) => v !== null && v !== undefined).map(([k]) => k).join(',') || '(none)';
     try {
       upsertEntry(db, baby.id, date, patch as any);
-      console.log(`[save] ok user=${locals.user.id} baby=${baby.id} date=${date} fields=[${fieldsTouched}] dropped_nulls=${filteredNulls.length} dt=${Date.now() - t0}ms`);
+      console.log(`[save] ok user=${locals.user.id} baby=${baby.id} date=${date} fields=[${fieldsTouched}] dropped_nulls=${filteredNulls.length} explicit_clears=${explicitClears.length} dt=${Date.now() - t0}ms`);
       return { success: m.today_entry_saved() };
     } catch (e) {
       console.error(`[save] FAIL user=${locals.user.id} baby=${baby.id} date=${date} fields=[${fieldsTouched}]`, e);

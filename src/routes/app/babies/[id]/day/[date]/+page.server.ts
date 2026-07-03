@@ -84,6 +84,15 @@ export const actions: Actions = {
       if (patch[k] === null) delete patch[k];
     }
 
+    // Explicit clear-field requests: same protocol as the Today action.
+    const timeFieldSet = new Set<string>([...fields, ...pauseFields] as readonly string[]);
+    for (const raw of form.getAll('clear')) {
+      const name = typeof raw === 'string' ? raw : '';
+      if (timeFieldSet.has(name)) {
+        patch[camel(name)] = null;
+      }
+    }
+
     const notes = String(form.get('notes') ?? '').trim();
     patch.notes = notes || null;
     const formTz = String(form.get('timezone') ?? '').trim();

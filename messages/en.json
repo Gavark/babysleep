@@ -160,6 +160,7 @@
   "today_nap_save_btn": "Save",
   "today_nap_save_title": "Save this nap",
   "today_add_nap": "Add a nap",
+  "today_clear_field": "Clear",
   "today_ideal_bedtime_label": "Ideal bedtime",
   "today_ideal_bedtime_sub": "For desired wake-up {time}",
   "today_suggested_bedtime_label": "Suggested bedtime",

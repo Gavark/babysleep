@@ -158,6 +158,15 @@
   function read(e: Event) {
     return (e.currentTarget as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement).value;
   }
+
+  let formEl = $state<HTMLFormElement | null>(null);
+  let pendingClears = $state<Set<string>>(new Set());
+  function clearField(name: string, reset: () => void) {
+    reset();
+    // Mark this field as explicitly cleared for the current form submission.
+    pendingClears = new Set([...pendingClears, name]);
+    setTimeout(() => formEl?.requestSubmit(), 0);
+  }
 </script>
 
 <p class="back"><a href="/app/babies/{data.baby.id}/history"><ArrowLeft size={14} /> {m.day_back_to_history()}</a></p>
@@ -173,12 +182,19 @@
 {#if form?.success}<p class="ok">{form.success}</p>{/if}
 
 <form
+  bind:this={formEl}
   method="POST"
   action="?/save"
-  use:enhance={() => async ({ update }) => update({ reset: false })}
+  use:enhance={() => async ({ result, update }) => {
+    await update({ reset: false });
+    if (result.type === 'success') pendingClears = new Set();
+  }}
   autocomplete="off"
   class="today-form"
 >
+  {#each Array.from(pendingClears) as name}
+    <input type="hidden" name="clear" value={name} />
+  {/each}
   <label class="field">
     <span class="field-label"><Globe size={12} /> {m.today_tz_field_label()}</span>
     <select
@@ -199,9 +215,20 @@
   <div class="card row-with-save">
     <label class="field">
       <span class="field-label"><Sun size={12} /> {m.today_wake_label()}</span>
-      <input class="field-input" type="time" name="wake_time" autocomplete="off"
-        value={wake}
-        oninput={(e) => wake = read(e)} onchange={(e) => wake = read(e)} onblur={(e) => wake = read(e)} />
+      <span class="input-with-clear">
+        <input class="field-input" type="time" name="wake_time" autocomplete="off"
+          value={wake}
+          oninput={(e) => wake = read(e)} onchange={(e) => wake = read(e)} onblur={(e) => wake = read(e)} />
+        {#if wake}
+          <button
+            type="button"
+            class="clear-btn"
+            aria-label={m.today_clear_field()}
+            title={m.today_clear_field()}
+            onclick={() => clearField('wake_time', () => wake = '')}
+          >✕</button>
+        {/if}
+      </span>
     </label>
     <button type="submit" class="btn btn-secondary btn-sm save-inline" title={m.today_wake_save_title()} aria-label={m.today_wake_save_title()}>
       <FloppyDisk size={14} />
@@ -242,15 +269,37 @@
       <div class="pair pair-with-pause">
         <label class="field">
           <span class="field-label">{m.today_nap_start_label()}</span>
-          <input class="field-input" type="time" name="nap{nap.idx}_start" autocomplete="off"
-            value={nap.startVal}
-            oninput={(e) => nap.setStart(read(e))} onchange={(e) => nap.setStart(read(e))} onblur={(e) => nap.setStart(read(e))} />
+          <span class="input-with-clear">
+            <input class="field-input" type="time" name="nap{nap.idx}_start" autocomplete="off"
+              value={nap.startVal}
+              oninput={(e) => nap.setStart(read(e))} onchange={(e) => nap.setStart(read(e))} onblur={(e) => nap.setStart(read(e))} />
+            {#if nap.startVal}
+              <button
+                type="button"
+                class="clear-btn"
+                aria-label={m.today_clear_field()}
+                title={m.today_clear_field()}
+                onclick={() => clearField(`nap${nap.idx}_start`, () => nap.setStart(''))}
+              >✕</button>
+            {/if}
+          </span>
         </label>
         <label class="field">
           <span class="field-label">{m.today_nap_end_label()}</span>
-          <input class="field-input" type="time" name="nap{nap.idx}_end" autocomplete="off"
-            value={nap.endVal}
-            oninput={(e) => nap.setEnd(read(e))} onchange={(e) => nap.setEnd(read(e))} onblur={(e) => nap.setEnd(read(e))} />
+          <span class="input-with-clear">
+            <input class="field-input" type="time" name="nap{nap.idx}_end" autocomplete="off"
+              value={nap.endVal}
+              oninput={(e) => nap.setEnd(read(e))} onchange={(e) => nap.setEnd(read(e))} onblur={(e) => nap.setEnd(read(e))} />
+            {#if nap.endVal}
+              <button
+                type="button"
+                class="clear-btn"
+                aria-label={m.today_clear_field()}
+                title={m.today_clear_field()}
+                onclick={() => clearField(`nap${nap.idx}_end`, () => nap.setEnd(''))}
+              >✕</button>
+            {/if}
+          </span>
         </label>
         <label class="field field-pause">
           <span class="field-label">{m.today_nap_pause_label()}</span>
@@ -297,9 +346,20 @@
   <div class="card row-with-save">
     <label class="field">
       <span class="field-label"><Moon size={12} /> {m.today_bedtime_label()}</span>
-      <input class="field-input" type="time" name="bedtime" autocomplete="off"
-        value={bedtime}
-        oninput={(e) => bedtime = read(e)} onchange={(e) => bedtime = read(e)} onblur={(e) => bedtime = read(e)} />
+      <span class="input-with-clear">
+        <input class="field-input" type="time" name="bedtime" autocomplete="off"
+          value={bedtime}
+          oninput={(e) => bedtime = read(e)} onchange={(e) => bedtime = read(e)} onblur={(e) => bedtime = read(e)} />
+        {#if bedtime}
+          <button
+            type="button"
+            class="clear-btn"
+            aria-label={m.today_clear_field()}
+            title={m.today_clear_field()}
+            onclick={() => clearField('bedtime', () => bedtime = '')}
+          >✕</button>
+        {/if}
+      </span>
     </label>
     <button type="submit" class="btn btn-secondary btn-sm save-inline" title={m.today_bedtime_save_title()} aria-label={m.today_bedtime_save_title()}>
       <FloppyDisk size={14} />
@@ -420,4 +480,29 @@
     font-size: var(--fs-sm);
     margin: 0;
   }
+
+  .input-with-clear {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-1);
+    position: relative;
+  }
+  .clear-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    background: transparent;
+    border: 1px solid var(--c-border);
+    border-radius: 999px;
+    color: var(--c-text-muted);
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 1;
+    transition: color 0.1s ease, border-color 0.1s ease;
+  }
+  .clear-btn:hover { color: var(--c-danger); border-color: var(--c-danger); }
+  .clear-btn:focus-visible { outline: 2px solid var(--c-accent-honey); }
 </style>
