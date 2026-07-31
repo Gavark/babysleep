@@ -1,6 +1,7 @@
 <script lang="ts">
   import ChartCanvas from '$lib/components/ChartCanvas.svelte';
   import { parseHHMM } from '$lib/time';
+  import { dayNapMinutes, napCount } from '$lib/naps';
   import Sun from 'phosphor-svelte/lib/Sun';
   import Moon from 'phosphor-svelte/lib/Moon';
   import Bed from 'phosphor-svelte/lib/Bed';
@@ -14,37 +15,6 @@
   function hhmmToHours(s: string | null | undefined): number | null {
     if (!s) return null;
     try { return parseHHMM(s) / 60; } catch { return null; }
-  }
-
-  // Helper: total nap minutes for an entry (start/end pairs, pause subtracted)
-  function dayNapMinutes(r: any): number | null {
-    let total = 0;
-    let hasAny = false;
-    const triples: [string | null, string | null, number | null][] = [
-      [r.nap1Start, r.nap1End, r.nap1PauseMin ?? null],
-      [r.nap2Start, r.nap2End, r.nap2PauseMin ?? null],
-      [r.nap3Start, r.nap3End, r.nap3PauseMin ?? null],
-      [r.nap4Start, r.nap4End, r.nap4PauseMin ?? null],
-      [r.nap5Start, r.nap5End, r.nap5PauseMin ?? null],
-      [r.nap6Start, r.nap6End, r.nap6PauseMin ?? null],
-      [r.nap7Start, r.nap7End, r.nap7PauseMin ?? null],
-      [r.nap8Start, r.nap8End, r.nap8PauseMin ?? null]
-    ];
-    for (const [s, e, pause] of triples) {
-      if (s && e && /^\d{2}:\d{2}$/.test(s) && /^\d{2}:\d{2}$/.test(e)) {
-        const dur = ((parseHHMM(e) - parseHHMM(s)) % 1440 + 1440) % 1440;
-        total += Math.max(0, dur - (pause ?? 0));
-        hasAny = true;
-      }
-    }
-    return hasAny ? total : null;
-  }
-
-  function napCount(r: any): number {
-    return [
-      r.nap1End, r.nap2End, r.nap3End, r.nap4End,
-      r.nap5End, r.nap6End, r.nap7End, r.nap8End
-    ].filter(Boolean).length;
   }
 
   // Compute previous-night duration for each entry using the previous chronological entry
