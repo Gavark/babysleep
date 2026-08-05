@@ -1,4 +1,4 @@
-<script lang="ts">
+<script module lang="ts">
   import {
     Chart,
     LineController,
@@ -12,11 +12,13 @@
     Legend,
     Filler
   } from 'chart.js';
-  import { readChartTheme, onChartThemeChange, withAlpha, type ChartTheme } from '$lib/charts/theme';
 
   // Explicit registration instead of ...registerables: only line and bar are
   // used, and registerables pulls in every controller, scale and plugin.
   // Legend is needed by the nap trend chart, which is multi-series.
+  // Module scope: this runs once per module load, not once per component
+  // instance (this page mounts seven ChartCanvas instances) and not on every
+  // SSR pass.
   Chart.register(
     LineController,
     BarController,
@@ -29,6 +31,10 @@
     Legend,
     Filler
   );
+</script>
+
+<script lang="ts">
+  import { readChartTheme, onChartThemeChange, withAlpha, type ChartTheme } from '$lib/charts/theme';
 
   let {
     type,

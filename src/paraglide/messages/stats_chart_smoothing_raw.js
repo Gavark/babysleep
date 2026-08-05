@@ -6,17 +6,17 @@ import { getLocale, experimentalStaticLocale } from '../runtime.js';
 /** @typedef {{}} Stats_Chart_Smoothing_RawInputs */
 
 const fr_stats_chart_smoothing_raw = /** @type {(inputs: Stats_Chart_Smoothing_RawInputs) => LocalizedString} */ () => {
-	return /** @type {LocalizedString} */ (`Valeurs quotidiennes brutes`)
+	return /** @type {LocalizedString} */ (`Valeurs brutes par relevé`)
 };
 
 const en_stats_chart_smoothing_raw = /** @type {(inputs: Stats_Chart_Smoothing_RawInputs) => LocalizedString} */ () => {
-	return /** @type {LocalizedString} */ (`Raw daily values`)
+	return /** @type {LocalizedString} */ (`Raw values per entry`)
 };
 
 /**
 * | output |
 * | --- |
-* | "Raw daily values" |
+* | "Raw values per entry" |
 *
 * @param {Stats_Chart_Smoothing_RawInputs} inputs
 * @param {{ locale?: "fr" | "en" }} options

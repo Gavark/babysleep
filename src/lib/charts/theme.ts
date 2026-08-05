@@ -24,24 +24,37 @@ export function withAlpha(hex: string, alpha: number): string {
 
 const NAP_RANKS = 8;
 
-function token(styles: CSSStyleDeclaration, name: string): string {
-  return styles.getPropertyValue(name).trim();
+// A missing/renamed custom property makes getPropertyValue return '', and
+// withAlpha('') passes that straight through — Chart.js then falls back to
+// its own default (black) for the stroke. `fallback` gives every call site
+// an explicit, already-resolved token to use instead, so no lookup can ever
+// bottom out at an empty string.
+function token(styles: CSSStyleDeclaration, name: string, fallback: string): string {
+  const value = styles.getPropertyValue(name).trim();
+  return value === '' ? fallback : value;
 }
 
 export function readChartTheme(): ChartTheme {
   const s = getComputedStyle(document.documentElement);
+  // getComputedStyle(...).color is the browser's already-resolved computed
+  // text color (the CSS `color` property, not a custom property) — CSS
+  // guarantees it is never an empty string, so it anchors the fallback
+  // chain below without introducing a colour literal of our own.
+  const text = token(s, '--c-text', s.color);
+  const textMuted = token(s, '--c-text-muted', text);
+  const grid = token(s, '--c-border', textMuted);
+  const tooltipBg = token(s, '--c-bg-card', text);
+  const wake = token(s, '--c-primary', text);
+  const bedtime = token(s, '--c-danger', wake);
+  const night = token(s, '--c-accent-sage', wake);
+  const nap = token(s, '--c-accent-honey', wake);
   return {
-    text: token(s, '--c-text'),
-    textMuted: token(s, '--c-text-muted'),
-    grid: token(s, '--c-border'),
-    tooltipBg: token(s, '--c-bg-card'),
-    series: {
-      wake: token(s, '--c-primary'),
-      bedtime: token(s, '--c-danger'),
-      night: token(s, '--c-accent-sage'),
-      nap: token(s, '--c-accent-honey')
-    },
-    napRanks: Array.from({ length: NAP_RANKS }, (_, i) => token(s, `--c-nap-${i + 1}`))
+    text,
+    textMuted,
+    grid,
+    tooltipBg,
+    series: { wake, bedtime, night, nap },
+    napRanks: Array.from({ length: NAP_RANKS }, (_, i) => token(s, `--c-nap-${i + 1}`, wake))
   };
 }
 

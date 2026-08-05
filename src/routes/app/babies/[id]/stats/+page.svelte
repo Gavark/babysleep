@@ -97,6 +97,23 @@
     });
   }
 
+  // Wake/bedtime series are clock times, not magnitudes: "minimum 0.5,
+  // maximum 23.5" reads as gibberish (and, unmapped, can even show the
+  // average as noon for a family that crosses midnight). "Earliest/average/
+  // latest" is the vocabulary that actually matches a time of day.
+  function ariaForTimeOfDay(name: string, values: (number | null)[], fmt: (v: number) => string): string {
+    const s = seriesStats(values);
+    if (!s) return m.stats_chart_aria_empty({ name });
+    return m.stats_chart_aria_timeofday({
+      name,
+      from: data.from,
+      to: data.to,
+      min: fmt(s.min),
+      avg: fmt(s.avg),
+      max: fmt(s.max)
+    });
+  }
+
   // Shared x-axis config: Chart.js thins the labels itself, so 90-day and
   // all-time presets stay legible without manual sampling.
   const xAxis = $derived({
@@ -213,12 +230,19 @@
     })
   );
 
+  // Rank is also encoded by hue via `token`, but one WARN-band colour pair in
+  // the palette is indistinguishable to some colour-vision deficiencies. A
+  // per-rank dash pattern makes rank readable from line style alone; it
+  // cycles for any rank beyond the fourth.
+  const TREND_DASH_PATTERNS = [[], [6, 3], [2, 3], [10, 4, 2, 4]];
+
   const trendDatasets = $derived(
-    trendSeries.map((s) => ({
+    trendSeries.map((s, i) => ({
       label: m.stats_chart_label_nap_rank({ n: s.rank }),
       data: s.values.map((v) => (v === null ? null : v / 60)),
       token: `nap-${s.rank}`,
       borderWidth: 2,
+      borderDash: TREND_DASH_PATTERNS[i % TREND_DASH_PATTERNS.length],
       tension: 0.2,
       spanGaps: false, // a gap is real missing data — do not bridge it
       pointRadius: dense ? 0 : 3,
@@ -248,9 +272,11 @@
     }
   });
 
-  // The aria summary describes the longest-running rank; per-rank detail is
-  // already available in the bar chart above.
+  // The aria summary describes rank 1 only, so it is labelled by rank, not by
+  // the chart's overall title — otherwise it would read as if it covered
+  // every rank. Per-rank detail is already available in the bar chart above.
   const trendAriaValues = $derived(trendSeries[0]?.values ?? []);
+  const trendAriaName = $derived(m.stats_chart_label_nap_rank({ n: 1 }));
 </script>
 
 <h1>{m.stats_title({ name: data.baby.name })}</h1>
@@ -285,15 +311,22 @@
     <ChartCanvas type="line"
       data={{ labels, datasets: [line('wake', m.stats_chart_label_wake(), wakeData)] }}
       options={wakeOpts}
-      ariaLabel={ariaFor(m.stats_charts_wake_time(), wakeData, decimalToHHMM)} />
+      ariaLabel={ariaForTimeOfDay(m.stats_charts_wake_time(), wakeData, decimalToHHMM)} />
   </section>
 
   <section class="card chart-section">
     <h2><Moon size={18} /> {m.stats_charts_bedtime()}</h2>
+    <!-- The aria summary is built from bedtimeNight, not raw bedtimeData: with
+         bedtimes either side of midnight (23:30, 00:30), unmapped clock
+         fractions give min 0.5 / max 23.5 / avg ~12 — a screen reader would
+         announce the average bedtime as noon, with min and max swapped.
+         Night-mapped values keep midnight from splitting the range, so
+         min/avg/max are computed on a continuous scale; decimalToHHMM then
+         normalises them (% 1440) back into real clock times for the label. -->
     <ChartCanvas type="line"
       data={{ labels, datasets: [line('bedtime', m.stats_chart_label_bedtime(), bedtimeNight)] }}
       options={bedtimeOpts}
-      ariaLabel={ariaFor(m.stats_charts_bedtime(), bedtimeData, decimalToHHMM)} />
+      ariaLabel={ariaForTimeOfDay(m.stats_charts_bedtime(), bedtimeNight, decimalToHHMM)} />
   </section>
 
   <section class="card chart-section">
@@ -340,16 +373,16 @@
 
   <section class="card chart-section">
     <h2><Coffee size={18} /> {m.stats_charts_nap_trend()}</h2>
-    <p class="chart-note">
-      {smoothed ? m.stats_chart_smoothing_rolling() : m.stats_chart_smoothing_raw()}
-    </p>
     {#if trendDatasets.length === 0}
       <p class="chart-note">{m.stats_chart_nap_rank_empty()}</p>
     {:else}
+      <p class="chart-note">
+        {smoothed ? m.stats_chart_smoothing_rolling() : m.stats_chart_smoothing_raw()}
+      </p>
       <ChartCanvas type="line" height={280}
         data={{ labels, datasets: trendDatasets }}
         options={trendOpts}
-        ariaLabel={ariaFor(m.stats_charts_nap_trend(), trendAriaValues.map((v) => (v === null ? null : v / 60)), decimalToDuration)} />
+        ariaLabel={ariaFor(trendAriaName, trendAriaValues.map((v) => (v === null ? null : v / 60)), decimalToDuration)} />
     {/if}
   </section>
 {/if}

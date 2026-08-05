@@ -6,17 +6,17 @@ import { getLocale, experimentalStaticLocale } from '../runtime.js';
 /** @typedef {{}} Stats_Chart_Smoothing_RollingInputs */
 
 const fr_stats_chart_smoothing_rolling = /** @type {(inputs: Stats_Chart_Smoothing_RollingInputs) => LocalizedString} */ () => {
-	return /** @type {LocalizedString} */ (`Moyenne glissante sur 7 jours`)
+	return /** @type {LocalizedString} */ (`Moyenne glissante sur 7 relevés`)
 };
 
 const en_stats_chart_smoothing_rolling = /** @type {(inputs: Stats_Chart_Smoothing_RollingInputs) => LocalizedString} */ () => {
-	return /** @type {LocalizedString} */ (`7-day rolling average`)
+	return /** @type {LocalizedString} */ (`7-entry rolling average`)
 };
 
 /**
 * | output |
 * | --- |
-* | "7-day rolling average" |
+* | "7-entry rolling average" |
 *
 * @param {Stats_Chart_Smoothing_RollingInputs} inputs
 * @param {{ locale?: "fr" | "en" }} options
