@@ -8,6 +8,7 @@
   import Cloud from 'phosphor-svelte/lib/Cloud';
   import Coffee from 'phosphor-svelte/lib/Coffee';
   import * as m from '$paraglide/messages';
+  import { seriesStats } from '$lib/charts/transforms';
 
   let { data } = $props();
 
@@ -60,6 +61,20 @@
     if (h === 0) return m.stats_chart_minutes_short({ min: mm });
     if (mm === 0) return m.stats_chart_hours_short({ h });
     return m.stats_chart_hours_minutes_short({ h, mm: String(mm).padStart(2, '0') });
+  }
+
+  // Screen readers get numbers, which the page provides nowhere else.
+  function ariaFor(name: string, values: (number | null)[], fmt: (v: number) => string): string {
+    const s = seriesStats(values);
+    if (!s) return m.stats_chart_aria_empty({ name });
+    return m.stats_chart_aria_series({
+      name,
+      from: data.from,
+      to: data.to,
+      min: fmt(s.min),
+      avg: fmt(s.avg),
+      max: fmt(s.max)
+    });
   }
 
   const timeOfDayOpts = {
@@ -153,35 +168,40 @@
     <h2><Sun size={18} /> {m.stats_charts_wake_time()}</h2>
     <ChartCanvas type="line"
       data={{ labels, datasets: [{ label: m.stats_chart_label_wake(), data: wakeData, borderColor: 'rgba(201,122,93,1)', backgroundColor: 'rgba(201,122,93,0.18)', tension: 0.2, spanGaps: true }] }}
-      options={timeOfDayOpts} />
+      options={timeOfDayOpts}
+      ariaLabel={ariaFor(m.stats_charts_wake_time(), wakeData, decimalToHHMM)} />
   </section>
 
   <section class="card chart-section">
     <h2><Moon size={18} /> {m.stats_charts_bedtime()}</h2>
     <ChartCanvas type="line"
       data={{ labels, datasets: [{ label: m.stats_chart_label_bedtime(), data: bedtimeData, borderColor: 'rgba(184,81,74,1)', backgroundColor: 'rgba(184,81,74,0.18)', tension: 0.2, spanGaps: true }] }}
-      options={timeOfDayOpts} />
+      options={timeOfDayOpts}
+      ariaLabel={ariaFor(m.stats_charts_bedtime(), bedtimeData, decimalToHHMM)} />
   </section>
 
   <section class="card chart-section">
     <h2><Bed size={18} /> {m.stats_charts_prev_night_hours()}</h2>
     <ChartCanvas type="line"
       data={{ labels, datasets: [{ label: m.stats_chart_label_night_hours(), data: prevNightData, borderColor: 'rgba(122,154,135,1)', backgroundColor: 'rgba(122,154,135,0.18)', tension: 0.2, spanGaps: true }] }}
-      options={hourOpts} />
+      options={hourOpts}
+      ariaLabel={ariaFor(m.stats_charts_prev_night_hours(), prevNightData, decimalToDuration)} />
   </section>
 
   <section class="card chart-section">
     <h2><Cloud size={18} /> {m.stats_charts_nap_total_hours()}</h2>
     <ChartCanvas type="line"
       data={{ labels, datasets: [{ label: m.stats_chart_label_day_hours(), data: napTotalData, borderColor: 'rgba(232,184,110,1)', backgroundColor: 'rgba(232,184,110,0.18)', tension: 0.2, spanGaps: true }] }}
-      options={hourOpts} />
+      options={hourOpts}
+      ariaLabel={ariaFor(m.stats_charts_nap_total_hours(), napTotalData, decimalToDuration)} />
   </section>
 
   <section class="card chart-section">
     <h2><Coffee size={18} /> {m.stats_charts_naps_count()}</h2>
     <ChartCanvas type="bar"
       data={{ labels, datasets: [{ label: m.stats_chart_label_naps(), data: napCountData, backgroundColor: 'rgba(232,184,110,0.7)' }] }}
-      options={countOpts} />
+      options={countOpts}
+      ariaLabel={ariaFor(m.stats_charts_naps_count(), napCountData, (v) => String(Math.round(v)))} />
   </section>
 {/if}
 

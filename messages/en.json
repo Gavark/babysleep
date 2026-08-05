@@ -259,6 +259,8 @@
   "stats_chart_minutes_short": "{min} min",
   "stats_chart_hours_short": "{h}h",
   "stats_chart_hours_minutes_short": "{h}h{mm}",
+  "stats_chart_aria_series": "{name}, {from} to {to}. Minimum {min}, average {avg}, maximum {max}.",
+  "stats_chart_aria_empty": "{name}: no data over this period.",
   "common_btn_close": "Close",
   "calendar_title": "Calendar — {name}",
   "calendar_nav_label": "Monthly navigation",
