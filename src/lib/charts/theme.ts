@@ -8,7 +8,14 @@ export type ChartTheme = {
   text: string;
   textMuted: string;
   grid: string;
-  tooltipBg: string;
+  /**
+   * null when `--c-bg-card` does not resolve. Consumers must then leave the
+   * tooltip entirely to Chart.js rather than theme it half-way: a themed text
+   * colour over an unthemed background (or the reverse) can render the tooltip
+   * unreadable, whereas Chart.js's own defaults are at least consistent with
+   * each other.
+   */
+  tooltipBg: string | null;
   series: { wake: string; bedtime: string; night: string; nap: string };
   napRanks: string[];
 };
@@ -34,6 +41,15 @@ function token(styles: CSSStyleDeclaration, name: string, fallback: string): str
   return value === '' ? fallback : value;
 }
 
+/**
+ * For colours that have no safe substitute. Returns null rather than guessing,
+ * leaving the caller to skip that piece of theming altogether.
+ */
+function optionalToken(styles: CSSStyleDeclaration, name: string): string | null {
+  const value = styles.getPropertyValue(name).trim();
+  return value === '' ? null : value;
+}
+
 export function readChartTheme(): ChartTheme {
   const s = getComputedStyle(document.documentElement);
   // getComputedStyle(...).color is the browser's already-resolved computed
@@ -43,7 +59,9 @@ export function readChartTheme(): ChartTheme {
   const text = token(s, '--c-text', s.color);
   const textMuted = token(s, '--c-text-muted', text);
   const grid = token(s, '--c-border', textMuted);
-  const tooltipBg = token(s, '--c-bg-card', text);
+  // Deliberately NOT falling back to a text-role colour: that would paint the
+  // tooltip's background the same colour as its own text.
+  const tooltipBg = optionalToken(s, '--c-bg-card');
   const wake = token(s, '--c-primary', text);
   const bedtime = token(s, '--c-danger', wake);
   const night = token(s, '--c-accent-sage', wake);

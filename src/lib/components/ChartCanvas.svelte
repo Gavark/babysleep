@@ -136,12 +136,20 @@
       plugins: {
         ...(o.plugins ?? {}),
         legend: { labels: { color: t.textMuted }, ...(o.plugins?.legend ?? {}) },
+        // All-or-nothing: theme the tooltip only when a real background
+        // resolved. Half-theming it (our text colour over Chart.js's default
+        // background, or the reverse) can make it unreadable, and Chart.js's
+        // own defaults are at least internally consistent.
         tooltip: {
-          backgroundColor: t.tooltipBg,
-          titleColor: t.text,
-          bodyColor: t.text,
-          borderColor: t.grid,
-          borderWidth: 1,
+          ...(t.tooltipBg
+            ? {
+                backgroundColor: t.tooltipBg,
+                titleColor: t.text,
+                bodyColor: t.text,
+                borderColor: t.grid,
+                borderWidth: 1
+              }
+            : {}),
           ...(o.plugins?.tooltip ?? {})
         }
       },
