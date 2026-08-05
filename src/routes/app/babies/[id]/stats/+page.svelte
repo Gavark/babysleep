@@ -8,7 +8,9 @@
   import Cloud from 'phosphor-svelte/lib/Cloud';
   import Coffee from 'phosphor-svelte/lib/Coffee';
   import * as m from '$paraglide/messages';
-  import { seriesStats } from '$lib/charts/transforms';
+  import {
+    seriesStats, toNightHours, axisRange, tickStep, formatDayMonth, formatFullDate
+  } from '$lib/charts/transforms';
 
   let { data } = $props();
 
@@ -29,10 +31,20 @@
     return dur / 60;
   }
 
+  // data.locale comes from +layout.server.ts. Do NOT read
+  // document.documentElement.lang — src/app.html hardcodes lang="fr".
+  const locale = $derived(data.locale ?? 'fr');
+  const isoDates = $derived(data.entries.map((e: any) => e.date));
+  const labels = $derived(isoDates.map((d: string) => formatDayMonth(d, locale)));
+  const dense = $derived(labels.length > 30);
+
   // Build all chart data
-  const labels = $derived(data.entries.map((e: any) => e.date));
   const wakeData = $derived(data.entries.map((e: any) => hhmmToHours(e.wakeTime)));
   const bedtimeData = $derived(data.entries.map((e: any) => hhmmToHours(e.bedtime)));
+  // Bedtimes are plotted on a night-continuous axis so 00:30 sits ABOVE 23:30
+  // instead of dropping to the bottom of the plot. decimalToHHMM already
+  // normalises with % 1440, so 24.5 renders as "00:30" in ticks and tooltips.
+  const bedtimeNight = $derived(bedtimeData.map((v: number | null) => (v === null ? null : toNightHours(v))));
   const napTotalData = $derived(data.entries.map((e: any) => {
     const mins = dayNapMinutes(e);
     return mins === null ? null : mins / 60;
@@ -77,64 +89,84 @@
     });
   }
 
-  const timeOfDayOpts = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        callbacks: {
-          label: (ctx: any) => `${ctx.dataset.label}: ${decimalToHHMM(ctx.parsed.y)}`
-        }
-      }
-    },
-    scales: {
-      y: {
-        min: 0,
-        max: 24,
-        ticks: {
-          stepSize: 2,
-          callback: (v: any) => decimalToHHMM(Number(v))
-        }
-      }
-    }
-  };
+  // Shared x-axis config: Chart.js thins the labels itself, so 90-day and
+  // all-time presets stay legible without manual sampling.
+  const xAxis = $derived({
+    ticks: { maxRotation: 0, autoSkip: true, autoSkipPadding: 12 }
+  });
 
-  const hourOpts = {
+  const dateTooltipTitle = $derived((items: any[]) =>
+    formatFullDate(isoDates[items[0].dataIndex], locale)
+  );
+
+  function timeOfDayOpts(values: (number | null)[], x: any, title: any) {
+    const { min, max } = axisRange(values);
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title,
+            label: (ctx: any) => `${ctx.dataset.label}: ${decimalToHHMM(ctx.parsed.y)}`
+          }
+        }
+      },
+      scales: {
+        x,
+        y: { min, max, ticks: { stepSize: tickStep(min, max), callback: (v: any) => decimalToHHMM(Number(v)) } }
+      }
+    };
+  }
+
+  const wakeOpts = $derived(timeOfDayOpts(wakeData, xAxis, dateTooltipTitle));
+  const bedtimeOpts = $derived(timeOfDayOpts(bedtimeNight, xAxis, dateTooltipTitle));
+
+  const hourOpts = $derived({
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: { display: false },
       tooltip: {
         callbacks: {
+          title: dateTooltipTitle,
           label: (ctx: any) => `${ctx.dataset.label}: ${decimalToDuration(ctx.parsed.y)}`
         }
       }
     },
     scales: {
+      x: xAxis,
       y: {
         beginAtZero: true,
         title: { display: true, text: m.stats_chart_axis_duration() },
-        ticks: {
-          callback: (v: any) => decimalToDuration(Number(v))
-        }
+        ticks: { callback: (v: any) => decimalToDuration(Number(v)) }
       }
     }
-  };
+  });
 
-  const countOpts = {
+  const countOpts = $derived({
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: { display: false },
       tooltip: {
-        callbacks: {
-          label: (ctx: any) => `${ctx.dataset.label}: ${ctx.parsed.y}`
-        }
+        callbacks: { title: dateTooltipTitle, label: (ctx: any) => `${ctx.dataset.label}: ${ctx.parsed.y}` }
       }
     },
-    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
-  };
+    scales: { x: xAxis, y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+  });
+
+  const line = (token: string, label: string, values: (number | null)[]) => ({
+    label,
+    token,
+    data: values,
+    borderWidth: 2,
+    tension: 0.2,
+    spanGaps: true,
+    pointRadius: dense ? 0 : 3,
+    pointHoverRadius: 5
+  });
 </script>
 
 <h1>{m.stats_title({ name: data.baby.name })}</h1>
@@ -167,23 +199,23 @@
   <section class="card chart-section">
     <h2><Sun size={18} /> {m.stats_charts_wake_time()}</h2>
     <ChartCanvas type="line"
-      data={{ labels, datasets: [{ label: m.stats_chart_label_wake(), data: wakeData, borderColor: 'rgba(201,122,93,1)', backgroundColor: 'rgba(201,122,93,0.18)', tension: 0.2, spanGaps: true }] }}
-      options={timeOfDayOpts}
+      data={{ labels, datasets: [line('wake', m.stats_chart_label_wake(), wakeData)] }}
+      options={wakeOpts}
       ariaLabel={ariaFor(m.stats_charts_wake_time(), wakeData, decimalToHHMM)} />
   </section>
 
   <section class="card chart-section">
     <h2><Moon size={18} /> {m.stats_charts_bedtime()}</h2>
     <ChartCanvas type="line"
-      data={{ labels, datasets: [{ label: m.stats_chart_label_bedtime(), data: bedtimeData, borderColor: 'rgba(184,81,74,1)', backgroundColor: 'rgba(184,81,74,0.18)', tension: 0.2, spanGaps: true }] }}
-      options={timeOfDayOpts}
+      data={{ labels, datasets: [line('bedtime', m.stats_chart_label_bedtime(), bedtimeNight)] }}
+      options={bedtimeOpts}
       ariaLabel={ariaFor(m.stats_charts_bedtime(), bedtimeData, decimalToHHMM)} />
   </section>
 
   <section class="card chart-section">
     <h2><Bed size={18} /> {m.stats_charts_prev_night_hours()}</h2>
     <ChartCanvas type="line"
-      data={{ labels, datasets: [{ label: m.stats_chart_label_night_hours(), data: prevNightData, borderColor: 'rgba(122,154,135,1)', backgroundColor: 'rgba(122,154,135,0.18)', tension: 0.2, spanGaps: true }] }}
+      data={{ labels, datasets: [line('night', m.stats_chart_label_night_hours(), prevNightData)] }}
       options={hourOpts}
       ariaLabel={ariaFor(m.stats_charts_prev_night_hours(), prevNightData, decimalToDuration)} />
   </section>
@@ -191,7 +223,7 @@
   <section class="card chart-section">
     <h2><Cloud size={18} /> {m.stats_charts_nap_total_hours()}</h2>
     <ChartCanvas type="line"
-      data={{ labels, datasets: [{ label: m.stats_chart_label_day_hours(), data: napTotalData, borderColor: 'rgba(232,184,110,1)', backgroundColor: 'rgba(232,184,110,0.18)', tension: 0.2, spanGaps: true }] }}
+      data={{ labels, datasets: [line('nap', m.stats_chart_label_day_hours(), napTotalData)] }}
       options={hourOpts}
       ariaLabel={ariaFor(m.stats_charts_nap_total_hours(), napTotalData, decimalToDuration)} />
   </section>
@@ -199,7 +231,7 @@
   <section class="card chart-section">
     <h2><Coffee size={18} /> {m.stats_charts_naps_count()}</h2>
     <ChartCanvas type="bar"
-      data={{ labels, datasets: [{ label: m.stats_chart_label_naps(), data: napCountData, backgroundColor: 'rgba(232,184,110,0.7)' }] }}
+      data={{ labels, datasets: [{ label: m.stats_chart_label_naps(), data: napCountData, token: 'nap', fillAlpha: 0.7, borderRadius: 4 }] }}
       options={countOpts}
       ariaLabel={ariaFor(m.stats_charts_naps_count(), napCountData, (v) => String(Math.round(v)))} />
   </section>
