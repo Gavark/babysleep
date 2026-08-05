@@ -1,7 +1,7 @@
 <script lang="ts">
   import ChartCanvas from '$lib/components/ChartCanvas.svelte';
   import { parseHHMM } from '$lib/time';
-  import { dayNapMinutes, napCount } from '$lib/naps';
+  import { dayNapMinutes, napCount, aggregateByRank, napSeriesByRank, maxNapRank } from '$lib/naps';
   import Sun from 'phosphor-svelte/lib/Sun';
   import Moon from 'phosphor-svelte/lib/Moon';
   import Bed from 'phosphor-svelte/lib/Bed';
@@ -50,6 +50,14 @@
     return mins === null ? null : mins / 60;
   }));
   const napCountData = $derived(data.entries.map(napCount));
+  const rankAgg = $derived(aggregateByRank(data.entries));
+  // The day count rides in the tick label: over a period spanning a rhythm
+  // change, a rank averaged over 4 days must not read as a peer of one
+  // averaged over 90. No rank is hidden.
+  const rankLabels = $derived(
+    rankAgg.map((r) => m.stats_chart_nap_rank_tick({ n: r.rank, days: r.days }))
+  );
+  const rankAvgHours = $derived(rankAgg.map((r) => r.avgMin / 60));
   const prevNightData = $derived(
     data.entries.map((e: any, i: number) => prevNightHours(e, i > 0 ? data.entries[i - 1] : null))
   );
@@ -157,6 +165,29 @@
     scales: { x: xAxis, y: { beginAtZero: true, ticks: { stepSize: 1 } } }
   });
 
+  const rankOpts = $derived({
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: (ctx: any) => [
+            `${decimalToDuration(ctx.parsed.y)}`,
+            m.stats_chart_nap_rank_tooltip({ days: rankAgg[ctx.dataIndex].days })
+          ]
+        }
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: { display: true, text: m.stats_chart_axis_duration() },
+        ticks: { callback: (v: any) => decimalToDuration(Number(v)) }
+      }
+    }
+  });
+
   const line = (token: string, label: string, values: (number | null)[]) => ({
     label,
     token,
@@ -235,6 +266,24 @@
       options={countOpts}
       ariaLabel={ariaFor(m.stats_charts_naps_count(), napCountData, (v) => String(Math.round(v)))} />
   </section>
+
+  <section class="card chart-section">
+    <h2><Coffee size={18} /> {m.stats_charts_nap_avg_by_rank()}</h2>
+    {#if rankAgg.length === 0}
+      <p class="chart-note">{m.stats_chart_nap_rank_empty()}</p>
+    {:else}
+      <ChartCanvas type="bar"
+        data={{ labels: rankLabels, datasets: [{
+          label: m.stats_charts_nap_avg_by_rank(),
+          data: rankAvgHours,
+          tokens: rankAgg.map((r) => `nap-${r.rank}`),
+          fillAlpha: 0.75,
+          borderRadius: 4
+        }] }}
+        options={rankOpts}
+        ariaLabel={ariaFor(m.stats_charts_nap_avg_by_rank(), rankAvgHours, decimalToDuration)} />
+    {/if}
+  </section>
 {/if}
 
 <style>
@@ -244,4 +293,5 @@
   .custom .field { min-width: 140px; }
   .chart-section { margin-bottom: var(--s-4); }
   .chart-section h2 { font-size: var(--fs-base); margin-bottom: var(--s-3); display: flex; align-items: center; gap: var(--s-2); }
+  .chart-note { color: var(--c-text-muted); font-size: var(--fs-sm); margin: 0; }
 </style>

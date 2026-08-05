@@ -33,6 +33,31 @@
   --c-cal-seg-nap:   var(--c-accent-honey);
   --c-cal-seg-night: #7A6FA9;
 
+  /* Charts — categorical palette for nap ranks (max 8 slots in the schema;
+     4 is the real-world maximum, at 0-3 months). Validated with the dataviz
+     skill's validate_palette.js against surface #FFFFFF: all 8 pass the
+     lightness band, chroma floor, and normal-vision floor (worst adjacent
+     pair >= 19.1, vs the >=15 hard gate); CVD separation passes for every
+     pair except nap-5/nap-6 (deutan ~8.0, the floor band), which is legal
+     here because the chart already carries secondary encoding — each bar
+     has its own x-axis rank label and a tooltip stating the rank. The
+     brief's original hex values (muted, taken straight from the app's
+     existing accent hues) failed the validator hard: several slots read as
+     gray below the chroma floor, and multiple adjacent pairs fell below the
+     hard-gate normal-vision floor of 15 (e.g. the original honey/olive pair
+     measured ~1.1). These are the same hue families (terracotta, violet,
+     olive/sage greens, honey, danger red, teal, mauve) re-stepped in OKLCH
+     to the lightness/chroma the checks require; ranks 1-4 (the common case)
+     clear the CVD target of 8 with wide margin (>=14.9 worst case). */
+  --c-nap-1: #BD5932;
+  --c-nap-2: #7D68C5;
+  --c-nap-3: #6A870A;
+  --c-nap-4: #AF5594;
+  --c-nap-5: #00925A;
+  --c-nap-6: #AD6800;
+  --c-nap-7: #009295;
+  --c-nap-8: #BF544C;
+
   /* Typographie */
   --fs-xs: 0.75rem;
   --fs-sm: 0.8125rem;
@@ -88,6 +113,14 @@
     --c-cal-heat-none: #2A2117;
     --c-cal-seg-night: #9A8FCC;
     /* --c-cal-seg-nap inherits via var(--c-accent-honey), already overridden above */
+    --c-nap-1: #C45F38;
+    --c-nap-2: #836ECC;
+    --c-nap-3: #708D17;
+    --c-nap-4: #B55B9A;
+    --c-nap-5: #009960;
+    --c-nap-6: #B36E00;
+    --c-nap-7: #00989B;
+    --c-nap-8: #C65A52;
   }
 }
 
@@ -116,4 +149,12 @@
   --c-cal-heat-none: #2A2117;
   --c-cal-seg-night: #9A8FCC;
   /* --c-cal-seg-nap inherits via var(--c-accent-honey), already overridden above */
+  --c-nap-1: #C45F38;
+  --c-nap-2: #836ECC;
+  --c-nap-3: #708D17;
+  --c-nap-4: #B55B9A;
+  --c-nap-5: #009960;
+  --c-nap-6: #B36E00;
+  --c-nap-7: #00989B;
+  --c-nap-8: #C65A52;
 }
