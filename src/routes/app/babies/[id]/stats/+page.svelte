@@ -9,7 +9,7 @@
   import Coffee from 'phosphor-svelte/lib/Coffee';
   import * as m from '$paraglide/messages';
   import {
-    seriesStats, toNightHours, axisRange, tickStep, formatDayMonth, formatFullDate
+    seriesStats, toNightHours, axisRange, tickStep, formatDayMonth, formatFullDate, rollingMean
   } from '$lib/charts/transforms';
 
   let { data } = $props();
@@ -198,6 +198,59 @@
     pointRadius: dense ? 0 : 3,
     pointHoverRadius: 5
   });
+
+  // Below 15 days there are too few points for a 7-day window to mean
+  // anything, so raw values are shown. The caption always says which.
+  const smoothed = $derived(data.entries.length > 14);
+
+  const trendSeries = $derived(
+    Array.from({ length: maxNapRank(data.entries) }, (_, i) => {
+      const raw = napSeriesByRank(data.entries, i + 1);
+      return {
+        rank: i + 1,
+        values: smoothed ? rollingMean(raw, 7, 4) : raw
+      };
+    })
+  );
+
+  const trendDatasets = $derived(
+    trendSeries.map((s) => ({
+      label: m.stats_chart_label_nap_rank({ n: s.rank }),
+      data: s.values.map((v) => (v === null ? null : v / 60)),
+      token: `nap-${s.rank}`,
+      borderWidth: 2,
+      tension: 0.2,
+      spanGaps: false, // a gap is real missing data — do not bridge it
+      pointRadius: dense ? 0 : 3,
+      pointHoverRadius: 5
+    }))
+  );
+
+  const trendOpts = $derived({
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: true, position: 'bottom' },
+      tooltip: {
+        callbacks: {
+          title: dateTooltipTitle,
+          label: (ctx: any) => `${ctx.dataset.label}: ${decimalToDuration(ctx.parsed.y)}`
+        }
+      }
+    },
+    scales: {
+      x: xAxis,
+      y: {
+        beginAtZero: true,
+        title: { display: true, text: m.stats_chart_axis_duration() },
+        ticks: { callback: (v: any) => decimalToDuration(Number(v)) }
+      }
+    }
+  });
+
+  // The aria summary describes the longest-running rank; per-rank detail is
+  // already available in the bar chart above.
+  const trendAriaValues = $derived(trendSeries[0]?.values ?? []);
 </script>
 
 <h1>{m.stats_title({ name: data.baby.name })}</h1>
@@ -282,6 +335,21 @@
         }] }}
         options={rankOpts}
         ariaLabel={ariaFor(m.stats_charts_nap_avg_by_rank(), rankAvgHours, decimalToDuration)} />
+    {/if}
+  </section>
+
+  <section class="card chart-section">
+    <h2><Coffee size={18} /> {m.stats_charts_nap_trend()}</h2>
+    <p class="chart-note">
+      {smoothed ? m.stats_chart_smoothing_rolling() : m.stats_chart_smoothing_raw()}
+    </p>
+    {#if trendDatasets.length === 0}
+      <p class="chart-note">{m.stats_chart_nap_rank_empty()}</p>
+    {:else}
+      <ChartCanvas type="line" height={280}
+        data={{ labels, datasets: trendDatasets }}
+        options={trendOpts}
+        ariaLabel={ariaFor(m.stats_charts_nap_trend(), trendAriaValues.map((v) => (v === null ? null : v / 60)), decimalToDuration)} />
     {/if}
   </section>
 {/if}
