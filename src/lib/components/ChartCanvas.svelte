@@ -41,7 +41,7 @@
     data,
     options,
     height = 240,
-    width,
+    minWidth,
     ariaLabel
   }: {
     type: 'line' | 'bar';
@@ -49,11 +49,11 @@
     options?: any;
     height?: number;
     /**
-     * Explicit pixel width. Set it when the chart must be wider than its
+     * Explicit pixel min-width. Set it when the chart must be wider than its
      * container and scrolled — the caller then supplies its own overflow-x
      * wrapper. Omit for the normal responsive behaviour.
      */
-    width?: number;
+    minWidth?: number;
     ariaLabel: string;
   } = $props();
 
@@ -170,7 +170,7 @@
      interactive and rejects role="img" on it. The wrapper carries the same
      semantics for a screen reader and keeps `npm run check` clean. -->
 <div
-  style="height: {height}px; position: relative;{width ? ` width: ${width}px;` : ''}"
+  style="height: {height}px; position: relative;{minWidth ? ` min-width: ${minWidth}px;` : ''}"
   role="img"
   aria-label={ariaLabel}
 >

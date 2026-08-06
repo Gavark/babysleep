@@ -98,6 +98,21 @@
     });
   }
 
+  // The monthly chart deliberately ignores the period selector (it always
+  // covers every recorded month), so its aria summary must not borrow
+  // data.from/data.to like ariaFor does — that would announce the selected
+  // period over statistics that span the baby's whole history.
+  function ariaForMonthly(name: string, values: (number | null)[], fmt: (v: number) => string): string {
+    const s = seriesStats(values);
+    if (!s) return m.stats_chart_aria_empty({ name });
+    return m.stats_chart_aria_monthly({
+      name,
+      min: fmt(s.min),
+      avg: fmt(s.avg),
+      max: fmt(s.max)
+    });
+  }
+
   // Wake/bedtime series are clock times, not magnitudes: "minimum 0.5,
   // maximum 23.5" reads as gibberish (and, unmapped, can even show the
   // average as noon for a family that crosses midnight). "Earliest/average/
@@ -210,7 +225,6 @@
   // phone three or four are visible and the user scrolls further — better than
   // compressing six into 340px, which is the cramping this chart exists to avoid.
   const MONTH_PX = 110;
-  const MONTHS_PER_PAGE = 6;
 
   const monthly = $derived(data.monthlyNaps);
 
@@ -233,7 +247,7 @@
     }))
   );
 
-  const monthlyWidth = $derived(Math.max(1, monthly.months.length) * MONTH_PX);
+  const monthlyWidth = $derived(monthly.months.length * MONTH_PX);
 
   const monthlyOpts = $derived({
     responsive: true,
@@ -278,8 +292,13 @@
     atEnd = el.scrollLeft >= el.scrollWidth - el.clientWidth - 1;
   }
 
+  // Step by the scroller's own visible width, not a fixed constant: on a
+  // narrow phone a fixed 660px step jumps past months the user never saw
+  // and can land straight at the end, disabling the button after one press.
   function page(direction: -1 | 1) {
-    scroller?.scrollBy({ left: direction * MONTHS_PER_PAGE * MONTH_PX, behavior: 'smooth' });
+    const el = scroller;
+    if (!el) return;
+    el.scrollBy({ left: direction * el.clientWidth, behavior: 'smooth' });
   }
 
   // Open on the most recent months — that is what anyone opens this chart for.
@@ -296,6 +315,14 @@
     monthlyWidth; // dependency — do not remove (re-run when the chart is rebuilt at a new width)
     el.scrollLeft = el.scrollWidth;
     syncScrollState();
+  });
+
+  // Rotating a phone (or resizing a desktop window) changes clientWidth
+  // without firing a scroll event, which otherwise leaves the page buttons
+  // stale: `›` enabled at the true end, or disabled mid-history.
+  $effect(() => {
+    window.addEventListener('resize', syncScrollState);
+    return () => window.removeEventListener('resize', syncScrollState);
   });
 
   const line = (token: string, label: string, values: (number | null)[]) => ({
@@ -398,7 +425,9 @@
 
 {#if data.entries.length === 0}
   <p class="empty">{m.stats_empty()}</p>
-{:else}
+{/if}
+
+{#if data.entries.length > 0}
   <section class="card chart-section">
     <h2><Sun size={18} /> {m.stats_charts_wake_time()}</h2>
     <ChartCanvas type="line"
@@ -463,41 +492,43 @@
         ariaLabel={ariaFor(m.stats_charts_nap_avg_by_rank(), rankAvgHours, decimalToDuration)} />
     {/if}
   </section>
+{/if}
 
-  <section class="card chart-section">
-    <h2><Coffee size={18} /> {m.stats_charts_nap_monthly()}</h2>
-    <p class="chart-note">{m.stats_chart_monthly_all_months()}</p>
-    {#if monthly.months.length === 0}
-      <p class="chart-note">{m.stats_chart_nap_rank_empty()}</p>
-    {:else}
-      <div class="scroll-controls">
-        <button type="button" class="btn btn-secondary scroll-btn"
-          onclick={() => page(-1)} disabled={atStart}
-          aria-label={m.stats_chart_monthly_prev()}>‹</button>
-        <button type="button" class="btn btn-secondary scroll-btn"
-          onclick={() => page(1)} disabled={atEnd}
-          aria-label={m.stats_chart_monthly_next()}>›</button>
-      </div>
-      <!-- svelte-ignore a11y_no_noninteractive_tabindex — this is the WAI-ARIA
-           APG "scrollable region" pattern: a keyboard user must be able to
-           focus this div to scroll it with arrow keys, even though `role="group"`
-           itself isn't in the linter's interactive-roles list. -->
-      <div
-        class="chart-scroller"
-        bind:this={scroller}
-        onscroll={syncScrollState}
-        tabindex="0"
-        role="group"
-        aria-label={m.stats_chart_monthly_region()}
-      >
-        <ChartCanvas type="bar" height={280} width={monthlyWidth}
-          data={{ labels: monthLabels, datasets: monthlyDatasets }}
-          options={monthlyOpts}
-          ariaLabel={ariaFor(m.stats_charts_nap_monthly(), monthlyAriaValues, decimalToDuration)} />
-      </div>
-    {/if}
-  </section>
+<section class="card chart-section">
+  <h2><Coffee size={18} /> {m.stats_charts_nap_monthly()}</h2>
+  <p class="chart-note">{m.stats_chart_monthly_all_months()}</p>
+  {#if monthly.months.length === 0}
+    <p class="chart-note">{m.stats_chart_monthly_empty()}</p>
+  {:else}
+    <div class="scroll-controls">
+      <button type="button" class="btn btn-secondary scroll-btn"
+        onclick={() => page(-1)} disabled={atStart}
+        aria-label={m.stats_chart_monthly_prev()}>‹</button>
+      <button type="button" class="btn btn-secondary scroll-btn"
+        onclick={() => page(1)} disabled={atEnd}
+        aria-label={m.stats_chart_monthly_next()}>›</button>
+    </div>
+    <!-- svelte-ignore a11y_no_noninteractive_tabindex — this is the WAI-ARIA
+         APG "scrollable region" pattern: a keyboard user must be able to
+         focus this div to scroll it with arrow keys, even though `role="group"`
+         itself isn't in the linter's interactive-roles list. -->
+    <div
+      class="chart-scroller"
+      bind:this={scroller}
+      onscroll={syncScrollState}
+      tabindex="0"
+      role="group"
+      aria-label={m.stats_chart_monthly_region()}
+    >
+      <ChartCanvas type="bar" height={280} minWidth={monthlyWidth}
+        data={{ labels: monthLabels, datasets: monthlyDatasets }}
+        options={monthlyOpts}
+        ariaLabel={ariaForMonthly(m.stats_chart_label_nap_rank({ n: 1 }), monthlyAriaValues, decimalToDuration)} />
+    </div>
+  {/if}
+</section>
 
+{#if data.entries.length > 0}
   <section class="card chart-section">
     <h2><Coffee size={18} /> {m.stats_charts_nap_trend()}</h2>
     {#if trendDatasets.length === 0}
