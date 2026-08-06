@@ -283,10 +283,17 @@
   }
 
   // Open on the most recent months — that is what anyone opens this chart for.
+  // This route has no {#key} guard, so switching babies reuses this component
+  // instance. Depending on monthlyWidth alone is not enough: two babies can
+  // happen to have the same number of recorded months, in which case the
+  // width would not change and this effect would not re-run, leaving the
+  // scroller parked on the PREVIOUS baby's position over the new baby's data.
+  // Reading `monthly` itself ties the re-run to the data, not a derived size.
   $effect(() => {
     const el = scroller;
     if (!el) return;
-    monthlyWidth; // re-run when the chart is rebuilt at a new width
+    monthly; // dependency — do not remove (re-run when the baby's data changes)
+    monthlyWidth; // dependency — do not remove (re-run when the chart is rebuilt at a new width)
     el.scrollLeft = el.scrollWidth;
     syncScrollState();
   });
