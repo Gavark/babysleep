@@ -253,7 +253,11 @@
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { display: true, position: 'bottom' },
+      // Chart.js draws its legend INSIDE the canvas, which on this chart is
+      // wider than its card — the legend would scroll away with the bars and
+      // get clipped mid-list. We render our own in HTML below the scroller so
+      // it stays put, centred, and always complete.
+      legend: { display: false },
       tooltip: {
         callbacks: {
           label: (ctx: any) => {
@@ -525,6 +529,17 @@
         options={monthlyOpts}
         ariaLabel={ariaForMonthly(m.stats_chart_label_nap_rank({ n: 1 }), monthlyAriaValues, decimalToDuration)} />
     </div>
+    <!-- Outside the scroller on purpose: fixed and centred, never clipped.
+         Swatches reference the same --c-nap-* tokens ChartCanvas resolves for
+         the bars, so the two cannot drift apart or miss a theme change. -->
+    <ul class="chart-legend">
+      {#each monthly.series as s (s.rank)}
+        <li>
+          <span class="swatch" style="background: var(--c-nap-{s.rank});"></span>
+          {m.stats_chart_label_nap_rank({ n: s.rank })}
+        </li>
+      {/each}
+    </ul>
   {/if}
 </section>
 
@@ -553,6 +568,14 @@
   .chart-section { margin-bottom: var(--s-4); }
   .chart-section h2 { font-size: var(--fs-base); margin-bottom: var(--s-3); display: flex; align-items: center; gap: var(--s-2); }
   .chart-note { color: var(--c-text-muted); font-size: var(--fs-sm); margin: 0; }
+  .chart-legend {
+    display: flex; flex-wrap: wrap; justify-content: center;
+    gap: var(--s-2) var(--s-4);
+    list-style: none; margin: var(--s-3) 0 0; padding: 0;
+    font-size: var(--fs-sm); color: var(--c-text-muted);
+  }
+  .chart-legend li { display: flex; align-items: center; gap: var(--s-2); }
+  .swatch { width: 12px; height: 12px; border-radius: 3px; flex: none; }
   .chart-scroller { overflow-x: auto; overflow-y: hidden; }
   .chart-scroller:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--c-focus-ring); border-radius: var(--r-md); }
   .scroll-controls { display: flex; gap: var(--s-2); justify-content: flex-end; margin-bottom: var(--s-2); }
