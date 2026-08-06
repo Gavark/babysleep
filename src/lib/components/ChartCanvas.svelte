@@ -41,12 +41,19 @@
     data,
     options,
     height = 240,
+    width,
     ariaLabel
   }: {
     type: 'line' | 'bar';
     data: any;
     options?: any;
     height?: number;
+    /**
+     * Explicit pixel width. Set it when the chart must be wider than its
+     * container and scrolled — the caller then supplies its own overflow-x
+     * wrapper. Omit for the normal responsive behaviour.
+     */
+    width?: number;
     ariaLabel: string;
   } = $props();
 
@@ -162,6 +169,10 @@
      a11y_no_interactive_element_to_noninteractive_role rule treats <canvas> as
      interactive and rejects role="img" on it. The wrapper carries the same
      semantics for a screen reader and keeps `npm run check` clean. -->
-<div style="height: {height}px; position: relative;" role="img" aria-label={ariaLabel}>
+<div
+  style="height: {height}px; position: relative;{width ? ` width: ${width}px;` : ''}"
+  role="img"
+  aria-label={ariaLabel}
+>
   <canvas bind:this={canvas}></canvas>
 </div>
