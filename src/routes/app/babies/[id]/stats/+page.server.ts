@@ -4,6 +4,7 @@ import { getDb } from '$lib/server/db';
 import { getBabyForUser } from '$lib/server/babies';
 import { listEntriesInRange } from '$lib/server/sleep-entries';
 import { resolveTimezone, todayISOInTZ } from '$lib/tz';
+import { aggregateByMonthAndRank } from '$lib/naps';
 
 function addDaysISO(iso: string, n: number): string {
   const [y, m, d] = iso.split('-').map(Number);
@@ -43,5 +44,21 @@ export const load: PageServerLoad = ({ locals, params, url }) => {
   const entries = listEntriesInRange(db, baby.id, from, to);
   // listEntriesInRange returns desc; we want ASC for time-series charts
   const asc = [...entries].reverse();
-  return { baby, from, to, preset: preset ?? 'custom', entries: asc, effectiveTz: tz };
+
+  // The monthly chart deliberately ignores the period selector, so it needs
+  // every entry — but only the aggregate is sent to the browser. Shipping the
+  // raw history would grow without bound as the family keeps recording.
+  // '1900-01-01' is the same lower bound the `all` preset already uses.
+  const allEntries = listEntriesInRange(db, baby.id, '1900-01-01', today);
+  const monthlyNaps = aggregateByMonthAndRank(allEntries);
+
+  return {
+    baby,
+    from,
+    to,
+    preset: preset ?? 'custom',
+    entries: asc,
+    effectiveTz: tz,
+    monthlyNaps
+  };
 };
