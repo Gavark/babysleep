@@ -9,7 +9,8 @@
   import Coffee from 'phosphor-svelte/lib/Coffee';
   import * as m from '$paraglide/messages';
   import {
-    seriesStats, toNightHours, axisRange, tickStep, formatDayMonth, formatFullDate, rollingMean
+    seriesStats, toNightHours, axisRange, tickStep, formatDayMonth, formatFullDate, rollingMean,
+    formatMonth
   } from '$lib/charts/transforms';
 
   let { data } = $props();
@@ -205,6 +206,91 @@
     }
   });
 
+  // Fixed width per month group so roughly six fit a desktop card. On a narrow
+  // phone three or four are visible and the user scrolls further — better than
+  // compressing six into 340px, which is the cramping this chart exists to avoid.
+  const MONTH_PX = 110;
+  const MONTHS_PER_PAGE = 6;
+
+  const monthly = $derived(data.monthlyNaps);
+
+  // Two-line tick: the month, then its sample size. A month with 6 recorded
+  // days must not read as the equal of one with 31.
+  const monthLabels = $derived(
+    monthly.months.map((mo: { key: string; days: number }) => [
+      formatMonth(mo.key, locale),
+      m.stats_chart_month_days({ days: mo.days })
+    ])
+  );
+
+  const monthlyDatasets = $derived(
+    monthly.series.map((s: any) => ({
+      label: m.stats_chart_label_nap_rank({ n: s.rank }),
+      data: s.points.map((p: any) => (p.meanMin === null ? null : p.meanMin / 60)),
+      token: `nap-${s.rank}`,
+      fillAlpha: 0.75,
+      borderRadius: 4
+    }))
+  );
+
+  const monthlyWidth = $derived(Math.max(1, monthly.months.length) * MONTH_PX);
+
+  const monthlyOpts = $derived({
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: true, position: 'bottom' },
+      tooltip: {
+        callbacks: {
+          label: (ctx: any) => {
+            const point = monthly.series[ctx.datasetIndex].points[ctx.dataIndex];
+            return [
+              `${ctx.dataset.label}: ${decimalToDuration(ctx.parsed.y)}`,
+              m.stats_chart_nap_rank_tooltip({ days: point.days })
+            ];
+          }
+        }
+      }
+    },
+    scales: {
+      x: { ticks: { maxRotation: 0 } },
+      y: {
+        beginAtZero: true,
+        title: { display: true, text: m.stats_chart_axis_duration() },
+        ticks: { callback: (v: any) => decimalToDuration(Number(v)) }
+      }
+    }
+  });
+
+  // The aria summary covers rank 1; per-month detail lives in the tooltips.
+  const monthlyAriaValues = $derived(
+    (monthly.series[0]?.points ?? []).map((p: any) => (p.meanMin === null ? null : p.meanMin / 60))
+  );
+
+  let scroller: HTMLDivElement | undefined = $state();
+  let atStart = $state(true);
+  let atEnd = $state(true);
+
+  function syncScrollState() {
+    const el = scroller;
+    if (!el) return;
+    atStart = el.scrollLeft <= 1;
+    atEnd = el.scrollLeft >= el.scrollWidth - el.clientWidth - 1;
+  }
+
+  function page(direction: -1 | 1) {
+    scroller?.scrollBy({ left: direction * MONTHS_PER_PAGE * MONTH_PX, behavior: 'smooth' });
+  }
+
+  // Open on the most recent months — that is what anyone opens this chart for.
+  $effect(() => {
+    const el = scroller;
+    if (!el) return;
+    monthlyWidth; // re-run when the chart is rebuilt at a new width
+    el.scrollLeft = el.scrollWidth;
+    syncScrollState();
+  });
+
   const line = (token: string, label: string, values: (number | null)[]) => ({
     label,
     token,
@@ -372,6 +458,40 @@
   </section>
 
   <section class="card chart-section">
+    <h2><Coffee size={18} /> {m.stats_charts_nap_monthly()}</h2>
+    <p class="chart-note">{m.stats_chart_monthly_all_months()}</p>
+    {#if monthly.months.length === 0}
+      <p class="chart-note">{m.stats_chart_nap_rank_empty()}</p>
+    {:else}
+      <div class="scroll-controls">
+        <button type="button" class="btn btn-secondary scroll-btn"
+          onclick={() => page(-1)} disabled={atStart}
+          aria-label={m.stats_chart_monthly_prev()}>‹</button>
+        <button type="button" class="btn btn-secondary scroll-btn"
+          onclick={() => page(1)} disabled={atEnd}
+          aria-label={m.stats_chart_monthly_next()}>›</button>
+      </div>
+      <!-- svelte-ignore a11y_no_noninteractive_tabindex — this is the WAI-ARIA
+           APG "scrollable region" pattern: a keyboard user must be able to
+           focus this div to scroll it with arrow keys, even though `role="group"`
+           itself isn't in the linter's interactive-roles list. -->
+      <div
+        class="chart-scroller"
+        bind:this={scroller}
+        onscroll={syncScrollState}
+        tabindex="0"
+        role="group"
+        aria-label={m.stats_chart_monthly_region()}
+      >
+        <ChartCanvas type="bar" height={280} width={monthlyWidth}
+          data={{ labels: monthLabels, datasets: monthlyDatasets }}
+          options={monthlyOpts}
+          ariaLabel={ariaFor(m.stats_charts_nap_monthly(), monthlyAriaValues, decimalToDuration)} />
+      </div>
+    {/if}
+  </section>
+
+  <section class="card chart-section">
     <h2><Coffee size={18} /> {m.stats_charts_nap_trend()}</h2>
     {#if trendDatasets.length === 0}
       <p class="chart-note">{m.stats_chart_nap_rank_empty()}</p>
@@ -395,4 +515,9 @@
   .chart-section { margin-bottom: var(--s-4); }
   .chart-section h2 { font-size: var(--fs-base); margin-bottom: var(--s-3); display: flex; align-items: center; gap: var(--s-2); }
   .chart-note { color: var(--c-text-muted); font-size: var(--fs-sm); margin: 0; }
+  .chart-scroller { overflow-x: auto; overflow-y: hidden; }
+  .chart-scroller:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--c-focus-ring); border-radius: var(--r-md); }
+  .scroll-controls { display: flex; gap: var(--s-2); justify-content: flex-end; margin-bottom: var(--s-2); }
+  .scroll-btn { min-width: 40px; padding: var(--s-1) var(--s-3); font-size: var(--fs-lg); line-height: 1; }
+  .scroll-btn:disabled { opacity: 0.4; cursor: default; }
 </style>

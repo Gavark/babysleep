@@ -102,3 +102,13 @@ export function formatFullDate(iso: string, locale: string): string {
     timeZone: 'UTC'
   }).format(utcDate(iso));
 }
+
+/** 'YYYY-MM' → 'août 2026' / 'Aug 2026', UTC-anchored like every date here. */
+export function formatMonth(monthKey: string, locale: string): string {
+  const [y, m] = monthKey.split('-').map(Number);
+  return new Intl.DateTimeFormat(locale, {
+    month: 'short',
+    year: 'numeric',
+    timeZone: 'UTC'
+  }).format(new Date(Date.UTC(y, m - 1, 1)));
+}

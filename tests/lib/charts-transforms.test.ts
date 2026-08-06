@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   toNightHours, axisRange, tickStep, rollingMean,
-  seriesStats, formatDayMonth, formatFullDate
+  seriesStats, formatDayMonth, formatFullDate, formatMonth
 } from '../../src/lib/charts/transforms';
 
 describe('toNightHours', () => {
@@ -134,5 +134,17 @@ describe('date formatting', () => {
   it('produces a full date containing the year', () => {
     expect(formatFullDate('2026-07-31', 'fr')).toContain('2026');
     expect(formatFullDate('2026-07-31', 'en')).toContain('2026');
+  });
+});
+
+describe('formatMonth', () => {
+  it('formats a month key for fr and en', () => {
+    expect(formatMonth('2026-08', 'fr')).toContain('2026');
+    expect(formatMonth('2026-08', 'en')).toContain('2026');
+  });
+
+  it('does not drift across the year boundary', () => {
+    expect(formatMonth('2026-01', 'en')).toContain('Jan');
+    expect(formatMonth('2026-12', 'en')).toContain('Dec');
   });
 });
