@@ -86,3 +86,78 @@ export function aggregateByRank(entries: NapEntry[]): RankStat[] {
 export function napSeriesByRank(entries: NapEntry[], rank: number): (number | null)[] {
   return entries.map((e) => napDurationsByRank(e)[rank - 1] ?? null);
 }
+
+export type MonthlyNapPoint = {
+  monthKey: string;
+  /** null when this rank never occurred that month — absence, not a zero-minute nap. */
+  meanMin: number | null;
+  /** Days this rank occurred that month. 0 exactly when meanMin is null. */
+  days: number;
+};
+
+export type MonthlyNapSeries = { rank: number; points: MonthlyNapPoint[] };
+
+export type MonthlyNapStats = {
+  /** Chronological. `days` counts entries with at least one nap. */
+  months: { key: string; days: number }[];
+  /** One per rank observed anywhere, ascending. Points are index-aligned with `months`. */
+  series: MonthlyNapSeries[];
+};
+
+/**
+ * Mean duration per nap rank, per calendar month.
+ *
+ * A month in which nothing was napped is omitted rather than rendered as an
+ * empty group: a month the family did not record is absent from the history,
+ * not a month of zero sleep. Ranks are chronological within each day (see
+ * napDurationsByRank), so an empty morning slot never shifts a month's ranks.
+ */
+export function aggregateByMonthAndRank(entries: NapEntry[]): MonthlyNapStats {
+  // monthKey -> rank index -> running total
+  const sums = new Map<string, number[]>();
+  const counts = new Map<string, number[]>();
+  const monthDays = new Map<string, number>();
+  let maxRank = 0;
+
+  for (const e of entries) {
+    const date = e.date;
+    if (typeof date !== 'string' || date.length < 7) continue;
+    const durations = napDurationsByRank(e);
+    if (durations.length === 0) continue; // no nap: contributes nothing, not even a day
+
+    const key = date.slice(0, 7);
+    if (!sums.has(key)) {
+      sums.set(key, []);
+      counts.set(key, []);
+    }
+    const s = sums.get(key)!;
+    const c = counts.get(key)!;
+    durations.forEach((d, i) => {
+      s[i] = (s[i] ?? 0) + d;
+      c[i] = (c[i] ?? 0) + 1;
+    });
+    monthDays.set(key, (monthDays.get(key) ?? 0) + 1);
+    maxRank = Math.max(maxRank, durations.length);
+  }
+
+  // 'YYYY-MM' sorts chronologically as a plain string.
+  const keys = [...monthDays.keys()].sort();
+  const months = keys.map((key) => ({ key, days: monthDays.get(key)! }));
+
+  const series: MonthlyNapSeries[] = [];
+  for (let i = 0; i < maxRank; i++) {
+    series.push({
+      rank: i + 1,
+      points: keys.map((key) => {
+        const n = counts.get(key)![i] ?? 0;
+        return {
+          monthKey: key,
+          meanMin: n === 0 ? null : sums.get(key)![i] / n,
+          days: n
+        };
+      })
+    });
+  }
+
+  return { months, series };
+}

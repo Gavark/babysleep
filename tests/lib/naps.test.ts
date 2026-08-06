@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   napDurationsByRank, dayNapMinutes, napCount,
-  aggregateByRank, napSeriesByRank, maxNapRank
+  aggregateByRank, napSeriesByRank, maxNapRank, aggregateByMonthAndRank
 } from '../../src/lib/naps';
 
 // Slots are positional, NOT chronological — a parent may leave slot 1 empty.
@@ -135,5 +135,110 @@ describe('maxNapRank', () => {
 
   it('returns 0 when there is no nap at all', () => {
     expect(maxNapRank([day({})])).toBe(0);
+  });
+});
+
+describe('aggregateByMonthAndRank', () => {
+  // `day` is the existing helper at the top of this file: (slots) => slots
+  const e = (date: string, naps: Record<string, unknown>) => day({ date, ...naps });
+
+  const twoNaps = (a: string, b: string, c: string, d: string) => ({
+    nap1Start: a, nap1End: b, nap2Start: c, nap2End: d
+  });
+
+  it('returns months in chronological order regardless of input order', () => {
+    const stats = aggregateByMonthAndRank([
+      e('2026-07-02', { nap1Start: '09:00', nap1End: '10:00' }),
+      e('2026-05-02', { nap1Start: '09:00', nap1End: '10:00' }),
+      e('2026-06-02', { nap1Start: '09:00', nap1End: '10:00' })
+    ]);
+    expect(stats.months.map((m) => m.key)).toEqual(['2026-05', '2026-06', '2026-07']);
+  });
+
+  it('averages each rank within each month', () => {
+    const stats = aggregateByMonthAndRank([
+      e('2026-05-01', twoNaps('09:00', '10:00', '14:00', '15:00')), // 60, 60
+      e('2026-05-02', twoNaps('09:00', '11:00', '14:00', '14:30'))  // 120, 30
+    ]);
+    expect(stats.series).toEqual([
+      { rank: 1, points: [{ monthKey: '2026-05', meanMin: 90, days: 2 }] },
+      { rank: 2, points: [{ monthKey: '2026-05', meanMin: 45, days: 2 }] }
+    ]);
+  });
+
+  it('gives a rank a null point for a month it never occurred in', () => {
+    const stats = aggregateByMonthAndRank([
+      e('2026-05-01', twoNaps('09:00', '10:00', '14:00', '15:00')),
+      e('2026-06-01', { nap1Start: '09:00', nap1End: '10:00' }) // no second nap in June
+    ]);
+    const rank2 = stats.series.find((s) => s.rank === 2)!;
+    expect(rank2.points).toEqual([
+      { monthKey: '2026-05', meanMin: 60, days: 1 },
+      { monthKey: '2026-06', meanMin: null, days: 0 }
+    ]);
+  });
+
+  it('gives every series one point per month, index-aligned with months', () => {
+    const stats = aggregateByMonthAndRank([
+      e('2026-05-01', twoNaps('09:00', '10:00', '14:00', '15:00')),
+      e('2026-06-01', { nap1Start: '09:00', nap1End: '10:00' })
+    ]);
+    for (const s of stats.series) {
+      expect(s.points.map((p) => p.monthKey)).toEqual(stats.months.map((m) => m.key));
+    }
+  });
+
+  it('keeps a month with a single recorded day rather than filtering it out', () => {
+    const stats = aggregateByMonthAndRank([
+      e('2026-05-01', { nap1Start: '09:00', nap1End: '10:00' }),
+      e('2026-08-01', { nap1Start: '09:00', nap1End: '09:20' })
+    ]);
+    expect(stats.months).toEqual([
+      { key: '2026-05', days: 1 },
+      { key: '2026-08', days: 1 }
+    ]);
+  });
+
+  it('omits a month entirely when nothing was recorded, without breaking alignment', () => {
+    // June has entries but NO naps — it must not appear as an empty group.
+    const stats = aggregateByMonthAndRank([
+      e('2026-05-01', { nap1Start: '09:00', nap1End: '10:00' }),
+      e('2026-06-01', { wakeTime: '07:00', bedtime: '20:00' }),
+      e('2026-07-01', { nap1Start: '09:00', nap1End: '10:00' })
+    ]);
+    expect(stats.months.map((m) => m.key)).toEqual(['2026-05', '2026-07']);
+    expect(stats.series[0].points.map((p) => p.monthKey)).toEqual(['2026-05', '2026-07']);
+  });
+
+  it('counts only entries with at least one nap in a month\'s day count', () => {
+    const stats = aggregateByMonthAndRank([
+      e('2026-05-01', { nap1Start: '09:00', nap1End: '10:00' }),
+      e('2026-05-02', { wakeTime: '07:00', bedtime: '20:00' }) // no nap: must not count
+    ]);
+    expect(stats.months).toEqual([{ key: '2026-05', days: 1 }]);
+  });
+
+  it('ranks chronologically, so an empty slot 1 does not shift a month\'s ranks', () => {
+    // Morning nap stored in slot 2, slot 1 empty. Rank 1 must still be the 09:00 one.
+    const stats = aggregateByMonthAndRank([
+      e('2026-05-01', { nap2Start: '09:00', nap2End: '10:00', nap3Start: '14:00', nap3End: '14:30' })
+    ]);
+    expect(stats.series).toEqual([
+      { rank: 1, points: [{ monthKey: '2026-05', meanMin: 60, days: 1 }] },
+      { rank: 2, points: [{ monthKey: '2026-05', meanMin: 30, days: 1 }] }
+    ]);
+  });
+
+  it('returns empty structures when there is no nap at all', () => {
+    expect(aggregateByMonthAndRank([])).toEqual({ months: [], series: [] });
+    expect(aggregateByMonthAndRank([e('2026-05-01', {})])).toEqual({ months: [], series: [] });
+  });
+
+  it('ignores an entry with no usable date', () => {
+    const stats = aggregateByMonthAndRank([
+      day({ nap1Start: '09:00', nap1End: '10:00' }), // no date field
+      e('2026-05-01', { nap1Start: '09:00', nap1End: '10:00' })
+    ]);
+    expect(stats.months).toEqual([{ key: '2026-05', days: 1 }]);
   });
 });
