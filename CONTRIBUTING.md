@@ -32,6 +32,7 @@ Useful commands:
 | `npm run build` | Production build |
 | `npm run db:generate` | Generate a Drizzle migration after editing the schema |
 | `npm run db:migrate` | Apply pending migrations to the local DB |
+| `npm run demo` | Seed an isolated demo DB and serve it on :5199 (for screenshots) |
 
 ## Pull request standards
 
@@ -79,6 +80,39 @@ what changed and *why*, not how (the diff already shows how).
   components or pure libs — SvelteKit will refuse to bundle.
 - CSS uses the design tokens in `src/lib/styles/tokens.css`. Hard-coded colour
   values should be rare and justified.
+
+## Releasing (maintainer)
+
+The version lives in three places and they have to move together, in a single
+commit, before the tag is created:
+
+1. `version` in `package.json`
+2. `version` in `package-lock.json` (twice: the root field and `packages[""]`)
+3. The image tag in **both** `docker-compose.yml` and `docker-compose.full.yml`
+
+Item 3 is the easy one to forget. The compose files are pinned to a release
+tag rather than `:latest` so that deployments are reproducible and
+`docker inspect` reports the version actually running. If the tag is not
+bumped, the release ships pointing at the previous image.
+
+Then:
+
+```bash
+git commit -m "chore: bump version to vX.Y.Z"
+git tag -a vX.Y.Z            # annotated, release notes in French and English
+git push origin master
+git push origin vX.Y.Z
+```
+
+Pushing the tag is what triggers the release: CI builds and publishes the
+image to GHCR, and `release.yml` reads the tag annotation and publishes it as
+the body of the GitHub Release. Don't run `gh release create` by hand; the
+workflow would then fail because the Release already exists. Re-pushing a tag
+fails the same way, by design.
+
+Before tagging, `npm test`, `npm run check` and `npm run build` all have to
+pass, and any new screenshots should be regenerated per
+`docs/assets-src/README.md`.
 
 ## What I'm unlikely to merge
 
