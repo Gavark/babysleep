@@ -222,4 +222,52 @@ describe('deriveTimerState', () => {
     );
     expect(state).toEqual({ kind: 'napping', napIdx: 0, elapsedMin: 30, pauseMin: 15 });
   });
+  // The stored HH:MM values are wall-clock in the baby's effective timezone,
+  // but `now` is a real instant. When the browser sits in a different zone
+  // than the baby, comparing against the browser's local hours skews the
+  // elapsed time by the whole offset (it used to clamp to 0, hiding an
+  // exceeded wake window from a travelling parent).
+  it('measures elapsed time against the wall clock of the given timezone', () => {
+    // 2026-08-21T13:18Z is 15:18 in Europe/Paris. Last nap ended at 14:02
+    // Paris time, so the baby has been awake for 76 minutes.
+    const now = new Date('2026-08-21T13:18:00Z');
+    const state = deriveTimerState(
+      mkInput({
+        wakeTime: '06:40',
+        naps: [
+          { start: '12:54', end: '14:02' },
+          { start: '', end: '' },
+          { start: '', end: '' },
+          { start: '', end: '' }
+        ]
+      }),
+      now,
+      'Europe/Paris'
+    );
+    expect(state).toEqual({
+      kind: 'awake',
+      elapsedMin: 76,
+      remainingMin: 89,
+      nextNapAt: '16:47',
+      overWindow: false
+    });
+  });
+
+  it('measures a nap in progress against the wall clock of the given timezone', () => {
+    const now = new Date('2026-08-21T13:18:00Z'); // 15:18 in Europe/Paris
+    const state = deriveTimerState(
+      mkInput({
+        wakeTime: '06:40',
+        naps: [
+          { start: '14:48', end: '' },
+          { start: '', end: '' },
+          { start: '', end: '' },
+          { start: '', end: '' }
+        ]
+      }),
+      now,
+      'Europe/Paris'
+    );
+    expect(state).toEqual({ kind: 'napping', napIdx: 0, elapsedMin: 30, pauseMin: 0 });
+  });
 });

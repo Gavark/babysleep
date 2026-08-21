@@ -44,7 +44,7 @@
     awakeWindowMin: ageParams.awakeWindowMin
   });
 
-  const timerState: TimerState = $derived(deriveTimerState(input, now));
+  const timerState: TimerState = $derived(deriveTimerState(input, now, effectiveTz));
   const emptySlot = $derived(nextEmptyNapSlot(naps));
   const progressSlot = $derived(inProgressNapSlot(naps));
 

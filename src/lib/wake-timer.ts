@@ -31,23 +31,37 @@ export function inProgressNapSlot(naps: TimerInput['naps']): number | null {
 }
 
 /**
- * Convert a HH:MM string into a Date on the same calendar day as `now`,
- * with local hours/minutes set. Used for computing elapsed minutes against
- * `now`. Does NOT handle midnight rollover — the timer is used during the
- * day (06:00–22:00 typically).
+ * Minutes since midnight of `now`, read on the wall clock of `tz`.
+ *
+ * Every HH:MM stored on an entry is wall-clock time in the baby's effective
+ * timezone, so `now` has to be read in that same zone before the two can be
+ * subtracted. Reading it in the browser's zone instead skews every elapsed
+ * value by the offset between the two, which silently clamped the wake
+ * window to 0 for anyone whose device was not in the baby's timezone.
+ *
+ * Falls back to the host's local clock when no timezone is supplied, which
+ * keeps the single-timezone case (and existing callers) unchanged.
  */
-function hhmmOnSameDay(hhmm: string, now: Date): Date {
-  const m = parseHHMM(hhmm); // minutes since midnight
-  const d = new Date(now);
-  d.setHours(Math.floor(m / 60), m % 60, 0, 0);
-  return d;
+function nowMinutesOfDay(now: Date, tz?: string): number {
+  if (!tz) return now.getHours() * 60 + now.getMinutes();
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: tz,
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  }).formatToParts(now);
+  const h = Number(parts.find((p) => p.type === 'hour')?.value ?? '0');
+  const min = Number(parts.find((p) => p.type === 'minute')?.value ?? '0');
+  return h * 60 + min;
 }
 
-function minutesBetween(from: Date, to: Date): number {
-  return Math.floor((to.getTime() - from.getTime()) / 60_000);
-}
-
-export function deriveTimerState(input: TimerInput, now: Date): TimerState {
+/**
+ * `tz` is the baby's effective IANA timezone. Elapsed values do NOT handle
+ * midnight rollover — the timer is used during the day (06:00–22:00
+ * typically), and a negative difference is clamped to 0.
+ */
+export function deriveTimerState(input: TimerInput, now: Date, tz?: string): TimerState {
+  const nowMin = nowMinutesOfDay(now, tz);
   // 1. bedtime overrides everything else
   if (isValidHHMM(input.bedtime)) {
     return { kind: 'bedtime', bedtime: input.bedtime };
@@ -57,7 +71,7 @@ export function deriveTimerState(input: TimerInput, now: Date): TimerState {
   const inProgress = inProgressNapSlot(input.naps);
   if (inProgress !== null) {
     const startStr = input.naps[inProgress].start;
-    const elapsed = minutesBetween(hhmmOnSameDay(startStr, now), now);
+    const elapsed = nowMin - parseHHMM(startStr);
     return {
       kind: 'napping',
       napIdx: inProgress,
@@ -84,8 +98,7 @@ export function deriveTimerState(input: TimerInput, now: Date): TimerState {
   // When no nap has finished yet, origin is the morning wake — the next nap is
   // the FIRST nap of the day, which uses the (typically shorter) first window.
   const window = hasAnyNapEnd ? input.awakeWindowMin : input.firstAwakeWindowMin;
-  const origin = hhmmOnSameDay(originStr, now);
-  const elapsedMin = Math.max(0, minutesBetween(origin, now));
+  const elapsedMin = Math.max(0, nowMin - parseHHMM(originStr));
   const remainingMin = window - elapsedMin;
   const overWindow = elapsedMin > window;
   const nextNapAt = formatHHMM(parseHHMM(originStr) + window);
