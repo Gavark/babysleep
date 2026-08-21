@@ -3,8 +3,13 @@
   import '$lib/styles/base.css';
   import '$lib/styles/components.css';
   import LocaleSwitcher from '$lib/components/LocaleSwitcher.svelte';
+  import { page } from '$app/state';
 
   let { children, data } = $props();
+
+  // The public landing page lays out its own full-width shell and renders its
+  // own topbar, so it opts out of the 720px column and the anonymous switcher.
+  const isLanding = $derived(page.url.pathname === '/');
 </script>
 
 <svelte:head>
@@ -15,15 +20,19 @@
      (login / signup / setup / public error pages). Once logged in, the
      app layout renders its own switcher inside the app header — so we
      skip this one to avoid showing the globe icon twice. -->
-{#if !data.user}
+{#if !data.user && !isLanding}
   <header class="public-topbar">
     <LocaleSwitcher current={data.locale} />
   </header>
 {/if}
 
-<main>
+{#if isLanding}
   {@render children()}
-</main>
+{:else}
+  <main>
+    {@render children()}
+  </main>
+{/if}
 
 <style>
   .public-topbar {
