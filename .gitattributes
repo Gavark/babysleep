@@ -1,2 +1,23 @@
-# Shell scripts must keep LF line endings (they run inside Linux containers)
+# Normalise everything to LF in the repository and in the working tree.
+#
+# Without this, `core.autocrlf=true` (the Windows default) wants to check
+# files out as CRLF while the tooling here writes LF. Generated files, the
+# Paraglide output in particular, then show up as permanently modified even
+# though their content is byte-identical to the index.
+#
+# The app is built and run inside Linux containers, so LF everywhere is also
+# what production expects.
+* text=auto eol=lf
+
+# Shell scripts must keep LF line endings (they run inside Linux containers).
 *.sh text eol=lf
+
+# Binary assets: never touch their bytes, never try to diff them as text.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.sqlite binary
