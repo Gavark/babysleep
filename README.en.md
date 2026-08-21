@@ -10,7 +10,7 @@ Built for parents who want to keep their family data on their own server.
 
 🇫🇷 [Readme en français](./README.md)
 
-![Calendar month view](./docs/screenshots/1.png)
+![BabySleep](./static/screenshots/banner.png)
 
 ---
 
@@ -61,20 +61,28 @@ header at first login, switchable from the header (🌐) or /account.
 
 <table>
   <tr>
-    <td width="50%"><img src="./docs/screenshots/2.png" alt="Calendar — mobile strip view" /></td>
-    <td width="50%"><img src="./docs/screenshots/3.png" alt="Today page with the wake-window timer" /></td>
+    <td width="50%"><img src="./static/screenshots/today.png" alt="Today page with the wake-window timer" /></td>
+    <td width="50%"><img src="./static/screenshots/calendar.png" alt="Month calendar with heatmap and 24 h timeline" /></td>
   </tr>
   <tr>
-    <td align="center"><sub>Calendar (mobile)</sub></td>
-    <td align="center"><sub>Today page with live wake-window timer</sub></td>
+    <td align="center"><sub>Today, with the wake-window timer</sub></td>
+    <td align="center"><sub>Month calendar, heatmap and 24 h timeline</sub></td>
   </tr>
   <tr>
-    <td><img src="./docs/screenshots/4.png" alt="History table with CSV export" /></td>
-    <td><img src="./docs/screenshots/5.png" alt="Stats with Chart.js" /></td>
+    <td><img src="./static/screenshots/stats.png" alt="Stats charts over a date range" /></td>
+    <td><img src="./static/screenshots/history.png" alt="History table with CSV export" /></td>
   </tr>
   <tr>
-    <td align="center"><sub>History table</sub></td>
     <td align="center"><sub>Stats over a date range</sub></td>
+    <td align="center"><sub>Filterable history, CSV export</sub></td>
+  </tr>
+  <tr>
+    <td><img src="./static/screenshots/mobile-calendar.png" alt="Calendar as a vertical strip on mobile" /></td>
+    <td><img src="./static/screenshots/today-dark.png" alt="Today page in dark mode" /></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Calendar on mobile (vertical strip)</sub></td>
+    <td align="center"><sub>Dark mode</sub></td>
   </tr>
 </table>
 

@@ -11,7 +11,7 @@ leur propre serveur.
 
 🇬🇧 [Read in English](./README.en.md)
 
-![Vue calendrier mensuelle](./docs/screenshots/1.png)
+![BabySleep](./static/screenshots/banner.png)
 
 ---
 
@@ -65,20 +65,28 @@ login, modifiable depuis le header (🌐) ou /account.
 
 <table>
   <tr>
-    <td width="50%"><img src="./docs/screenshots/2.png" alt="Calendrier — vue mobile (strip vertical)" /></td>
-    <td width="50%"><img src="./docs/screenshots/3.png" alt="Page Aujourd'hui avec le timer fenêtre d'éveil" /></td>
+    <td width="50%"><img src="./static/screenshots/today.png" alt="Page Aujourd'hui avec le timer fenêtre d'éveil" /></td>
+    <td width="50%"><img src="./static/screenshots/calendar.png" alt="Calendrier mensuel avec heatmap et timeline 24 h" /></td>
   </tr>
   <tr>
-    <td align="center"><sub>Calendrier (mobile)</sub></td>
-    <td align="center"><sub>Page Aujourd'hui avec timer live</sub></td>
+    <td align="center"><sub>Aujourd'hui, avec le timer fenêtre d'éveil</sub></td>
+    <td align="center"><sub>Calendrier mensuel, heatmap et timeline 24 h</sub></td>
   </tr>
   <tr>
-    <td><img src="./docs/screenshots/4.png" alt="Tableau historique avec export CSV" /></td>
-    <td><img src="./docs/screenshots/5.png" alt="Stats avec Chart.js" /></td>
+    <td><img src="./static/screenshots/stats.png" alt="Graphes de stats sur une période" /></td>
+    <td><img src="./static/screenshots/history.png" alt="Tableau historique avec export CSV" /></td>
   </tr>
   <tr>
-    <td align="center"><sub>Tableau historique</sub></td>
     <td align="center"><sub>Stats sur une période</sub></td>
+    <td align="center"><sub>Historique filtrable, export CSV</sub></td>
+  </tr>
+  <tr>
+    <td><img src="./static/screenshots/mobile-calendar.png" alt="Calendrier en strip vertical sur mobile" /></td>
+    <td><img src="./static/screenshots/today-dark.png" alt="Page Aujourd'hui en mode sombre" /></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Calendrier sur mobile (strip vertical)</sub></td>
+    <td align="center"><sub>Mode sombre</sub></td>
   </tr>
 </table>
 

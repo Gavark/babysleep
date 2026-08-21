@@ -38,7 +38,12 @@ export default defineConfig({
       srcDir: 'src',
       filename: 'service-worker.ts',
       injectManifest: {
-        globPatterns: ['client/**/*.{js,css,ico,png,svg,webp,woff2}']
+        globPatterns: ['client/**/*.{js,css,ico,png,svg,webp,woff2}'],
+        // Landing-page and README imagery is served from static/screenshots/.
+        // It is marketing material, not app shell, so keep it out of the
+        // service worker precache: every install would otherwise download
+        // ~300 kB of screenshots it never shows offline.
+        globIgnores: ['client/screenshots/**']
       },
       manifest: {
         name: 'BabySleep',
