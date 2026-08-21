@@ -18,3 +18,8 @@ docs/superpowers/
 
 # Local reverse-proxy config (copy Caddyfile.example to Caddyfile)
 Caddyfile
+
+# Host-specific compose overrides (extra published ports, machine-local
+# volumes, sidecars for other apps). Deployment detail, not project config.
+docker-compose.local.yml
+docker-compose.override.yml
