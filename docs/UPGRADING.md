@@ -22,18 +22,23 @@ docker compose -f docker-compose.full.yml logs -f app
 
 That's it for routine updates. The rest of this page is for the edge cases.
 
-## Pinning to a specific version
+## Version pinning
 
-The default tag is `:latest`, which follows the `master` branch. If you want
-reproducible deployments, pin to a release tag in your compose file:
+Both compose files ship pinned to a release tag, so a deployment is
+reproducible and `docker inspect` reports the version actually running:
 
 ```yaml
 services:
   app:
-    image: ghcr.io/gavark/babysleep:v0.1.0
+    image: ghcr.io/gavark/babysleep:v0.7.1
 ```
 
-Then `docker compose pull && up -d` only updates when you change the tag.
+This is why the update procedure starts with `git pull`: the new tag arrives
+with the compose file, and `docker compose pull` then fetches that exact
+image. Nothing moves under you between releases.
+
+If you would rather track the `master` branch and update on every pull, swap
+the tag for `:latest` in your own copy of the file.
 
 Available tags are listed at
 <https://github.com/Gavark/babysleep/pkgs/container/babysleep>.
