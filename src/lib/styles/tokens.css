@@ -15,6 +15,12 @@
   --c-bg-muted: #FAF0E6;
   --c-primary: #C97A5D;
   --c-primary-hover: #B6694F;
+  /* Link text needs 4.5:1, which --c-primary misses on every light surface
+     (3.09:1 on --c-bg-app). Same hue and saturation, darkened until it
+     clears AA on bg-app, bg-card and bg-muted. --c-primary stays as-is for
+     buttons, borders and large display numbers, where 3:1 is the bar. */
+  --c-link: #A85638;
+  --c-link-hover: #8A472E;
   --c-accent-honey: #E8B86E;
   --c-accent-sage: #7A9A87;
   --c-text: #3D2E25;
@@ -96,6 +102,10 @@
     --c-bg-muted: #2A2117;
     --c-primary: #E89876;
     --c-primary-hover: #F4A988;
+    /* Dark mode already clears AA (6.91:1 on --c-bg-card), so links keep the
+       accent rather than a darkened variant that would go muddy here. */
+    --c-link: #E89876;
+    --c-link-hover: #F4A988;
     --c-accent-honey: #F0C988;
     --c-accent-sage: #94B5A2;
     --c-text: #F5EBE0;
@@ -132,6 +142,8 @@
   --c-bg-muted: #2A2117;
   --c-primary: #E89876;
   --c-primary-hover: #F4A988;
+  --c-link: #E89876;
+  --c-link-hover: #F4A988;
   --c-accent-honey: #F0C988;
   --c-accent-sage: #94B5A2;
   --c-text: #F5EBE0;

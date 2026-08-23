@@ -150,7 +150,10 @@
   .seg.nap { background: var(--c-cal-seg-nap); }
   .seg.night { background: var(--c-cal-seg-night); }
 
-  .total { display: block; text-align: center; font-weight: 600; color: var(--c-primary); margin-top: var(--s-1); font-size: var(--fs-xs); }
+  /* 12px sitting on a heat tint: --c-primary measured 2.24:1 on the worst
+     one, and no terracotta dark enough to clear 4.5:1 there still reads
+     as the brand accent. The text colour does, at 8.9:1 or better. */
+  .total { display: block; text-align: center; font-weight: 600; color: var(--c-text); margin-top: var(--s-1); font-size: var(--fs-xs); }
 
   .cell.mode-strip {
     display: grid;

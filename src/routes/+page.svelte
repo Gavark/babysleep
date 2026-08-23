@@ -105,7 +105,7 @@
       </div>
     </div>
     <div class="hero-shot">
-      {@render shot('feature-calendar', m.landing_hero_shot_alt(), 689, 508, true)}
+      {@render shot('feature-calendar', m.landing_hero_shot_alt(), 688, 508, true)}
     </div>
   </section>
 
@@ -268,16 +268,13 @@
     gap: var(--s-3);
     white-space: nowrap;
   }
-  /* --c-primary sits at 3.1:1 on the light background, which clears the 3:1
-     bar for large text and UI chrome but not the 4.5:1 one for body copy.
-     Nav and body links therefore use --c-text. */
   .topbar-link {
     color: var(--c-text);
     font-weight: 600;
     font-size: var(--fs-md);
     text-decoration: none;
   }
-  .topbar-link:hover { color: var(--c-text); text-decoration: underline; }
+  .topbar-link:hover { color: var(--c-link-hover); text-decoration: underline; }
 
   .section { margin-top: clamp(64px, 9vw, 120px); }
 
@@ -476,7 +473,7 @@
     align-items: center;
     gap: var(--s-2);
     font-weight: 700;
-    color: var(--c-text);
+    color: var(--c-link);
   }
 
   /* ------------------------------------------------------------- footer */

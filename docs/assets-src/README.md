@@ -31,7 +31,15 @@ the theme from the header toggle, then capture these elements:
 | `feature-mobile-{fr,en}[-dark].png` | `/app/babies/1/calendar?month=2026-07` | `.cal-strip`, rows 6+ hidden | 390 wide |
 
 All four variants of one file must come out at the same size, otherwise the
-theme swap in `src/routes/+page.svelte` shifts the layout.
+theme swap in `src/routes/+page.svelte` shifts the layout. The `width` and
+`height` passed to the `shot` snippet must match too, or the page reserves the
+wrong box and shifts on load.
+
+**Capture the Today page during daytime in the baby's timezone.** The seeder
+builds "today" from the real clock and deliberately leaves the day empty
+outside waking hours, and the wake-window timer is computed client-side from
+the real time, so a capture taken at 2 a.m. Paris shows an empty day and a
+timer reading zero.
 
 ## 3. README captures
 

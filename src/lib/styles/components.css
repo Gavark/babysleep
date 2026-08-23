@@ -100,7 +100,7 @@
 .key-box .key-value {
   font-size: var(--fs-xl);
   font-weight: 700;
-  color: var(--c-primary);
+  color: var(--c-link);
   font-feature-settings: "tnum" 1;
 }
 
@@ -130,7 +130,7 @@
   margin: var(--s-1) 0 var(--s-2);
   display: inline-flex; align-items: center; gap: var(--s-2);
 }
-.hint strong { color: var(--c-primary); font-weight: 700; }
+.hint strong { color: var(--c-link); font-weight: 700; }
 
 /* === 2-col grid === */
 .pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-2); }
@@ -154,7 +154,7 @@
 /* === Back link === */
 .back { margin: 0 0 var(--s-2); font-size: var(--fs-sm); }
 .back a { color: var(--c-text-muted); display: inline-flex; align-items: center; gap: var(--s-1); }
-.back a:hover { color: var(--c-primary); text-decoration: underline; }
+.back a:hover { color: var(--c-link-hover); text-decoration: underline; }
 
 /* === Status messages === */
 .error { color: var(--c-danger); padding: var(--s-2) var(--s-3); background: rgba(184, 81, 74, 0.08); border-radius: var(--r-md); }
@@ -184,7 +184,7 @@
   text-decoration: none;
   transition: background 0.15s, color 0.15s;
 }
-.nav-pill:hover { color: var(--c-primary); text-decoration: none; }
+.nav-pill:hover { color: var(--c-link); text-decoration: none; }
 .nav-pill.active { background: var(--c-primary); color: white; }
 .nav-pill.active:hover { color: white; }
 
@@ -198,7 +198,7 @@
   text-decoration: none;
   transition: all 0.15s;
 }
-.tab:hover { color: var(--c-primary); border-color: var(--c-primary); text-decoration: none; }
+.tab:hover { color: var(--c-link); border-color: var(--c-primary); text-decoration: none; }
 .tab.active { background: var(--c-primary); color: white; border-color: var(--c-primary); }
 .tab.active:hover { color: white; }
 
@@ -216,8 +216,8 @@
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
 }
-.sub-tab:hover { color: var(--c-primary); text-decoration: none; }
-.sub-tab.active { color: var(--c-primary); font-weight: 600; border-bottom-color: var(--c-primary); }
+.sub-tab:hover { color: var(--c-link); text-decoration: none; }
+.sub-tab.active { color: var(--c-link); font-weight: 600; border-bottom-color: var(--c-primary); }
 
 /* === Summary strip (used on history + stats pages) === */
 .summary-strip {
@@ -231,7 +231,7 @@
   font-size: var(--fs-sm);
 }
 .summary-strip > div { display: inline-flex; align-items: center; gap: var(--s-1); color: var(--c-text); }
-.summary-strip strong { color: var(--c-primary); }
+.summary-strip strong { color: var(--c-text); }
 
 /* === Page utilities === */
 .page-meta { color: var(--c-text-muted); font-size: var(--fs-sm); margin-bottom: var(--s-4); }
