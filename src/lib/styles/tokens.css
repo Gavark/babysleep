@@ -21,6 +21,13 @@
      buttons, borders and large display numbers, where 3:1 is the bar. */
   --c-link: #A85638;
   --c-link-hover: #8A472E;
+  /* Filled controls (buttons, active tabs). --c-primary is a mid-tone: at
+     3.27:1 it carries neither white nor dark ink at 4.5:1, so the fill itself
+     has to be the darker accent. Light mode keeps white labels on a deeper
+     terracotta; dark mode flips to dark ink on the light accent. */
+  --c-fill: #A85638;
+  --c-fill-hover: #8A472E;
+  --c-on-fill: #FFFFFF;
   --c-accent-honey: #E8B86E;
   --c-accent-sage: #7A9A87;
   --c-text: #3D2E25;
@@ -106,6 +113,9 @@
        accent rather than a darkened variant that would go muddy here. */
     --c-link: #E89876;
     --c-link-hover: #F4A988;
+    --c-fill: #E89876;
+    --c-fill-hover: #F4A988;
+    --c-on-fill: #1F1814;
     --c-accent-honey: #F0C988;
     --c-accent-sage: #94B5A2;
     --c-text: #F5EBE0;
@@ -144,6 +154,9 @@
   --c-primary-hover: #F4A988;
   --c-link: #E89876;
   --c-link-hover: #F4A988;
+  --c-fill: #E89876;
+  --c-fill-hover: #F4A988;
+  --c-on-fill: #1F1814;
   --c-accent-honey: #F0C988;
   --c-accent-sage: #94B5A2;
   --c-text: #F5EBE0;

@@ -70,7 +70,11 @@ const CASES: Array<[string, string, string[], number]> = [
   ],
   // Muted secondary copy.
   ['muted text', 'c-text-muted', ['c-bg-app', 'c-bg-card'], AA_BODY],
-  // Primary is a button fill and a border, never body text.
+  // Button and active-tab labels sit on the fill and are body-size.
+  ['label on fill', 'c-on-fill', ['c-fill', 'c-fill-hover'], AA_BODY],
+  ['label on danger fill', 'c-on-fill', ['c-danger'], AA_BODY],
+  ['secondary button label', 'c-link', ['c-bg-app', 'c-bg-card'], AA_BODY],
+  // Primary is now only a border and a large display number.
   ['primary as UI component', 'c-primary', ['c-bg-app', 'c-bg-card'], AA_LARGE]
 ];
 
@@ -95,12 +99,12 @@ describe('regression guard', () => {
     expect(token('light', 'c-link')).not.toBe(token('light', 'c-primary'));
   });
 
-  // Known gap, deliberately out of scope for the link fix: filled controls
-  // (.btn-primary, .tab.active, .nav-pill.active, .badge-*) put `color: white`
-  // on an accent background. At 15px/600 those labels are body text and need
-  // 4.5:1; they measure 3.27:1 in light mode and 2.29:1 in dark, where the
-  // accent lightens to #E89876. Fixing it means either darkening the fills or
-  // switching the labels to dark ink, which changes how every button in the
-  // app looks. That is a design call, not a token tweak.
-  it.todo('filled controls: white labels should meet AA on the accent fill');
+  it('no stylesheet hard-codes a label colour on a filled control', () => {
+    // `color: white` on an accent fill was the old pattern and measured
+    // 2.29:1 in dark mode. Labels must come from --c-on-fill, which flips
+    // with the theme.
+    for (const file of ['src/lib/styles/components.css', 'src/lib/styles/base.css']) {
+      expect(readFileSync(file, 'utf8'), file).not.toMatch(/color:\s*white/);
+    }
+  });
 });
