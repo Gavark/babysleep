@@ -14,6 +14,7 @@
   import FloppyDisk from 'phosphor-svelte/lib/FloppyDisk';
   import Cloud from 'phosphor-svelte/lib/Cloud';
   import Trash from 'phosphor-svelte/lib/Trash';
+  import { formatAgeBracket } from '$lib/format';
   import * as m from '$paraglide/messages';
 
   let { data, form } = $props();
@@ -173,7 +174,7 @@
 
 <h1>{m.day_title({ name: data.baby.name, date: data.date })}</h1>
 <p class="page-meta">
-  {data.entry ? m.day_page_meta_edit() : m.day_page_meta_create()} · <strong>{m.today_page_meta_months({ months: data.ageMonths })}</strong> {m.today_page_meta_label({ label: data.ageParams.label })} ·
+  {data.entry ? m.day_page_meta_edit() : m.day_page_meta_create()} · <strong>{m.today_page_meta_months({ months: data.ageMonths })}</strong> {m.today_page_meta_label({ label: formatAgeBracket(data.ageParams) })} ·
   {m.today_page_meta_naps({ count: data.ageParams.naps })} · {m.today_page_meta_window({ window: data.ageParams.awakeWindowMin })} · {m.today_page_meta_night({ night: data.ageParams.nightSleepH })}
 </p>
 <p class="tz-info"><Globe size={12} /> {m.today_tz_label()} <strong>{data.effectiveTz}</strong></p>

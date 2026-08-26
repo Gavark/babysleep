@@ -394,5 +394,7 @@
   "landing_install_step_run": "Run",
   "landing_install_step_run_body": "The app listens on port 3000, ready to sit behind your reverse proxy.",
   "landing_install_docs_link": "Read the full documentation",
-  "landing_footer_license": "Released under the AGPL-3.0 licence."
+  "landing_footer_license": "Released under the AGPL-3.0 licence.",
+  "age_bracket_months": "{from}-{to} months",
+  "age_bracket_years": "{from}-{to} years"
 }

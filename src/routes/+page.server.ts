@@ -15,7 +15,9 @@ export const load: PageServerLoad = ({ locals }) => {
   // product does not actually use.
   return {
     ageBrackets: AGE_PARAMS.map((p) => ({
-      label: p.label,
+      key: p.key,
+      ageMinMonths: p.ageMinMonths,
+      ageMaxMonths: p.ageMaxMonths,
       awakeWindowMin: p.awakeWindowMin,
       naps: p.naps
     }))

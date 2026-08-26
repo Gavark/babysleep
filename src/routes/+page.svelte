@@ -10,6 +10,7 @@
   import Key from 'phosphor-svelte/lib/Key';
   import FileCsv from 'phosphor-svelte/lib/FileCsv';
   import ArrowRight from 'phosphor-svelte/lib/ArrowRight';
+  import { formatAgeBracket } from '$lib/format';
   import * as m from '$paraglide/messages';
 
   let { data } = $props();
@@ -166,9 +167,9 @@
     <figure class="chart">
       <figcaption>{m.landing_window_chart_title()}</figcaption>
       <ul class="bars">
-        {#each data.ageBrackets as bracket (bracket.label)}
+        {#each data.ageBrackets as bracket (bracket.key)}
           <li class="bar-row">
-            <span class="bar-label">{bracket.label}</span>
+            <span class="bar-label">{formatAgeBracket(bracket)}</span>
             <span class="bar-track">
               <span class="bar-fill" style="width: {(bracket.awakeWindowMin / maxWindow) * 100}%"></span>
             </span>

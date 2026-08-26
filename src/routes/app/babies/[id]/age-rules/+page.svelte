@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { formatAgeBracket } from '$lib/format';
   import * as m from '$paraglide/messages';
   import Info from 'phosphor-svelte/lib/Info';
   import { formatDuration } from '$lib/sleep-calc';
@@ -37,7 +38,7 @@
     <tbody>
       {#each data.brackets as b, i}
         <tr class={rowClass(i)}>
-          <td><strong>{b.label}</strong>{#if i === data.currentBracketIdx} <span class="badge-current">{m.age_rules_current_bracket_badge()}</span>{/if}</td>
+          <td><strong>{formatAgeBracket(b)}</strong>{#if i === data.currentBracketIdx} <span class="badge-current">{m.age_rules_current_bracket_badge()}</span>{/if}</td>
           <td>{b.naps}</td>
           <td>{formatDuration(b.firstAwakeWindowMin)}</td>
           <td>{formatDuration(b.awakeWindowMin)}</td>
@@ -55,7 +56,7 @@
   {#each data.brackets as b, i}
     <div class={cardClass(i)}>
       <div class="bracket-header">
-        <h3>{b.label}</h3>
+        <h3>{formatAgeBracket(b)}</h3>
         {#if i === data.currentBracketIdx}
           <span class="badge-current">{m.age_rules_current_bracket_badge()}</span>
         {/if}

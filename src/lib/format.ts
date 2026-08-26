@@ -1,4 +1,6 @@
 import type { Locale } from './server/auth/locale';
+import type { AgeParams } from './age-params';
+import * as m from '$paraglide/messages';
 
 /**
  * Both locales render dates as DD/MM/YYYY by default:
@@ -38,4 +40,19 @@ export function formatDateTime(
 
 export function formatNumber(n: number, locale: Locale, opts?: Intl.NumberFormatOptions): string {
   return new Intl.NumberFormat(tagFor(locale), opts).format(n);
+}
+
+/**
+ * Render an age bracket in the active locale.
+ *
+ * AgeParams.key is an identity, not a label. It used to be a French string
+ * ('0-3 mois') that got rendered directly, so the English UI showed French
+ * brackets next to translated nap counts.
+ */
+export function formatAgeBracket(p: Pick<AgeParams, 'ageMinMonths' | 'ageMaxMonths'>): string {
+  // Only the last bracket spans whole years; below that, months read better.
+  if (p.ageMinMonths >= 24 && p.ageMinMonths % 12 === 0 && p.ageMaxMonths % 12 === 0) {
+    return m.age_bracket_years({ from: p.ageMinMonths / 12, to: p.ageMaxMonths / 12 });
+  }
+  return m.age_bracket_months({ from: p.ageMinMonths, to: p.ageMaxMonths });
 }

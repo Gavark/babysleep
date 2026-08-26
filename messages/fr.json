@@ -394,5 +394,7 @@
   "landing_install_step_run": "Lancer",
   "landing_install_step_run_body": "L'app écoute sur le port 3000, prête à passer derrière votre reverse proxy.",
   "landing_install_docs_link": "Lire la documentation complète",
-  "landing_footer_license": "Publié sous licence AGPL-3.0."
+  "landing_footer_license": "Publié sous licence AGPL-3.0.",
+  "age_bracket_months": "{from}-{to} mois",
+  "age_bracket_years": "{from}-{to} ans"
 }

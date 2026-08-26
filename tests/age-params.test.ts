@@ -18,7 +18,7 @@ describe('AGE_PARAMS', () => {
   });
   it('every tier has required fields', () => {
     for (const t of AGE_PARAMS) {
-      expect(typeof t.label).toBe('string');
+      expect(typeof t.key).toBe('string');
       expect(typeof t.naps).toBe('number');
       expect(typeof t.awakeWindowMin).toBe('number');
       expect(typeof t.beforeBedWindowMin).toBe('number');
@@ -30,24 +30,24 @@ describe('AGE_PARAMS', () => {
 
 describe('paramsForAge', () => {
   it('returns 0-3 mois for 0', () => {
-    expect(paramsForAge(0).label).toBe('0-3 mois');
+    expect(paramsForAge(0).key).toBe('0-3m');
   });
   it('returns 6-9 mois for 6', () => {
-    expect(paramsForAge(6).label).toBe('6-9 mois');
+    expect(paramsForAge(6).key).toBe('6-9m');
   });
   it('returns 6-9 mois for 8 (within tier)', () => {
-    expect(paramsForAge(8).label).toBe('6-9 mois');
+    expect(paramsForAge(8).key).toBe('6-9m');
   });
   it('clamps to first tier for negative input', () => {
-    expect(paramsForAge(-3).label).toBe('0-3 mois');
+    expect(paramsForAge(-3).key).toBe('0-3m');
   });
   it('clamps to last tier for input >= 36', () => {
-    expect(paramsForAge(36).label).toBe('2-3 ans');
-    expect(paramsForAge(60).label).toBe('2-3 ans');
+    expect(paramsForAge(36).key).toBe('2-3y');
+    expect(paramsForAge(60).key).toBe('2-3y');
   });
   it('returns the right tier at the boundary (Sheets parity: ascending match-≤)', () => {
     // 12 should match 12-18 (boundary inclusive on min, like VLOOKUP TRUE)
-    expect(paramsForAge(12).label).toBe('12-18 mois');
+    expect(paramsForAge(12).key).toBe('12-18m');
   });
 });
 
@@ -58,12 +58,12 @@ describe('findCurrentBracketIdx', () => {
 
   it('returns the 4-6 bracket index for 5 months', () => {
     const idx = findCurrentBracketIdx(5);
-    expect(AGE_PARAMS[idx].label).toBe('4-6 mois');
+    expect(AGE_PARAMS[idx].key).toBe('4-6m');
   });
 
   it('returns the 9-12 bracket index for 10 months', () => {
     const idx = findCurrentBracketIdx(10);
-    expect(AGE_PARAMS[idx].label).toBe('9-12 mois');
+    expect(AGE_PARAMS[idx].key).toBe('9-12m');
   });
 
   it('returns the last bracket index for ages past the table (e.g. 100 months)', () => {

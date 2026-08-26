@@ -11,6 +11,7 @@
   import FloppyDisk from 'phosphor-svelte/lib/FloppyDisk';
   import Cloud from 'phosphor-svelte/lib/Cloud';
   import WakeTimer from '$lib/components/WakeTimer.svelte';
+  import { formatAgeBracket } from '$lib/format';
   import * as m from '$paraglide/messages';
   import { onMount } from 'svelte';
   import EnablePushButton from '$lib/components/EnablePushButton.svelte';
@@ -246,7 +247,7 @@
 
 <h1>{data.baby.name} — {data.today}</h1>
 <p class="page-meta">
-  <strong>{m.today_page_meta_months({ months: data.ageMonths })}</strong> {m.today_page_meta_label({ label: data.ageParams.label })} ·
+  <strong>{m.today_page_meta_months({ months: data.ageMonths })}</strong> {m.today_page_meta_label({ label: formatAgeBracket(data.ageParams) })} ·
   {m.today_page_meta_naps({ count: data.ageParams.naps })} · {m.today_page_meta_window({ window: data.ageParams.awakeWindowMin })} · {m.today_page_meta_night({ night: data.ageParams.nightSleepH })}
 </p>
 <p class="tz-info"><Globe size={12} /> {m.today_tz_label()} <strong>{data.effectiveTz}</strong></p>

@@ -1,5 +1,7 @@
 export type AgeParams = {
-  label: string;
+  /** Stable identity for the bracket. NOT display text: render it with
+   *  formatAgeBracket() from $lib/format, which is locale-aware. */
+  key: string;
   ageMinMonths: number;
   ageMaxMonths: number;
   naps: number;
@@ -18,14 +20,14 @@ export type AgeParams = {
 // places it closer to 1h30–1h45 for this age — 100 min splits the difference.
 // beforeBedWindowMin 4-6 mois bumped to 150 (was 120) for the same reason.
 export const AGE_PARAMS: readonly AgeParams[] = [
-  { label: '0-3 mois',   ageMinMonths: 0,  ageMaxMonths: 3,  naps: 4, firstAwakeWindowMin: 60,  awakeWindowMin: 75,  beforeBedWindowMin: 60,  nightSleepH: 9,  daySleepH: 7   },
-  { label: '3-4 mois',   ageMinMonths: 3,  ageMaxMonths: 4,  naps: 4, firstAwakeWindowMin: 75,  awakeWindowMin: 90,  beforeBedWindowMin: 90,  nightSleepH: 10, daySleepH: 5   },
-  { label: '4-6 mois',   ageMinMonths: 4,  ageMaxMonths: 6,  naps: 3, firstAwakeWindowMin: 100, awakeWindowMin: 120, beforeBedWindowMin: 150, nightSleepH: 11, daySleepH: 3.5 },
-  { label: '6-9 mois',   ageMinMonths: 6,  ageMaxMonths: 9,  naps: 3, firstAwakeWindowMin: 135, awakeWindowMin: 165, beforeBedWindowMin: 180, nightSleepH: 11, daySleepH: 3   },
-  { label: '9-12 mois',  ageMinMonths: 9,  ageMaxMonths: 12, naps: 2, firstAwakeWindowMin: 180, awakeWindowMin: 210, beforeBedWindowMin: 240, nightSleepH: 11, daySleepH: 2.5 },
-  { label: '12-18 mois', ageMinMonths: 12, ageMaxMonths: 18, naps: 2, firstAwakeWindowMin: 240, awakeWindowMin: 270, beforeBedWindowMin: 300, nightSleepH: 11, daySleepH: 2.5 },
-  { label: '18-24 mois', ageMinMonths: 18, ageMaxMonths: 24, naps: 1, firstAwakeWindowMin: 300, awakeWindowMin: 330, beforeBedWindowMin: 330, nightSleepH: 11, daySleepH: 2   },
-  { label: '2-3 ans',    ageMinMonths: 24, ageMaxMonths: 36, naps: 1, firstAwakeWindowMin: 330, awakeWindowMin: 360, beforeBedWindowMin: 360, nightSleepH: 11, daySleepH: 1.5 }
+  { key: '0-3m',    ageMinMonths: 0,  ageMaxMonths: 3,  naps: 4, firstAwakeWindowMin: 60,  awakeWindowMin: 75,  beforeBedWindowMin: 60,  nightSleepH: 9,  daySleepH: 7   },
+  { key: '3-4m',    ageMinMonths: 3,  ageMaxMonths: 4,  naps: 4, firstAwakeWindowMin: 75,  awakeWindowMin: 90,  beforeBedWindowMin: 90,  nightSleepH: 10, daySleepH: 5   },
+  { key: '4-6m',    ageMinMonths: 4,  ageMaxMonths: 6,  naps: 3, firstAwakeWindowMin: 100, awakeWindowMin: 120, beforeBedWindowMin: 150, nightSleepH: 11, daySleepH: 3.5 },
+  { key: '6-9m',    ageMinMonths: 6,  ageMaxMonths: 9,  naps: 3, firstAwakeWindowMin: 135, awakeWindowMin: 165, beforeBedWindowMin: 180, nightSleepH: 11, daySleepH: 3   },
+  { key: '9-12m',   ageMinMonths: 9,  ageMaxMonths: 12, naps: 2, firstAwakeWindowMin: 180, awakeWindowMin: 210, beforeBedWindowMin: 240, nightSleepH: 11, daySleepH: 2.5 },
+  { key: '12-18m',  ageMinMonths: 12, ageMaxMonths: 18, naps: 2, firstAwakeWindowMin: 240, awakeWindowMin: 270, beforeBedWindowMin: 300, nightSleepH: 11, daySleepH: 2.5 },
+  { key: '18-24m',  ageMinMonths: 18, ageMaxMonths: 24, naps: 1, firstAwakeWindowMin: 300, awakeWindowMin: 330, beforeBedWindowMin: 330, nightSleepH: 11, daySleepH: 2   },
+  { key: '2-3y',    ageMinMonths: 24, ageMaxMonths: 36, naps: 1, firstAwakeWindowMin: 330, awakeWindowMin: 360, beforeBedWindowMin: 360, nightSleepH: 11, daySleepH: 1.5 }
 ] as const;
 
 export function paramsForAge(months: number): AgeParams {
