@@ -119,10 +119,12 @@
       <img src="/_assets/icon.png" alt="" />
       <span>BabySleep</span>
     </div>
-    <h1>Le sommeil de votre bébé, sur votre propre serveur.</h1>
-    <p>Siestes, nuits et fenêtres d'éveil dans une PWA que vous hébergez vous-même. Un fichier SQLite, rien d'autre.</p>
+    <h1 data-fr="Le sommeil de votre bébé, sur votre propre serveur."
+        data-en="Your baby's sleep, on your own server.">Le sommeil de votre bébé, sur votre propre serveur.</h1>
+    <p data-fr="Siestes, nuits et fenêtres d'éveil dans une PWA que vous hébergez vous-même. Un fichier SQLite, rien d'autre."
+       data-en="Naps, nights and wake windows in a PWA you host yourself. One SQLite file, nothing else.">Siestes, nuits et fenêtres d'éveil dans une PWA que vous hébergez vous-même. Un fichier SQLite, rien d'autre.</p>
     <div class="facts">
-      <span class="fact">Auto-hébergé</span>
+      <span class="fact" data-fr="Auto-hébergé" data-en="Self-hosted">Auto-hébergé</span>
       <span class="fact">Docker</span>
       <span class="fact">AGPL-3.0</span>
       <span class="fact">FR / EN</span>
@@ -131,5 +133,11 @@
   <div class="shot">
     <div class="frame"><img src="/_assets/calendar.png" alt="" /></div>
   </div>
+<script>
+  // Same board in both locales: ?lang=en swaps every data-en string in place.
+  if (new URLSearchParams(location.search).get('lang') === 'en') {
+    for (const el of document.querySelectorAll('[data-en]')) el.textContent = el.dataset.en;
+  }
+</script>
 </body>
 </html>

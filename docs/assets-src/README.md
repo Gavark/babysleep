@@ -43,13 +43,19 @@ timer reading zero.
 
 ## 3. README captures
 
-Full-page or viewport captures at 1024 wide (390 for mobile), French, light
-theme unless the name says `-dark`: `today.png`, `calendar.png`, `stats.png`,
-`history.png`, `mobile-calendar.png`, `today-dark.png`.
+Full-page or viewport captures at 1024 wide (390 for mobile), light theme
+unless the name says `-dark`: `today`, `calendar`, `stats`, `history`,
+`mobile-calendar`, `today-dark`.
+
+Each exists twice: the bare name is French and feeds README.md, the `-en`
+suffix is English and feeds README.en.md. Switch the locale from the header
+globe between the two passes.
 
 ## 4. Banner and social card
 
 `banner.html` and `og.html` in this folder render `banner.png` (1280x420) and
-`og.png` (1200x630). Both pull their colours straight from
+`og.png` (1200x630). The banner board is bilingual: add `?lang=en` to the URL
+and it swaps every `data-en` string in place, which is how `banner-en.png` is
+produced from the same design (point it at `calendar-en.png` for that pass). Both pull their colours straight from
 `src/lib/styles/tokens.css` and embed the real `calendar.png`, so they cannot
 drift from the product. Each file's header comment carries the render steps.
