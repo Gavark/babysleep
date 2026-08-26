@@ -30,7 +30,7 @@ reproducible and `docker inspect` reports the version actually running:
 ```yaml
 services:
   app:
-    image: ghcr.io/gavark/babysleep:v0.7.1
+    image: ghcr.io/gavark/babysleep:v0.7.2
 ```
 
 This is why the update procedure starts with `git pull`: the new tag arrives
