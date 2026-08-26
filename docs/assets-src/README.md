@@ -54,8 +54,11 @@ globe between the two passes.
 ## 4. Banner and social card
 
 `banner.html` and `og.html` in this folder render `banner.png` (1280x420) and
-`og.png` (1200x630). The banner board is bilingual: add `?lang=en` to the URL
-and it swaps every `data-en` string in place, which is how `banner-en.png` is
-produced from the same design (point it at `calendar-en.png` for that pass). Both pull their colours straight from
-`src/lib/styles/tokens.css` and embed the real `calendar.png`, so they cannot
-drift from the product. Each file's header comment carries the render steps.
+`og.png` (1200x630). Both read their colours straight from
+`src/lib/styles/tokens.css` and embed a real capture rather than a mock-up, so
+neither can drift away from the product. Each file's header comment carries
+the render steps.
+
+The banner board is bilingual: append `?lang=en` and it swaps every `data-en`
+string in place. That is how `banner-en.png` comes out of the same design,
+with `calendar-en.png` embedded instead of `calendar.png` for that pass.
