@@ -15,7 +15,9 @@ job. By default:
 - **Schedule:** every day at 03:00 (`TZ` timezone)
 - **Destination:** `./backups/` on the host (bind-mounted into the sidecar)
 - **Filename:** `babysleep-YYYYMMDDTHHMMSSZ.sqlite`
-- **Retention:** keeps the newest 30 snapshots; older ones are deleted
+- **Retention:** keeps the newest 30 automatic snapshots; older ones are deleted.
+  Snapshots you name yourself (e.g. `babysleep-predeploy-v0.7.0.sqlite`) are
+  never pruned
 
 Both schedule and retention are tunable via env vars — see
 [CONFIGURATION.md](./CONFIGURATION.md#backup-sidecar-full-compose-only).
@@ -23,6 +25,12 @@ Both schedule and retention are tunable via env vars — see
 The script uses SQLite's `.backup` command (not a raw `cp`), which is safe
 against concurrent writes by the app — SQLite handles the lock internally and
 produces a consistent snapshot.
+
+Every snapshot is verified before the run is called a success: the file must be
+non-empty and pass `PRAGMA integrity_check`. A snapshot that fails either check
+is deleted and the run exits non-zero (visible in `docker logs babysleep-backup`)
+rather than leaving a broken file that looks like a real backup. Retention runs
+only after a snapshot passes, so a failed run never prunes a good backup.
 
 ## Trigger a backup on demand
 

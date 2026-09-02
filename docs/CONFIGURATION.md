@@ -94,9 +94,11 @@ nightly backup container.
 
 ### `BACKUP_RETENTION` _(default `30`)_
 
-How many SQLite snapshot files to keep in `./backups/`. The oldest are pruned
-after each successful backup. Set to a higher number if you have disk space
-and want a longer history (the DB is tiny — a few KB per snapshot).
+How many automatic SQLite snapshots to keep in `./backups/`. The oldest are
+pruned after each successful backup. Only the timestamped files the sidecar
+writes are counted — snapshots you name yourself are left alone. Set to a
+higher number if you have disk space and want a longer history (the DB is
+tiny — a few KB per snapshot).
 
 ### `BACKUP_SCHEDULE` _(default `0 3 * * *`)_
 
