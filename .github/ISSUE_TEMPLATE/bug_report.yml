@@ -49,6 +49,7 @@ body:
     attributes:
       label: How are you running it?
       options:
+        - "docker-compose.quickstart.yml (local test)"
         - "docker-compose.yml (minimal)"
         - "docker-compose.full.yml (Caddy + backup)"
         - "Custom Docker setup"

@@ -83,7 +83,9 @@ different header names.
 When no `X-Forwarded-Proto` header arrives, SvelteKit assumes `https`. Opening
 the app over plain HTTP without a proxy (e.g. `http://localhost:3000`)
 therefore loads pages but rejects every form submission with a 403. Put the
-app behind a reverse proxy, or use `npm run dev` for local testing.
+app behind a reverse proxy. To try BabySleep locally, use
+`docker-compose.quickstart.yml`, which puts a plain-HTTP Caddy in front of the
+app, or `npm run dev`.
 
 ### `ORIGIN` _(optional)_
 

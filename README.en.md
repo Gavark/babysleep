@@ -98,11 +98,15 @@ cd babysleep
 cp .env.example .env
 # .env.example works as-is for a first test; re-read it to customise TZ,
 # ORIGIN, or to opt into the scripted-admin setup.
-docker compose up -d
+docker compose -f docker-compose.quickstart.yml up -d
 ```
 
 Open <http://localhost:3000> in your browser — you'll be sent to a setup wizard
 to create your admin account. After that, log in and start tracking.
+
+This compose file puts a small Caddy in front of the app, over plain HTTP:
+without a proxy declaring the protocol, the app rejects every form (403). It is
+meant for trying BabySleep on your machine, not for exposing it to the internet.
 
 ### Behind a reverse proxy with HTTPS
 
@@ -115,8 +119,9 @@ cp Caddyfile.example Caddyfile
 docker compose -f docker-compose.full.yml up -d
 ```
 
-If you prefer Nginx Proxy Manager, Traefik, or your own reverse proxy, stick
-with the minimal `docker-compose.yml` and point your proxy at port 3000.
+If you prefer Nginx Proxy Manager, Traefik, or your own reverse proxy, switch
+to the minimal `docker-compose.yml` and point your proxy at port 3000. That port
+isn't meant to be opened directly in a browser.
 
 ---
 

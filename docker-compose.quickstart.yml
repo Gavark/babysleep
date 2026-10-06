@@ -1,0 +1,62 @@
+# Try BabySleep on this machine over plain HTTP: the app + a minimal Caddy.
+#
+#   docker compose -f docker-compose.quickstart.yml up -d
+#
+# Then open http://localhost:3000.
+#
+# Why Caddy: SvelteKit checks the Origin of every form submission against the
+# protocol/host declared by the reverse proxy, and assumes https when no proxy
+# header arrives. Opened directly over plain HTTP, the app would load pages but
+# reject every form (including the setup wizard) with a 403. This Caddy only
+# forwards requests and declares the original protocol (http). No TLS, no
+# Caddyfile to edit.
+#
+# Not for production: use docker-compose.full.yml (HTTPS via Let's Encrypt), or
+# docker-compose.yml behind your own reverse proxy. Both reuse the data volume
+# created here.
+
+services:
+  app:
+    image: ghcr.io/gavark/babysleep:v0.7.5
+    # Falls back to building from source if the image isn't pulled.
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: babysleep
+    restart: unless-stopped
+    # Reachable only through Caddy: no published port.
+    expose:
+      - "3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_PATH=/data/babysleep.sqlite
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - DISABLE_SIGNUP=${DISABLE_SIGNUP:-false}
+      - TZ=${TZ:-Europe/Paris}
+      - ORIGIN=${ORIGIN:-}
+      - PROTOCOL_HEADER=x-forwarded-proto
+      - HOST_HEADER=x-forwarded-host
+      # Client IP for rate limiting: Caddy overwrites X-Forwarded-For with the
+      # address it sees, and the app is only reachable through it.
+      - ADDRESS_HEADER=x-forwarded-for
+      - XFF_DEPTH=1
+    volumes:
+      - babysleep_data:/data
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: babysleep-caddy
+    restart: unless-stopped
+    # An address without a hostname makes Caddy serve plain HTTP.
+    command: caddy reverse-proxy --from :3000 --to app:3000
+    # Loopback only: reachable from this machine. Change to "3000:3000" to try
+    # it from another device on your network (still plain HTTP, never expose
+    # it to the internet).
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      - app
+
+volumes:
+  babysleep_data:

@@ -5,6 +5,9 @@
 #   docker compose up -d
 #
 # The app listens on http://localhost:3000. Point your reverse proxy at it.
+# Don't open that port directly in a browser: without a proxy declaring the
+# protocol, every form is rejected with a 403. To just try BabySleep, use
+# docker-compose.quickstart.yml.
 # For the full stack (app + Caddy with auto-HTTPS + nightly backup sidecar),
 # see docker-compose.full.yml.
 
