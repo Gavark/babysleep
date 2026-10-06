@@ -3,7 +3,11 @@
 FROM node:22-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci
+# --ignore-scripts: better-sqlite3 13 ships prebuilt binaries (linuxmusl
+# included) but also a binding.gyp, and npm ci runs `node-gyp rebuild` for it
+# regardless of its "gypfile": false. Alpine has no Python, so that fails. No
+# dependency needs an install script (local npm 12 skips them all already).
+RUN npm ci --ignore-scripts
 
 FROM node:22-alpine AS build
 WORKDIR /app
@@ -20,7 +24,7 @@ ENV PORT=3000
 
 # Production deps only
 COPY package.json package-lock.json ./
-RUN npm ci --omit=dev && npm cache clean --force
+RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
 
 # Built app + migrations
 COPY --from=build /app/build ./build
