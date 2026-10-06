@@ -8,6 +8,7 @@ making my future self's life harder."
 
 Use the [Issue templates](https://github.com/Gavark/babysleep/issues/new/choose).
 Usage questions go to [Discussions](https://github.com/Gavark/babysleep/discussions).
+Security vulnerabilities do not go in issues: see [SECURITY.md](./SECURITY.md).
 
 ## Local development
 
