@@ -59,10 +59,14 @@
     });
   }
 
+  // Reset the hide timer on each toast, or an earlier toast's timer would
+  // hide a newer one before its 3 s are up.
+  let toastTimer: ReturnType<typeof setTimeout> | undefined;
   function showToast(message: string) {
     toastMessage = message;
     toastVisible = true;
-    setTimeout(() => { toastVisible = false; }, 3000);
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { toastVisible = false; }, 3000);
   }
 
   function handleStart() {
