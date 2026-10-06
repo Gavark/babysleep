@@ -34,7 +34,7 @@
     "@sveltejs/kit": "^2.70.1",
     "@sveltejs/vite-plugin-svelte": "^7.1.2",
     "@types/better-sqlite3": "^9.6.0",
-    "@types/node": "^25.7.0",
+    "@types/node": "^22.20.5",
     "@types/web-push": "^3.6.4",
     "@vite-pwa/sveltekit": "^1.1.0",
     "drizzle-kit": "^0.31.10",
