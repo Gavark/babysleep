@@ -1,6 +1,7 @@
 /// <reference lib="webworker" />
 /* eslint-disable */
-import { build, files, version } from '$service-worker';
+import { immutable, assets } from '$app/manifest';
+import { version } from '$app/env';
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -10,7 +11,14 @@ declare const self: ServiceWorkerGlobalScope;
 // ~300 kB of images it never shows offline. HTML is never cached, so pages
 // still need the network.
 const CACHE = `babysleep-${version}`;
-const PRECACHE = [...build, ...files.filter((f) => !f.startsWith('/screenshots/'))];
+// $app/manifest paths are relative to the base path (e.g. `screenshots/x.png`).
+// Resolve them against the service worker's own URL, which sits at the base
+// path, so the filter and the fetch handler below see absolute pathnames.
+const toPathname = (path: string) => new URL(path, self.location.href).pathname;
+const PRECACHE = [
+  ...immutable.map((f) => toPathname(f.path)),
+  ...assets.map((f) => toPathname(f.path)).filter((p) => !p.startsWith('/screenshots/'))
+];
 const PRECACHED = new Set(PRECACHE);
 
 self.addEventListener('install', (event) => {

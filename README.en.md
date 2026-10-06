@@ -129,7 +129,7 @@ for the full annotated list. Highlights:
 |---|---|---|
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD` | no | Skip the setup wizard for scripted deployments. |
 | `DISABLE_SIGNUP` | no | `true` to block `/signup` entirely. Invitations still work. |
-| `ORIGIN` | yes if behind a proxy | Public HTTPS URL for CSRF/Origin checks. |
+| `ORIGIN` | no | Public URL, only used for the default VAPID subject. The CSRF check relies on the proxy headers (`PROTOCOL_HEADER`, `HOST_HEADER`). |
 | `TZ` | no | Container timezone. Default `Europe/Paris`. |
 | `VAPID_SUBJECT` | no | Override the VAPID subject (default: `mailto:admin@<host>` derived from `ORIGIN`). |
 

@@ -1,4 +1,4 @@
-import type { Handle } from '@sveltejs/kit';
+import type { Handle } from '@sveltejs/kit/hooks';
 import { redirect } from '@sveltejs/kit';
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { getDb } from '$lib/server/db';

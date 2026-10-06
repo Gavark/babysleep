@@ -71,21 +71,26 @@ join, OR when you've decided your instance is "full".
 
 ## Reverse-proxy / origin
 
-### `ORIGIN` _(required behind a proxy)_
-
-Public HTTPS URL of the deployment, e.g. `https://babysleep.example.com`.
-SvelteKit checks the `Origin` header on POSTs against this value as CSRF
-protection. If unset behind a proxy, every form submission gets rejected with
-a 403.
-
-For local HTTP testing without a proxy, set `ORIGIN=http://localhost:3000`.
-
 ### `PROTOCOL_HEADER`, `HOST_HEADER`
 
 Set to `x-forwarded-proto` and `x-forwarded-host` respectively in the shipped
 compose files. They tell SvelteKit which headers your reverse proxy uses to
-declare the original protocol/host. Caddy, Traefik, and Nginx all use these
-defaults. Leave them as-is unless your proxy uses different header names.
+declare the original protocol/host, and SvelteKit checks the `Origin` header
+of every POST against that protocol/host as CSRF protection. Caddy, Traefik,
+and Nginx all use these defaults. Leave them as-is unless your proxy uses
+different header names.
+
+When no `X-Forwarded-Proto` header arrives, SvelteKit assumes `https`. Opening
+the app over plain HTTP without a proxy (e.g. `http://localhost:3000`)
+therefore loads pages but rejects every form submission with a 403. Put the
+app behind a reverse proxy, or use `npm run dev` for local testing.
+
+### `ORIGIN` _(optional)_
+
+Public URL of the deployment, e.g. `https://babysleep.example.com`. Since
+SvelteKit 3 it is no longer used for the CSRF check (see above). BabySleep
+only uses it to derive the default VAPID subject (`mailto:admin@<host>`), so
+set it if you rely on that default instead of `VAPID_SUBJECT`.
 
 ### `ADDRESS_HEADER`, `XFF_DEPTH`
 
@@ -164,6 +169,7 @@ If you're behind a proxy, check that headers propagate correctly:
 curl -fsI https://your-domain/healthz | head -1
 ```
 
-A 200 means the reverse proxy is reaching the app and `ORIGIN` is set
-correctly. A 403 on a POST (e.g. to `/login`) almost always means `ORIGIN`
-doesn't match the URL the user is visiting.
+A 200 means the reverse proxy is reaching the app. A 403 on a POST (e.g. to
+`/login`) almost always means the proxy isn't forwarding `X-Forwarded-Proto` /
+`X-Forwarded-Host`, or `PROTOCOL_HEADER` / `HOST_HEADER` don't match the header
+names it uses.

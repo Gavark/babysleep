@@ -134,7 +134,7 @@ Toute la config passe par des variables d'environnement. Voir
 |---|---|---|
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD` | non | Passe le wizard pour les déploiements scriptés. |
 | `DISABLE_SIGNUP` | non | `true` pour bloquer `/signup`. Les invitations marchent quand même. |
-| `ORIGIN` | oui si derrière un proxy | URL publique HTTPS pour les checks CSRF/Origin. |
+| `ORIGIN` | non | URL publique, utilisée seulement pour le sujet VAPID par défaut. Le check CSRF se base sur les en-têtes du proxy (`PROTOCOL_HEADER`, `HOST_HEADER`). |
 | `TZ` | non | Fuseau horaire du container. Défaut `Europe/Paris`. |
 | `VAPID_SUBJECT` | non | Override du sujet VAPID (défaut : `mailto:admin@<host>` dérivé d'`ORIGIN`). |
 
