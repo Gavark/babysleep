@@ -24,7 +24,7 @@ That's it for routine updates. The rest of this page is for the edge cases.
 
 ## Version pinning
 
-Both compose files ship pinned to a release tag, so a deployment is
+The compose files ship pinned to a release tag, so a deployment is
 reproducible and `docker inspect` reports the version actually running:
 
 ```yaml

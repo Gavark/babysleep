@@ -84,17 +84,20 @@ what changed and *why*, not how (the diff already shows how).
 
 ## Releasing (maintainer)
 
-The version lives in three places and they have to move together, in a single
-commit, before the tag is created:
+The version lives in several places and they have to move together, in a
+single commit, before the tag is created:
 
 1. `version` in `package.json`
 2. `version` in `package-lock.json` (twice: the root field and `packages[""]`)
-3. The image tag in **both** `docker-compose.yml` and `docker-compose.full.yml`
+3. The image tag in `docker-compose.yml`, `docker-compose.full.yml` and
+   `docker-compose.quickstart.yml`, and in the example in `docs/UPGRADING.md`
 
 Item 3 is the easy one to forget. The compose files are pinned to a release
 tag rather than `:latest` so that deployments are reproducible and
 `docker inspect` reports the version actually running. If the tag is not
 bumped, the release ships pointing at the previous image.
+`tests/compose-version.test.ts` fails when one of these files doesn't match
+`package.json`, so `npm test` catches it.
 
 Then:
 
