@@ -67,21 +67,26 @@
 
   function handleStart() {
     if (submitting) return;
-    if (emptySlot === null) return;
+    // Capture the slot before the callback: the parent mutates `naps`
+    // synchronously, so `emptySlot` already points at the next slot afterwards.
+    const slot = emptySlot;
+    if (slot === null) return;
     submitting = true;
     const hhmm = formatNowHHMM(effectiveTz);
-    onNapStart(emptySlot, hhmm);
-    showToast(m.wake_timer_toast_nap_started({ n: emptySlot + 1, at: hhmm }));
+    onNapStart(slot, hhmm);
+    showToast(m.wake_timer_toast_nap_started({ n: slot + 1, at: hhmm }));
     setTimeout(() => { submitting = false; }, 2000);
   }
 
   function handleEnd() {
     if (submitting) return;
-    if (progressSlot === null) return;
+    // Same as handleStart: `progressSlot` becomes null once the end is set.
+    const slot = progressSlot;
+    if (slot === null) return;
     submitting = true;
     const hhmm = formatNowHHMM(effectiveTz);
-    onNapEnd(progressSlot, hhmm);
-    showToast(m.wake_timer_toast_nap_ended({ n: progressSlot + 1, at: hhmm }));
+    onNapEnd(slot, hhmm);
+    showToast(m.wake_timer_toast_nap_ended({ n: slot + 1, at: hhmm }));
     setTimeout(() => { submitting = false; }, 2000);
   }
 
