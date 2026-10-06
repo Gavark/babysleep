@@ -24,6 +24,6 @@ const en_error_title = /** @type {(inputs: Error_TitleInputs) => LocalizedString
 */
 export const error_title = /** @type {((inputs: Error_TitleInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Error_TitleInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_error_title(inputs)
-	return en_error_title(inputs)
+	if (locale === "en") return en_error_title(inputs)
+	return fr_error_title(inputs)
 });

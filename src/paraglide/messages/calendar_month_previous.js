@@ -24,6 +24,6 @@ const en_calendar_month_previous = /** @type {(inputs: Calendar_Month_PreviousIn
 */
 export const calendar_month_previous = /** @type {((inputs?: Calendar_Month_PreviousInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Calendar_Month_PreviousInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_calendar_month_previous(inputs)
-	return en_calendar_month_previous(inputs)
+	if (locale === "en") return en_calendar_month_previous(inputs)
+	return fr_calendar_month_previous(inputs)
 });

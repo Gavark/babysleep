@@ -24,6 +24,6 @@ const en_stats_chart_aria_monthly = /** @type {(inputs: Stats_Chart_Aria_Monthly
 */
 export const stats_chart_aria_monthly = /** @type {((inputs: Stats_Chart_Aria_MonthlyInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Stats_Chart_Aria_MonthlyInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_stats_chart_aria_monthly(inputs)
-	return en_stats_chart_aria_monthly(inputs)
+	if (locale === "en") return en_stats_chart_aria_monthly(inputs)
+	return fr_stats_chart_aria_monthly(inputs)
 });

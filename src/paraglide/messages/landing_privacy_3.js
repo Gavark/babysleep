@@ -24,6 +24,6 @@ const en_landing_privacy_3 = /** @type {(inputs: Landing_Privacy_3Inputs) => Loc
 */
 export const landing_privacy_3 = /** @type {((inputs?: Landing_Privacy_3Inputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Landing_Privacy_3Inputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_landing_privacy_3(inputs)
-	return en_landing_privacy_3(inputs)
+	if (locale === "en") return en_landing_privacy_3(inputs)
+	return fr_landing_privacy_3(inputs)
 });

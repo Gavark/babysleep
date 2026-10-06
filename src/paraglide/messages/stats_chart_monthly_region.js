@@ -24,6 +24,6 @@ const en_stats_chart_monthly_region = /** @type {(inputs: Stats_Chart_Monthly_Re
 */
 export const stats_chart_monthly_region = /** @type {((inputs?: Stats_Chart_Monthly_RegionInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Stats_Chart_Monthly_RegionInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_stats_chart_monthly_region(inputs)
-	return en_stats_chart_monthly_region(inputs)
+	if (locale === "en") return en_stats_chart_monthly_region(inputs)
+	return fr_stats_chart_monthly_region(inputs)
 });

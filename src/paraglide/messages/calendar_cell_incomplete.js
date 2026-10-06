@@ -24,6 +24,6 @@ const en_calendar_cell_incomplete = /** @type {(inputs: Calendar_Cell_Incomplete
 */
 export const calendar_cell_incomplete = /** @type {((inputs?: Calendar_Cell_IncompleteInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Calendar_Cell_IncompleteInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_calendar_cell_incomplete(inputs)
-	return en_calendar_cell_incomplete(inputs)
+	if (locale === "en") return en_calendar_cell_incomplete(inputs)
+	return fr_calendar_cell_incomplete(inputs)
 });

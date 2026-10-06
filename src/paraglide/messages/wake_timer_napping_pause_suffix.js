@@ -24,6 +24,6 @@ const en_wake_timer_napping_pause_suffix = /** @type {(inputs: Wake_Timer_Nappin
 */
 export const wake_timer_napping_pause_suffix = /** @type {((inputs: Wake_Timer_Napping_Pause_SuffixInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Wake_Timer_Napping_Pause_SuffixInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_wake_timer_napping_pause_suffix(inputs)
-	return en_wake_timer_napping_pause_suffix(inputs)
+	if (locale === "en") return en_wake_timer_napping_pause_suffix(inputs)
+	return fr_wake_timer_napping_pause_suffix(inputs)
 });

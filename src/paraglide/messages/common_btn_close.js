@@ -24,6 +24,6 @@ const en_common_btn_close = /** @type {(inputs: Common_Btn_CloseInputs) => Local
 */
 export const common_btn_close = /** @type {((inputs?: Common_Btn_CloseInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Common_Btn_CloseInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_common_btn_close(inputs)
-	return en_common_btn_close(inputs)
+	if (locale === "en") return en_common_btn_close(inputs)
+	return fr_common_btn_close(inputs)
 });

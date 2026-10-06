@@ -24,6 +24,6 @@ const en_csv_header_nap_end = /** @type {(inputs: Csv_Header_Nap_EndInputs) => L
 */
 export const csv_header_nap_end = /** @type {((inputs: Csv_Header_Nap_EndInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Csv_Header_Nap_EndInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_csv_header_nap_end(inputs)
-	return en_csv_header_nap_end(inputs)
+	if (locale === "en") return en_csv_header_nap_end(inputs)
+	return fr_csv_header_nap_end(inputs)
 });

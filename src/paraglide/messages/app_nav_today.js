@@ -24,6 +24,6 @@ const en_app_nav_today = /** @type {(inputs: App_Nav_TodayInputs) => LocalizedSt
 */
 export const app_nav_today = /** @type {((inputs?: App_Nav_TodayInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<App_Nav_TodayInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_app_nav_today(inputs)
-	return en_app_nav_today(inputs)
+	if (locale === "en") return en_app_nav_today(inputs)
+	return fr_app_nav_today(inputs)
 });

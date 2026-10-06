@@ -24,6 +24,6 @@ const en_csv_header_notes = /** @type {(inputs: Csv_Header_NotesInputs) => Local
 */
 export const csv_header_notes = /** @type {((inputs?: Csv_Header_NotesInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Csv_Header_NotesInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_csv_header_notes(inputs)
-	return en_csv_header_notes(inputs)
+	if (locale === "en") return en_csv_header_notes(inputs)
+	return fr_csv_header_notes(inputs)
 });

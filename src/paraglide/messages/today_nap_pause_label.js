@@ -24,6 +24,6 @@ const en_today_nap_pause_label = /** @type {(inputs: Today_Nap_Pause_LabelInputs
 */
 export const today_nap_pause_label = /** @type {((inputs?: Today_Nap_Pause_LabelInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Today_Nap_Pause_LabelInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_today_nap_pause_label(inputs)
-	return en_today_nap_pause_label(inputs)
+	if (locale === "en") return en_today_nap_pause_label(inputs)
+	return fr_today_nap_pause_label(inputs)
 });

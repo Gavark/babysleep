@@ -24,6 +24,6 @@ const en_account_connected_as = /** @type {(inputs: Account_Connected_AsInputs) 
 */
 export const account_connected_as = /** @type {((inputs?: Account_Connected_AsInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Account_Connected_AsInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_account_connected_as(inputs)
-	return en_account_connected_as(inputs)
+	if (locale === "en") return en_account_connected_as(inputs)
+	return fr_account_connected_as(inputs)
 });

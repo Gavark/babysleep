@@ -24,6 +24,6 @@ const en_account_sessions_current_device = /** @type {(inputs: Account_Sessions_
 */
 export const account_sessions_current_device = /** @type {((inputs?: Account_Sessions_Current_DeviceInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Account_Sessions_Current_DeviceInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_account_sessions_current_device(inputs)
-	return en_account_sessions_current_device(inputs)
+	if (locale === "en") return en_account_sessions_current_device(inputs)
+	return fr_account_sessions_current_device(inputs)
 });

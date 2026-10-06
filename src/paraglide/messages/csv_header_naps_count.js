@@ -24,6 +24,6 @@ const en_csv_header_naps_count = /** @type {(inputs: Csv_Header_Naps_CountInputs
 */
 export const csv_header_naps_count = /** @type {((inputs?: Csv_Header_Naps_CountInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Csv_Header_Naps_CountInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_csv_header_naps_count(inputs)
-	return en_csv_header_naps_count(inputs)
+	if (locale === "en") return en_csv_header_naps_count(inputs)
+	return fr_csv_header_naps_count(inputs)
 });

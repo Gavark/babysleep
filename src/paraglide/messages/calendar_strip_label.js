@@ -24,6 +24,6 @@ const en_calendar_strip_label = /** @type {(inputs: Calendar_Strip_LabelInputs) 
 */
 export const calendar_strip_label = /** @type {((inputs?: Calendar_Strip_LabelInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Calendar_Strip_LabelInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_calendar_strip_label(inputs)
-	return en_calendar_strip_label(inputs)
+	if (locale === "en") return en_calendar_strip_label(inputs)
+	return fr_calendar_strip_label(inputs)
 });

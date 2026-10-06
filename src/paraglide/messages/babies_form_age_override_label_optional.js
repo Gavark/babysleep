@@ -24,6 +24,6 @@ const en_babies_form_age_override_label_optional = /** @type {(inputs: Babies_Fo
 */
 export const babies_form_age_override_label_optional = /** @type {((inputs?: Babies_Form_Age_Override_Label_OptionalInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Babies_Form_Age_Override_Label_OptionalInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_babies_form_age_override_label_optional(inputs)
-	return en_babies_form_age_override_label_optional(inputs)
+	if (locale === "en") return en_babies_form_age_override_label_optional(inputs)
+	return fr_babies_form_age_override_label_optional(inputs)
 });

@@ -24,6 +24,6 @@ const en_today_page_meta_window = /** @type {(inputs: Today_Page_Meta_WindowInpu
 */
 export const today_page_meta_window = /** @type {((inputs: Today_Page_Meta_WindowInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Today_Page_Meta_WindowInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_today_page_meta_window(inputs)
-	return en_today_page_meta_window(inputs)
+	if (locale === "en") return en_today_page_meta_window(inputs)
+	return fr_today_page_meta_window(inputs)
 });

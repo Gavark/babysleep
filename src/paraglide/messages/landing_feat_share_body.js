@@ -24,6 +24,6 @@ const en_landing_feat_share_body = /** @type {(inputs: Landing_Feat_Share_BodyIn
 */
 export const landing_feat_share_body = /** @type {((inputs?: Landing_Feat_Share_BodyInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Landing_Feat_Share_BodyInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_landing_feat_share_body(inputs)
-	return en_landing_feat_share_body(inputs)
+	if (locale === "en") return en_landing_feat_share_body(inputs)
+	return fr_landing_feat_share_body(inputs)
 });

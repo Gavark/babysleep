@@ -24,6 +24,6 @@ const en_wake_timer_toast_pause_added = /** @type {(inputs: Wake_Timer_Toast_Pau
 */
 export const wake_timer_toast_pause_added = /** @type {((inputs: Wake_Timer_Toast_Pause_AddedInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Wake_Timer_Toast_Pause_AddedInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_wake_timer_toast_pause_added(inputs)
-	return en_wake_timer_toast_pause_added(inputs)
+	if (locale === "en") return en_wake_timer_toast_pause_added(inputs)
+	return fr_wake_timer_toast_pause_added(inputs)
 });

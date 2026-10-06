@@ -24,6 +24,6 @@ const en_admin_invitations_back_to_app = /** @type {(inputs: Admin_Invitations_B
 */
 export const admin_invitations_back_to_app = /** @type {((inputs?: Admin_Invitations_Back_To_AppInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Admin_Invitations_Back_To_AppInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_admin_invitations_back_to_app(inputs)
-	return en_admin_invitations_back_to_app(inputs)
+	if (locale === "en") return en_admin_invitations_back_to_app(inputs)
+	return fr_admin_invitations_back_to_app(inputs)
 });

@@ -24,6 +24,6 @@ const en_calendar_nav_label = /** @type {(inputs: Calendar_Nav_LabelInputs) => L
 */
 export const calendar_nav_label = /** @type {((inputs?: Calendar_Nav_LabelInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Calendar_Nav_LabelInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_calendar_nav_label(inputs)
-	return en_calendar_nav_label(inputs)
+	if (locale === "en") return en_calendar_nav_label(inputs)
+	return fr_calendar_nav_label(inputs)
 });

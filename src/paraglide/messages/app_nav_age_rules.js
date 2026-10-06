@@ -24,6 +24,6 @@ const en_app_nav_age_rules = /** @type {(inputs: App_Nav_Age_RulesInputs) => Loc
 */
 export const app_nav_age_rules = /** @type {((inputs?: App_Nav_Age_RulesInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<App_Nav_Age_RulesInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_app_nav_age_rules(inputs)
-	return en_app_nav_age_rules(inputs)
+	if (locale === "en") return en_app_nav_age_rules(inputs)
+	return fr_app_nav_age_rules(inputs)
 });

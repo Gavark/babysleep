@@ -24,6 +24,6 @@ const en_csv_header_nap_duration = /** @type {(inputs: Csv_Header_Nap_DurationIn
 */
 export const csv_header_nap_duration = /** @type {((inputs: Csv_Header_Nap_DurationInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Csv_Header_Nap_DurationInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_csv_header_nap_duration(inputs)
-	return en_csv_header_nap_duration(inputs)
+	if (locale === "en") return en_csv_header_nap_duration(inputs)
+	return fr_csv_header_nap_duration(inputs)
 });

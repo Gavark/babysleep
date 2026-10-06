@@ -24,6 +24,6 @@ const en_landing_install_lead = /** @type {(inputs: Landing_Install_LeadInputs) 
 */
 export const landing_install_lead = /** @type {((inputs?: Landing_Install_LeadInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Landing_Install_LeadInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_landing_install_lead(inputs)
-	return en_landing_install_lead(inputs)
+	if (locale === "en") return en_landing_install_lead(inputs)
+	return fr_landing_install_lead(inputs)
 });

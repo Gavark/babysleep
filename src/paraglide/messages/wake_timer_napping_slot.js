@@ -24,6 +24,6 @@ const en_wake_timer_napping_slot = /** @type {(inputs: Wake_Timer_Napping_SlotIn
 */
 export const wake_timer_napping_slot = /** @type {((inputs: Wake_Timer_Napping_SlotInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Wake_Timer_Napping_SlotInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_wake_timer_napping_slot(inputs)
-	return en_wake_timer_napping_slot(inputs)
+	if (locale === "en") return en_wake_timer_napping_slot(inputs)
+	return fr_wake_timer_napping_slot(inputs)
 });

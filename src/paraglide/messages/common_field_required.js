@@ -24,6 +24,6 @@ const en_common_field_required = /** @type {(inputs: Common_Field_RequiredInputs
 */
 export const common_field_required = /** @type {((inputs?: Common_Field_RequiredInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Common_Field_RequiredInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_common_field_required(inputs)
-	return en_common_field_required(inputs)
+	if (locale === "en") return en_common_field_required(inputs)
+	return fr_common_field_required(inputs)
 });

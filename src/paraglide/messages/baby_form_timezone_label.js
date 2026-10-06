@@ -24,6 +24,6 @@ const en_baby_form_timezone_label = /** @type {(inputs: Baby_Form_Timezone_Label
 */
 export const baby_form_timezone_label = /** @type {((inputs?: Baby_Form_Timezone_LabelInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Baby_Form_Timezone_LabelInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_baby_form_timezone_label(inputs)
-	return en_baby_form_timezone_label(inputs)
+	if (locale === "en") return en_baby_form_timezone_label(inputs)
+	return fr_baby_form_timezone_label(inputs)
 });

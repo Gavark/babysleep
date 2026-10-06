@@ -24,6 +24,6 @@ const en_stats_empty = /** @type {(inputs: Stats_EmptyInputs) => LocalizedString
 */
 export const stats_empty = /** @type {((inputs?: Stats_EmptyInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Stats_EmptyInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_stats_empty(inputs)
-	return en_stats_empty(inputs)
+	if (locale === "en") return en_stats_empty(inputs)
+	return fr_stats_empty(inputs)
 });

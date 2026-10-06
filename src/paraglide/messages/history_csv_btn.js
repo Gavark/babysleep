@@ -24,6 +24,6 @@ const en_history_csv_btn = /** @type {(inputs: History_Csv_BtnInputs) => Localiz
 */
 export const history_csv_btn = /** @type {((inputs?: History_Csv_BtnInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<History_Csv_BtnInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_history_csv_btn(inputs)
-	return en_history_csv_btn(inputs)
+	if (locale === "en") return en_history_csv_btn(inputs)
+	return fr_history_csv_btn(inputs)
 });

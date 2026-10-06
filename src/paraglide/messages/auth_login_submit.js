@@ -24,6 +24,6 @@ const en_auth_login_submit = /** @type {(inputs: Auth_Login_SubmitInputs) => Loc
 */
 export const auth_login_submit = /** @type {((inputs?: Auth_Login_SubmitInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Auth_Login_SubmitInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_auth_login_submit(inputs)
-	return en_auth_login_submit(inputs)
+	if (locale === "en") return en_auth_login_submit(inputs)
+	return fr_auth_login_submit(inputs)
 });

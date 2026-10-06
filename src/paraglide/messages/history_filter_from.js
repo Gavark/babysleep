@@ -24,6 +24,6 @@ const en_history_filter_from = /** @type {(inputs: History_Filter_FromInputs) =>
 */
 export const history_filter_from = /** @type {((inputs?: History_Filter_FromInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<History_Filter_FromInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_history_filter_from(inputs)
-	return en_history_filter_from(inputs)
+	if (locale === "en") return en_history_filter_from(inputs)
+	return fr_history_filter_from(inputs)
 });

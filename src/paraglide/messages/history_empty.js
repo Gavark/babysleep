@@ -24,6 +24,6 @@ const en_history_empty = /** @type {(inputs: History_EmptyInputs) => LocalizedSt
 */
 export const history_empty = /** @type {((inputs?: History_EmptyInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<History_EmptyInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_history_empty(inputs)
-	return en_history_empty(inputs)
+	if (locale === "en") return en_history_empty(inputs)
+	return fr_history_empty(inputs)
 });

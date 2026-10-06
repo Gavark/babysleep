@@ -24,6 +24,6 @@ const en_account_password_weak = /** @type {(inputs: Account_Password_WeakInputs
 */
 export const account_password_weak = /** @type {((inputs?: Account_Password_WeakInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Account_Password_WeakInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_account_password_weak(inputs)
-	return en_account_password_weak(inputs)
+	if (locale === "en") return en_account_password_weak(inputs)
+	return fr_account_password_weak(inputs)
 });

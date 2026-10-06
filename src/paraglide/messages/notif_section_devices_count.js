@@ -24,6 +24,6 @@ const en_notif_section_devices_count = /** @type {(inputs: Notif_Section_Devices
 */
 export const notif_section_devices_count = /** @type {((inputs: Notif_Section_Devices_CountInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Notif_Section_Devices_CountInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_notif_section_devices_count(inputs)
-	return en_notif_section_devices_count(inputs)
+	if (locale === "en") return en_notif_section_devices_count(inputs)
+	return fr_notif_section_devices_count(inputs)
 });

@@ -24,6 +24,6 @@ const en_history_table_notes = /** @type {(inputs: History_Table_NotesInputs) =>
 */
 export const history_table_notes = /** @type {((inputs?: History_Table_NotesInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<History_Table_NotesInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_history_table_notes(inputs)
-	return en_history_table_notes(inputs)
+	if (locale === "en") return en_history_table_notes(inputs)
+	return fr_history_table_notes(inputs)
 });

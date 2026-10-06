@@ -24,6 +24,6 @@ const en_day_delete_btn = /** @type {(inputs: Day_Delete_BtnInputs) => Localized
 */
 export const day_delete_btn = /** @type {((inputs?: Day_Delete_BtnInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Day_Delete_BtnInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_day_delete_btn(inputs)
-	return en_day_delete_btn(inputs)
+	if (locale === "en") return en_day_delete_btn(inputs)
+	return fr_day_delete_btn(inputs)
 });

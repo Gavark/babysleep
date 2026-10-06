@@ -24,6 +24,6 @@ const en_calendar_picker_opt_medium = /** @type {(inputs: Calendar_Picker_Opt_Me
 */
 export const calendar_picker_opt_medium = /** @type {((inputs?: Calendar_Picker_Opt_MediumInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Calendar_Picker_Opt_MediumInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_calendar_picker_opt_medium(inputs)
-	return en_calendar_picker_opt_medium(inputs)
+	if (locale === "en") return en_calendar_picker_opt_medium(inputs)
+	return fr_calendar_picker_opt_medium(inputs)
 });

@@ -24,6 +24,6 @@ const en_account_timezone_error = /** @type {(inputs: Account_Timezone_ErrorInpu
 */
 export const account_timezone_error = /** @type {((inputs?: Account_Timezone_ErrorInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Account_Timezone_ErrorInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_account_timezone_error(inputs)
-	return en_account_timezone_error(inputs)
+	if (locale === "en") return en_account_timezone_error(inputs)
+	return fr_account_timezone_error(inputs)
 });

@@ -24,6 +24,6 @@ const en_landing_footer_license = /** @type {(inputs: Landing_Footer_LicenseInpu
 */
 export const landing_footer_license = /** @type {((inputs?: Landing_Footer_LicenseInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Landing_Footer_LicenseInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_landing_footer_license(inputs)
-	return en_landing_footer_license(inputs)
+	if (locale === "en") return en_landing_footer_license(inputs)
+	return fr_landing_footer_license(inputs)
 });

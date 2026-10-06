@@ -24,6 +24,6 @@ const en_today_day_budget_remaining = /** @type {(inputs: Today_Day_Budget_Remai
 */
 export const today_day_budget_remaining = /** @type {((inputs?: Today_Day_Budget_RemainingInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Today_Day_Budget_RemainingInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_today_day_budget_remaining(inputs)
-	return en_today_day_budget_remaining(inputs)
+	if (locale === "en") return en_today_day_budget_remaining(inputs)
+	return fr_today_day_budget_remaining(inputs)
 });

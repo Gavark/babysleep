@@ -24,6 +24,6 @@ const en_calendar_cell_pct_suffix = /** @type {(inputs: Calendar_Cell_Pct_Suffix
 */
 export const calendar_cell_pct_suffix = /** @type {((inputs: Calendar_Cell_Pct_SuffixInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Calendar_Cell_Pct_SuffixInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_calendar_cell_pct_suffix(inputs)
-	return en_calendar_cell_pct_suffix(inputs)
+	if (locale === "en") return en_calendar_cell_pct_suffix(inputs)
+	return fr_calendar_cell_pct_suffix(inputs)
 });

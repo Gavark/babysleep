@@ -24,6 +24,6 @@ const en_history_summary_mean_bedtime = /** @type {(inputs: History_Summary_Mean
 */
 export const history_summary_mean_bedtime = /** @type {((inputs?: History_Summary_Mean_BedtimeInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<History_Summary_Mean_BedtimeInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_history_summary_mean_bedtime(inputs)
-	return en_history_summary_mean_bedtime(inputs)
+	if (locale === "en") return en_history_summary_mean_bedtime(inputs)
+	return fr_history_summary_mean_bedtime(inputs)
 });

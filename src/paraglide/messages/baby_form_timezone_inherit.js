@@ -24,6 +24,6 @@ const en_baby_form_timezone_inherit = /** @type {(inputs: Baby_Form_Timezone_Inh
 */
 export const baby_form_timezone_inherit = /** @type {((inputs?: Baby_Form_Timezone_InheritInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Baby_Form_Timezone_InheritInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_baby_form_timezone_inherit(inputs)
-	return en_baby_form_timezone_inherit(inputs)
+	if (locale === "en") return en_baby_form_timezone_inherit(inputs)
+	return fr_baby_form_timezone_inherit(inputs)
 });

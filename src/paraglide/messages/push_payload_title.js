@@ -24,6 +24,6 @@ const en_push_payload_title = /** @type {(inputs: Push_Payload_TitleInputs) => L
 */
 export const push_payload_title = /** @type {((inputs: Push_Payload_TitleInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Push_Payload_TitleInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_push_payload_title(inputs)
-	return en_push_payload_title(inputs)
+	if (locale === "en") return en_push_payload_title(inputs)
+	return fr_push_payload_title(inputs)
 });

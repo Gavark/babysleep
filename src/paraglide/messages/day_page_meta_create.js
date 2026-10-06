@@ -24,6 +24,6 @@ const en_day_page_meta_create = /** @type {(inputs: Day_Page_Meta_CreateInputs) 
 */
 export const day_page_meta_create = /** @type {((inputs?: Day_Page_Meta_CreateInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Day_Page_Meta_CreateInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_day_page_meta_create(inputs)
-	return en_day_page_meta_create(inputs)
+	if (locale === "en") return en_day_page_meta_create(inputs)
+	return fr_day_page_meta_create(inputs)
 });

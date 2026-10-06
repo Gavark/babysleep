@@ -24,6 +24,6 @@ const en_baby_form_update_success = /** @type {(inputs: Baby_Form_Update_Success
 */
 export const baby_form_update_success = /** @type {((inputs?: Baby_Form_Update_SuccessInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Baby_Form_Update_SuccessInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_baby_form_update_success(inputs)
-	return en_baby_form_update_success(inputs)
+	if (locale === "en") return en_baby_form_update_success(inputs)
+	return fr_baby_form_update_success(inputs)
 });

@@ -24,6 +24,6 @@ const en_calendar_cell_pct_of_quota = /** @type {(inputs: Calendar_Cell_Pct_Of_Q
 */
 export const calendar_cell_pct_of_quota = /** @type {((inputs: Calendar_Cell_Pct_Of_QuotaInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Calendar_Cell_Pct_Of_QuotaInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_calendar_cell_pct_of_quota(inputs)
-	return en_calendar_cell_pct_of_quota(inputs)
+	if (locale === "en") return en_calendar_cell_pct_of_quota(inputs)
+	return fr_calendar_cell_pct_of_quota(inputs)
 });

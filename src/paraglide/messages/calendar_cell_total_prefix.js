@@ -24,6 +24,6 @@ const en_calendar_cell_total_prefix = /** @type {(inputs: Calendar_Cell_Total_Pr
 */
 export const calendar_cell_total_prefix = /** @type {((inputs: Calendar_Cell_Total_PrefixInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Calendar_Cell_Total_PrefixInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_calendar_cell_total_prefix(inputs)
-	return en_calendar_cell_total_prefix(inputs)
+	if (locale === "en") return en_calendar_cell_total_prefix(inputs)
+	return fr_calendar_cell_total_prefix(inputs)
 });

@@ -24,6 +24,6 @@ const en_notif_page_title = /** @type {(inputs: Notif_Page_TitleInputs) => Local
 */
 export const notif_page_title = /** @type {((inputs?: Notif_Page_TitleInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Notif_Page_TitleInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_notif_page_title(inputs)
-	return en_notif_page_title(inputs)
+	if (locale === "en") return en_notif_page_title(inputs)
+	return fr_notif_page_title(inputs)
 });

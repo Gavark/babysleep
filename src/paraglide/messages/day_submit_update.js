@@ -24,6 +24,6 @@ const en_day_submit_update = /** @type {(inputs: Day_Submit_UpdateInputs) => Loc
 */
 export const day_submit_update = /** @type {((inputs?: Day_Submit_UpdateInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Day_Submit_UpdateInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_day_submit_update(inputs)
-	return en_day_submit_update(inputs)
+	if (locale === "en") return en_day_submit_update(inputs)
+	return fr_day_submit_update(inputs)
 });

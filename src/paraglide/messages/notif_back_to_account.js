@@ -24,6 +24,6 @@ const en_notif_back_to_account = /** @type {(inputs: Notif_Back_To_AccountInputs
 */
 export const notif_back_to_account = /** @type {((inputs?: Notif_Back_To_AccountInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Notif_Back_To_AccountInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_notif_back_to_account(inputs)
-	return en_notif_back_to_account(inputs)
+	if (locale === "en") return en_notif_back_to_account(inputs)
+	return fr_notif_back_to_account(inputs)
 });

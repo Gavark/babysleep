@@ -24,6 +24,6 @@ const en_history_table_bedtime = /** @type {(inputs: History_Table_BedtimeInputs
 */
 export const history_table_bedtime = /** @type {((inputs?: History_Table_BedtimeInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<History_Table_BedtimeInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_history_table_bedtime(inputs)
-	return en_history_table_bedtime(inputs)
+	if (locale === "en") return en_history_table_bedtime(inputs)
+	return fr_history_table_bedtime(inputs)
 });

@@ -24,6 +24,6 @@ const en_history_table_date = /** @type {(inputs: History_Table_DateInputs) => L
 */
 export const history_table_date = /** @type {((inputs?: History_Table_DateInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<History_Table_DateInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_history_table_date(inputs)
-	return en_history_table_date(inputs)
+	if (locale === "en") return en_history_table_date(inputs)
+	return fr_history_table_date(inputs)
 });

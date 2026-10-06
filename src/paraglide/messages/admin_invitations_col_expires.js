@@ -24,6 +24,6 @@ const en_admin_invitations_col_expires = /** @type {(inputs: Admin_Invitations_C
 */
 export const admin_invitations_col_expires = /** @type {((inputs?: Admin_Invitations_Col_ExpiresInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Admin_Invitations_Col_ExpiresInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_admin_invitations_col_expires(inputs)
-	return en_admin_invitations_col_expires(inputs)
+	if (locale === "en") return en_admin_invitations_col_expires(inputs)
+	return fr_admin_invitations_col_expires(inputs)
 });

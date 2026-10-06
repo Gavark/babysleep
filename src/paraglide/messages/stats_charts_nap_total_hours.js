@@ -24,6 +24,6 @@ const en_stats_charts_nap_total_hours = /** @type {(inputs: Stats_Charts_Nap_Tot
 */
 export const stats_charts_nap_total_hours = /** @type {((inputs?: Stats_Charts_Nap_Total_HoursInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Stats_Charts_Nap_Total_HoursInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_stats_charts_nap_total_hours(inputs)
-	return en_stats_charts_nap_total_hours(inputs)
+	if (locale === "en") return en_stats_charts_nap_total_hours(inputs)
+	return fr_stats_charts_nap_total_hours(inputs)
 });

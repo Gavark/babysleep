@@ -24,6 +24,6 @@ const en_wake_timer_pause_add_btn = /** @type {(inputs: Wake_Timer_Pause_Add_Btn
 */
 export const wake_timer_pause_add_btn = /** @type {((inputs?: Wake_Timer_Pause_Add_BtnInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Wake_Timer_Pause_Add_BtnInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_wake_timer_pause_add_btn(inputs)
-	return en_wake_timer_pause_add_btn(inputs)
+	if (locale === "en") return en_wake_timer_pause_add_btn(inputs)
+	return fr_wake_timer_pause_add_btn(inputs)
 });

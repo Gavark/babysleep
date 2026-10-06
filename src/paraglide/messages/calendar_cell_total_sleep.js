@@ -24,6 +24,6 @@ const en_calendar_cell_total_sleep = /** @type {(inputs: Calendar_Cell_Total_Sle
 */
 export const calendar_cell_total_sleep = /** @type {((inputs: Calendar_Cell_Total_SleepInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Calendar_Cell_Total_SleepInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_calendar_cell_total_sleep(inputs)
-	return en_calendar_cell_total_sleep(inputs)
+	if (locale === "en") return en_calendar_cell_total_sleep(inputs)
+	return fr_calendar_cell_total_sleep(inputs)
 });

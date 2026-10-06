@@ -24,6 +24,6 @@ const en_day_invalid_date = /** @type {(inputs: Day_Invalid_DateInputs) => Local
 */
 export const day_invalid_date = /** @type {((inputs?: Day_Invalid_DateInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Day_Invalid_DateInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_day_invalid_date(inputs)
-	return en_day_invalid_date(inputs)
+	if (locale === "en") return en_day_invalid_date(inputs)
+	return fr_day_invalid_date(inputs)
 });

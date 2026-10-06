@@ -24,6 +24,6 @@ const en_stats_charts_nap_monthly = /** @type {(inputs: Stats_Charts_Nap_Monthly
 */
 export const stats_charts_nap_monthly = /** @type {((inputs?: Stats_Charts_Nap_MonthlyInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Stats_Charts_Nap_MonthlyInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_stats_charts_nap_monthly(inputs)
-	return en_stats_charts_nap_monthly(inputs)
+	if (locale === "en") return en_stats_charts_nap_monthly(inputs)
+	return fr_stats_charts_nap_monthly(inputs)
 });

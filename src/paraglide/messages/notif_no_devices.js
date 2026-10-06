@@ -24,6 +24,6 @@ const en_notif_no_devices = /** @type {(inputs: Notif_No_DevicesInputs) => Local
 */
 export const notif_no_devices = /** @type {((inputs?: Notif_No_DevicesInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Notif_No_DevicesInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_notif_no_devices(inputs)
-	return en_notif_no_devices(inputs)
+	if (locale === "en") return en_notif_no_devices(inputs)
+	return fr_notif_no_devices(inputs)
 });

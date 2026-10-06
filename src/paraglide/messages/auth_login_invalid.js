@@ -24,6 +24,6 @@ const en_auth_login_invalid = /** @type {(inputs: Auth_Login_InvalidInputs) => L
 */
 export const auth_login_invalid = /** @type {((inputs?: Auth_Login_InvalidInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Auth_Login_InvalidInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_auth_login_invalid(inputs)
-	return en_auth_login_invalid(inputs)
+	if (locale === "en") return en_auth_login_invalid(inputs)
+	return fr_auth_login_invalid(inputs)
 });

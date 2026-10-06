@@ -24,6 +24,6 @@ const en_calendar_seg_nap = /** @type {(inputs: Calendar_Seg_NapInputs) => Local
 */
 export const calendar_seg_nap = /** @type {((inputs?: Calendar_Seg_NapInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Calendar_Seg_NapInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_calendar_seg_nap(inputs)
-	return en_calendar_seg_nap(inputs)
+	if (locale === "en") return en_calendar_seg_nap(inputs)
+	return fr_calendar_seg_nap(inputs)
 });

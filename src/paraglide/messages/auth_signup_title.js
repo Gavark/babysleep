@@ -24,6 +24,6 @@ const en_auth_signup_title = /** @type {(inputs: Auth_Signup_TitleInputs) => Loc
 */
 export const auth_signup_title = /** @type {((inputs?: Auth_Signup_TitleInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Auth_Signup_TitleInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_auth_signup_title(inputs)
-	return en_auth_signup_title(inputs)
+	if (locale === "en") return en_auth_signup_title(inputs)
+	return fr_auth_signup_title(inputs)
 });

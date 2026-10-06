@@ -24,6 +24,6 @@ const en_common_btn_save = /** @type {(inputs: Common_Btn_SaveInputs) => Localiz
 */
 export const common_btn_save = /** @type {((inputs?: Common_Btn_SaveInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Common_Btn_SaveInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_common_btn_save(inputs)
-	return en_common_btn_save(inputs)
+	if (locale === "en") return en_common_btn_save(inputs)
+	return fr_common_btn_save(inputs)
 });

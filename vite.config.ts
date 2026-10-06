@@ -15,6 +15,10 @@ export default defineConfig({
       // Don't auto-emit src/paraglide/.gitignore — we commit the generated dir
       // (stable IDE types + CI works without a pre-step).
       emitGitIgnore: false,
+      // As of 2.26 the Vite plugin writes the absolute project path into the
+      // generated README, so it would change with every checkout location.
+      // It is generic Paraglide documentation; don't emit it.
+      emitReadme: false,
       // Pin the output layout so `npm run dev` and `npm run paraglide` (CLI)
       // produce byte-identical files. Without this, the plugin's dev mode
       // can drift to `locale-modules` and create noisy diffs in src/paraglide

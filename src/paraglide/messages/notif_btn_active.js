@@ -24,6 +24,6 @@ const en_notif_btn_active = /** @type {(inputs: Notif_Btn_ActiveInputs) => Local
 */
 export const notif_btn_active = /** @type {((inputs?: Notif_Btn_ActiveInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Notif_Btn_ActiveInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_notif_btn_active(inputs)
-	return en_notif_btn_active(inputs)
+	if (locale === "en") return en_notif_btn_active(inputs)
+	return fr_notif_btn_active(inputs)
 });

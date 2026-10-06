@@ -24,6 +24,6 @@ const en_account_password_wrong_current = /** @type {(inputs: Account_Password_W
 */
 export const account_password_wrong_current = /** @type {((inputs?: Account_Password_Wrong_CurrentInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Account_Password_Wrong_CurrentInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_account_password_wrong_current(inputs)
-	return en_account_password_wrong_current(inputs)
+	if (locale === "en") return en_account_password_wrong_current(inputs)
+	return fr_account_password_wrong_current(inputs)
 });

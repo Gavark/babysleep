@@ -24,6 +24,6 @@ const en_auth_password_mismatch = /** @type {(inputs: Auth_Password_MismatchInpu
 */
 export const auth_password_mismatch = /** @type {((inputs?: Auth_Password_MismatchInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Auth_Password_MismatchInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_auth_password_mismatch(inputs)
-	return en_auth_password_mismatch(inputs)
+	if (locale === "en") return en_auth_password_mismatch(inputs)
+	return fr_auth_password_mismatch(inputs)
 });

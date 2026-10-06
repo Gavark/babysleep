@@ -24,6 +24,6 @@ const en_stats_charts_wake_time = /** @type {(inputs: Stats_Charts_Wake_TimeInpu
 */
 export const stats_charts_wake_time = /** @type {((inputs?: Stats_Charts_Wake_TimeInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Stats_Charts_Wake_TimeInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_stats_charts_wake_time(inputs)
-	return en_stats_charts_wake_time(inputs)
+	if (locale === "en") return en_stats_charts_wake_time(inputs)
+	return fr_stats_charts_wake_time(inputs)
 });

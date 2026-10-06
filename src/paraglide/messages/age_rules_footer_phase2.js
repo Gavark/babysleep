@@ -24,6 +24,6 @@ const en_age_rules_footer_phase2 = /** @type {(inputs: Age_Rules_Footer_Phase2In
 */
 export const age_rules_footer_phase2 = /** @type {((inputs?: Age_Rules_Footer_Phase2Inputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Age_Rules_Footer_Phase2Inputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_age_rules_footer_phase2(inputs)
-	return en_age_rules_footer_phase2(inputs)
+	if (locale === "en") return en_age_rules_footer_phase2(inputs)
+	return fr_age_rules_footer_phase2(inputs)
 });

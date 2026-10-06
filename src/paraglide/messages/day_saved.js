@@ -24,6 +24,6 @@ const en_day_saved = /** @type {(inputs: Day_SavedInputs) => LocalizedString} */
 */
 export const day_saved = /** @type {((inputs?: Day_SavedInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Day_SavedInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_day_saved(inputs)
-	return en_day_saved(inputs)
+	if (locale === "en") return en_day_saved(inputs)
+	return fr_day_saved(inputs)
 });

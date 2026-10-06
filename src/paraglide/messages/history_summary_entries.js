@@ -24,6 +24,6 @@ const en_history_summary_entries = /** @type {(inputs: History_Summary_EntriesIn
 */
 export const history_summary_entries = /** @type {((inputs: History_Summary_EntriesInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<History_Summary_EntriesInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_history_summary_entries(inputs)
-	return en_history_summary_entries(inputs)
+	if (locale === "en") return en_history_summary_entries(inputs)
+	return fr_history_summary_entries(inputs)
 });

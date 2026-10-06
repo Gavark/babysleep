@@ -24,6 +24,6 @@ const en_age_rules_col_naps = /** @type {(inputs: Age_Rules_Col_NapsInputs) => L
 */
 export const age_rules_col_naps = /** @type {((inputs?: Age_Rules_Col_NapsInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Age_Rules_Col_NapsInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_age_rules_col_naps(inputs)
-	return en_age_rules_col_naps(inputs)
+	if (locale === "en") return en_age_rules_col_naps(inputs)
+	return fr_age_rules_col_naps(inputs)
 });

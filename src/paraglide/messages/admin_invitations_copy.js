@@ -24,6 +24,6 @@ const en_admin_invitations_copy = /** @type {(inputs: Admin_Invitations_CopyInpu
 */
 export const admin_invitations_copy = /** @type {((inputs?: Admin_Invitations_CopyInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Admin_Invitations_CopyInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_admin_invitations_copy(inputs)
-	return en_admin_invitations_copy(inputs)
+	if (locale === "en") return en_admin_invitations_copy(inputs)
+	return fr_admin_invitations_copy(inputs)
 });

@@ -24,6 +24,6 @@ const en_auth_signup_confirm_label = /** @type {(inputs: Auth_Signup_Confirm_Lab
 */
 export const auth_signup_confirm_label = /** @type {((inputs?: Auth_Signup_Confirm_LabelInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Auth_Signup_Confirm_LabelInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_auth_signup_confirm_label(inputs)
-	return en_auth_signup_confirm_label(inputs)
+	if (locale === "en") return en_auth_signup_confirm_label(inputs)
+	return fr_auth_signup_confirm_label(inputs)
 });

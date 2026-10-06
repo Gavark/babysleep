@@ -24,6 +24,6 @@ const en_notif_error_invalid_id = /** @type {(inputs: Notif_Error_Invalid_IdInpu
 */
 export const notif_error_invalid_id = /** @type {((inputs?: Notif_Error_Invalid_IdInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Notif_Error_Invalid_IdInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_notif_error_invalid_id(inputs)
-	return en_notif_error_invalid_id(inputs)
+	if (locale === "en") return en_notif_error_invalid_id(inputs)
+	return fr_notif_error_invalid_id(inputs)
 });

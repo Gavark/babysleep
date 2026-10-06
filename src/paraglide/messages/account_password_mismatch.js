@@ -24,6 +24,6 @@ const en_account_password_mismatch = /** @type {(inputs: Account_Password_Mismat
 */
 export const account_password_mismatch = /** @type {((inputs?: Account_Password_MismatchInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Account_Password_MismatchInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_account_password_mismatch(inputs)
-	return en_account_password_mismatch(inputs)
+	if (locale === "en") return en_account_password_mismatch(inputs)
+	return fr_account_password_mismatch(inputs)
 });

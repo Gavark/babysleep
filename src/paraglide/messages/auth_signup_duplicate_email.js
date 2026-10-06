@@ -24,6 +24,6 @@ const en_auth_signup_duplicate_email = /** @type {(inputs: Auth_Signup_Duplicate
 */
 export const auth_signup_duplicate_email = /** @type {((inputs?: Auth_Signup_Duplicate_EmailInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Auth_Signup_Duplicate_EmailInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_auth_signup_duplicate_email(inputs)
-	return en_auth_signup_duplicate_email(inputs)
+	if (locale === "en") return en_auth_signup_duplicate_email(inputs)
+	return fr_auth_signup_duplicate_email(inputs)
 });

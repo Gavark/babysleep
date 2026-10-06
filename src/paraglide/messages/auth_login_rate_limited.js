@@ -24,6 +24,6 @@ const en_auth_login_rate_limited = /** @type {(inputs: Auth_Login_Rate_LimitedIn
 */
 export const auth_login_rate_limited = /** @type {((inputs?: Auth_Login_Rate_LimitedInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Auth_Login_Rate_LimitedInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_auth_login_rate_limited(inputs)
-	return en_auth_login_rate_limited(inputs)
+	if (locale === "en") return en_auth_login_rate_limited(inputs)
+	return fr_auth_login_rate_limited(inputs)
 });

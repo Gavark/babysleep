@@ -24,6 +24,6 @@ const en_landing_window_chart_note = /** @type {(inputs: Landing_Window_Chart_No
 */
 export const landing_window_chart_note = /** @type {((inputs?: Landing_Window_Chart_NoteInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Landing_Window_Chart_NoteInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_landing_window_chart_note(inputs)
-	return en_landing_window_chart_note(inputs)
+	if (locale === "en") return en_landing_window_chart_note(inputs)
+	return fr_landing_window_chart_note(inputs)
 });

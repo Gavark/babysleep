@@ -24,6 +24,6 @@ const en_calendar_cell_no_data = /** @type {(inputs: Calendar_Cell_No_DataInputs
 */
 export const calendar_cell_no_data = /** @type {((inputs?: Calendar_Cell_No_DataInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Calendar_Cell_No_DataInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_calendar_cell_no_data(inputs)
-	return en_calendar_cell_no_data(inputs)
+	if (locale === "en") return en_calendar_cell_no_data(inputs)
+	return fr_calendar_cell_no_data(inputs)
 });

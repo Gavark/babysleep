@@ -24,6 +24,6 @@ const en_error_home_link = /** @type {(inputs: Error_Home_LinkInputs) => Localiz
 */
 export const error_home_link = /** @type {((inputs?: Error_Home_LinkInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Error_Home_LinkInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_error_home_link(inputs)
-	return en_error_home_link(inputs)
+	if (locale === "en") return en_error_home_link(inputs)
+	return fr_error_home_link(inputs)
 });

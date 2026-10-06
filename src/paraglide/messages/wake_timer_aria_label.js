@@ -24,6 +24,6 @@ const en_wake_timer_aria_label = /** @type {(inputs: Wake_Timer_Aria_LabelInputs
 */
 export const wake_timer_aria_label = /** @type {((inputs?: Wake_Timer_Aria_LabelInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Wake_Timer_Aria_LabelInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_wake_timer_aria_label(inputs)
-	return en_wake_timer_aria_label(inputs)
+	if (locale === "en") return en_wake_timer_aria_label(inputs)
+	return fr_wake_timer_aria_label(inputs)
 });

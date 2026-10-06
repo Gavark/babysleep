@@ -24,6 +24,6 @@ const en_calendar_heat_meh = /** @type {(inputs: Calendar_Heat_MehInputs) => Loc
 */
 export const calendar_heat_meh = /** @type {((inputs?: Calendar_Heat_MehInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Calendar_Heat_MehInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_calendar_heat_meh(inputs)
-	return en_calendar_heat_meh(inputs)
+	if (locale === "en") return en_calendar_heat_meh(inputs)
+	return fr_calendar_heat_meh(inputs)
 });

@@ -24,6 +24,6 @@ const en_common_label_optional = /** @type {(inputs: Common_Label_OptionalInputs
 */
 export const common_label_optional = /** @type {((inputs?: Common_Label_OptionalInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Common_Label_OptionalInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_common_label_optional(inputs)
-	return en_common_label_optional(inputs)
+	if (locale === "en") return en_common_label_optional(inputs)
+	return fr_common_label_optional(inputs)
 });

@@ -24,6 +24,6 @@ const en_babies_form_error_name_required = /** @type {(inputs: Babies_Form_Error
 */
 export const babies_form_error_name_required = /** @type {((inputs?: Babies_Form_Error_Name_RequiredInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Babies_Form_Error_Name_RequiredInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_babies_form_error_name_required(inputs)
-	return en_babies_form_error_name_required(inputs)
+	if (locale === "en") return en_babies_form_error_name_required(inputs)
+	return fr_babies_form_error_name_required(inputs)
 });

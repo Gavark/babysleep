@@ -24,6 +24,6 @@ const en_landing_hero_lead = /** @type {(inputs: Landing_Hero_LeadInputs) => Loc
 */
 export const landing_hero_lead = /** @type {((inputs?: Landing_Hero_LeadInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Landing_Hero_LeadInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_landing_hero_lead(inputs)
-	return en_landing_hero_lead(inputs)
+	if (locale === "en") return en_landing_hero_lead(inputs)
+	return fr_landing_hero_lead(inputs)
 });

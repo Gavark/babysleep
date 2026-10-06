@@ -24,6 +24,6 @@ const en_calendar_title = /** @type {(inputs: Calendar_TitleInputs) => Localized
 */
 export const calendar_title = /** @type {((inputs: Calendar_TitleInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Calendar_TitleInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_calendar_title(inputs)
-	return en_calendar_title(inputs)
+	if (locale === "en") return en_calendar_title(inputs)
+	return fr_calendar_title(inputs)
 });

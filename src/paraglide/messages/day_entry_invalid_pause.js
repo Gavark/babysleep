@@ -24,6 +24,6 @@ const en_day_entry_invalid_pause = /** @type {(inputs: Day_Entry_Invalid_PauseIn
 */
 export const day_entry_invalid_pause = /** @type {((inputs: Day_Entry_Invalid_PauseInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Day_Entry_Invalid_PauseInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_day_entry_invalid_pause(inputs)
-	return en_day_entry_invalid_pause(inputs)
+	if (locale === "en") return en_day_entry_invalid_pause(inputs)
+	return fr_day_entry_invalid_pause(inputs)
 });

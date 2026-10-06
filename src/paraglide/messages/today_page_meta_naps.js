@@ -24,6 +24,6 @@ const en_today_page_meta_naps = /** @type {(inputs: Today_Page_Meta_NapsInputs) 
 */
 export const today_page_meta_naps = /** @type {((inputs: Today_Page_Meta_NapsInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Today_Page_Meta_NapsInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_today_page_meta_naps(inputs)
-	return en_today_page_meta_naps(inputs)
+	if (locale === "en") return en_today_page_meta_naps(inputs)
+	return fr_today_page_meta_naps(inputs)
 });

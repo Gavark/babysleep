@@ -24,6 +24,6 @@ const en_babies_form_submit_create = /** @type {(inputs: Babies_Form_Submit_Crea
 */
 export const babies_form_submit_create = /** @type {((inputs?: Babies_Form_Submit_CreateInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Babies_Form_Submit_CreateInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_babies_form_submit_create(inputs)
-	return en_babies_form_submit_create(inputs)
+	if (locale === "en") return en_babies_form_submit_create(inputs)
+	return fr_babies_form_submit_create(inputs)
 });

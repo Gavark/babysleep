@@ -24,6 +24,6 @@ const en_today_tz_field_label = /** @type {(inputs: Today_Tz_Field_LabelInputs) 
 */
 export const today_tz_field_label = /** @type {((inputs?: Today_Tz_Field_LabelInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Today_Tz_Field_LabelInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_today_tz_field_label(inputs)
-	return en_today_tz_field_label(inputs)
+	if (locale === "en") return en_today_tz_field_label(inputs)
+	return fr_today_tz_field_label(inputs)
 });

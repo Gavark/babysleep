@@ -24,6 +24,6 @@ const en_day_title = /** @type {(inputs: Day_TitleInputs) => LocalizedString} */
 */
 export const day_title = /** @type {((inputs: Day_TitleInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Day_TitleInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_day_title(inputs)
-	return en_day_title(inputs)
+	if (locale === "en") return en_day_title(inputs)
+	return fr_day_title(inputs)
 });

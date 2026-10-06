@@ -24,6 +24,6 @@ const en_today_recent_line = /** @type {(inputs: Today_Recent_LineInputs) => Loc
 */
 export const today_recent_line = /** @type {((inputs: Today_Recent_LineInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Today_Recent_LineInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_today_recent_line(inputs)
-	return en_today_recent_line(inputs)
+	if (locale === "en") return en_today_recent_line(inputs)
+	return fr_today_recent_line(inputs)
 });

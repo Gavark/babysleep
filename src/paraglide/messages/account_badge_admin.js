@@ -24,6 +24,6 @@ const en_account_badge_admin = /** @type {(inputs: Account_Badge_AdminInputs) =>
 */
 export const account_badge_admin = /** @type {((inputs?: Account_Badge_AdminInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Account_Badge_AdminInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_account_badge_admin(inputs)
-	return en_account_badge_admin(inputs)
+	if (locale === "en") return en_account_badge_admin(inputs)
+	return fr_account_badge_admin(inputs)
 });

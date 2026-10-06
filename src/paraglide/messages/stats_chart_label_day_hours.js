@@ -24,6 +24,6 @@ const en_stats_chart_label_day_hours = /** @type {(inputs: Stats_Chart_Label_Day
 */
 export const stats_chart_label_day_hours = /** @type {((inputs?: Stats_Chart_Label_Day_HoursInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Stats_Chart_Label_Day_HoursInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_stats_chart_label_day_hours(inputs)
-	return en_stats_chart_label_day_hours(inputs)
+	if (locale === "en") return en_stats_chart_label_day_hours(inputs)
+	return fr_stats_chart_label_day_hours(inputs)
 });

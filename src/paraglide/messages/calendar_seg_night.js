@@ -24,6 +24,6 @@ const en_calendar_seg_night = /** @type {(inputs: Calendar_Seg_NightInputs) => L
 */
 export const calendar_seg_night = /** @type {((inputs?: Calendar_Seg_NightInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Calendar_Seg_NightInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_calendar_seg_night(inputs)
-	return en_calendar_seg_night(inputs)
+	if (locale === "en") return en_calendar_seg_night(inputs)
+	return fr_calendar_seg_night(inputs)
 });

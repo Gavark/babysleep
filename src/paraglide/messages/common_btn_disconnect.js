@@ -24,6 +24,6 @@ const en_common_btn_disconnect = /** @type {(inputs: Common_Btn_DisconnectInputs
 */
 export const common_btn_disconnect = /** @type {((inputs?: Common_Btn_DisconnectInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Common_Btn_DisconnectInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_common_btn_disconnect(inputs)
-	return en_common_btn_disconnect(inputs)
+	if (locale === "en") return en_common_btn_disconnect(inputs)
+	return fr_common_btn_disconnect(inputs)
 });

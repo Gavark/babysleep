@@ -24,6 +24,6 @@ const en_calendar_picker_edit_day = /** @type {(inputs: Calendar_Picker_Edit_Day
 */
 export const calendar_picker_edit_day = /** @type {((inputs?: Calendar_Picker_Edit_DayInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Calendar_Picker_Edit_DayInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_calendar_picker_edit_day(inputs)
-	return en_calendar_picker_edit_day(inputs)
+	if (locale === "en") return en_calendar_picker_edit_day(inputs)
+	return fr_calendar_picker_edit_day(inputs)
 });

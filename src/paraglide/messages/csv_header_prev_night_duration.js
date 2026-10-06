@@ -24,6 +24,6 @@ const en_csv_header_prev_night_duration = /** @type {(inputs: Csv_Header_Prev_Ni
 */
 export const csv_header_prev_night_duration = /** @type {((inputs?: Csv_Header_Prev_Night_DurationInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Csv_Header_Prev_Night_DurationInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_csv_header_prev_night_duration(inputs)
-	return en_csv_header_prev_night_duration(inputs)
+	if (locale === "en") return en_csv_header_prev_night_duration(inputs)
+	return fr_csv_header_prev_night_duration(inputs)
 });

@@ -24,6 +24,6 @@ const en_stats_chart_axis_duration = /** @type {(inputs: Stats_Chart_Axis_Durati
 */
 export const stats_chart_axis_duration = /** @type {((inputs?: Stats_Chart_Axis_DurationInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Stats_Chart_Axis_DurationInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_stats_chart_axis_duration(inputs)
-	return en_stats_chart_axis_duration(inputs)
+	if (locale === "en") return en_stats_chart_axis_duration(inputs)
+	return fr_stats_chart_axis_duration(inputs)
 });

@@ -30,7 +30,7 @@
     "web-push": "^3.6.7"
   },
   "devDependencies": {
-    "@inlang/paraglide-js": "^2.18.2",
+    "@inlang/paraglide-js": "^2.26.0",
     "@sveltejs/kit": "^3.0.1",
     "@sveltejs/vite-plugin-svelte": "^7.1.2",
     "@types/better-sqlite3": "^9.6.0",

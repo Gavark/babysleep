@@ -24,6 +24,6 @@ const en_auth_setup_intro = /** @type {(inputs: Auth_Setup_IntroInputs) => Local
 */
 export const auth_setup_intro = /** @type {((inputs?: Auth_Setup_IntroInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Auth_Setup_IntroInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_auth_setup_intro(inputs)
-	return en_auth_setup_intro(inputs)
+	if (locale === "en") return en_auth_setup_intro(inputs)
+	return fr_auth_setup_intro(inputs)
 });

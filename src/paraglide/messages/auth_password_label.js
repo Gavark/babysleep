@@ -24,6 +24,6 @@ const en_auth_password_label = /** @type {(inputs: Auth_Password_LabelInputs) =>
 */
 export const auth_password_label = /** @type {((inputs?: Auth_Password_LabelInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Auth_Password_LabelInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_auth_password_label(inputs)
-	return en_auth_password_label(inputs)
+	if (locale === "en") return en_auth_password_label(inputs)
+	return fr_auth_password_label(inputs)
 });

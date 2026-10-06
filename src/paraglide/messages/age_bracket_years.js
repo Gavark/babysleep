@@ -24,6 +24,6 @@ const en_age_bracket_years = /** @type {(inputs: Age_Bracket_YearsInputs) => Loc
 */
 export const age_bracket_years = /** @type {((inputs: Age_Bracket_YearsInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Age_Bracket_YearsInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_age_bracket_years(inputs)
-	return en_age_bracket_years(inputs)
+	if (locale === "en") return en_age_bracket_years(inputs)
+	return fr_age_bracket_years(inputs)
 });

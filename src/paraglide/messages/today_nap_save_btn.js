@@ -24,6 +24,6 @@ const en_today_nap_save_btn = /** @type {(inputs: Today_Nap_Save_BtnInputs) => L
 */
 export const today_nap_save_btn = /** @type {((inputs?: Today_Nap_Save_BtnInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Today_Nap_Save_BtnInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_today_nap_save_btn(inputs)
-	return en_today_nap_save_btn(inputs)
+	if (locale === "en") return en_today_nap_save_btn(inputs)
+	return fr_today_nap_save_btn(inputs)
 });

@@ -24,6 +24,6 @@ const en_age_rules_col_before_bed = /** @type {(inputs: Age_Rules_Col_Before_Bed
 */
 export const age_rules_col_before_bed = /** @type {((inputs?: Age_Rules_Col_Before_BedInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Age_Rules_Col_Before_BedInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_age_rules_col_before_bed(inputs)
-	return en_age_rules_col_before_bed(inputs)
+	if (locale === "en") return en_age_rules_col_before_bed(inputs)
+	return fr_age_rules_col_before_bed(inputs)
 });

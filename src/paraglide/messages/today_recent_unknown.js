@@ -24,6 +24,6 @@ const en_today_recent_unknown = /** @type {(inputs: Today_Recent_UnknownInputs) 
 */
 export const today_recent_unknown = /** @type {((inputs?: Today_Recent_UnknownInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Today_Recent_UnknownInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_today_recent_unknown(inputs)
-	return en_today_recent_unknown(inputs)
+	if (locale === "en") return en_today_recent_unknown(inputs)
+	return fr_today_recent_unknown(inputs)
 });

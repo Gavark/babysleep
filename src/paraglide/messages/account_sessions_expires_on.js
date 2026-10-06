@@ -24,6 +24,6 @@ const en_account_sessions_expires_on = /** @type {(inputs: Account_Sessions_Expi
 */
 export const account_sessions_expires_on = /** @type {((inputs: Account_Sessions_Expires_OnInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Account_Sessions_Expires_OnInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_account_sessions_expires_on(inputs)
-	return en_account_sessions_expires_on(inputs)
+	if (locale === "en") return en_account_sessions_expires_on(inputs)
+	return fr_account_sessions_expires_on(inputs)
 });

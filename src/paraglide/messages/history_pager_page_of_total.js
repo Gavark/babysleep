@@ -24,6 +24,6 @@ const en_history_pager_page_of_total = /** @type {(inputs: History_Pager_Page_Of
 */
 export const history_pager_page_of_total = /** @type {((inputs: History_Pager_Page_Of_TotalInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<History_Pager_Page_Of_TotalInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_history_pager_page_of_total(inputs)
-	return en_history_pager_page_of_total(inputs)
+	if (locale === "en") return en_history_pager_page_of_total(inputs)
+	return fr_history_pager_page_of_total(inputs)
 });

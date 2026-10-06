@@ -24,6 +24,6 @@ const en_today_entry_invalid_pause = /** @type {(inputs: Today_Entry_Invalid_Pau
 */
 export const today_entry_invalid_pause = /** @type {((inputs: Today_Entry_Invalid_PauseInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Today_Entry_Invalid_PauseInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_today_entry_invalid_pause(inputs)
-	return en_today_entry_invalid_pause(inputs)
+	if (locale === "en") return en_today_entry_invalid_pause(inputs)
+	return fr_today_entry_invalid_pause(inputs)
 });

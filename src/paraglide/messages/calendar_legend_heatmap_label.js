@@ -24,6 +24,6 @@ const en_calendar_legend_heatmap_label = /** @type {(inputs: Calendar_Legend_Hea
 */
 export const calendar_legend_heatmap_label = /** @type {((inputs?: Calendar_Legend_Heatmap_LabelInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Calendar_Legend_Heatmap_LabelInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_calendar_legend_heatmap_label(inputs)
-	return en_calendar_legend_heatmap_label(inputs)
+	if (locale === "en") return en_calendar_legend_heatmap_label(inputs)
+	return fr_calendar_legend_heatmap_label(inputs)
 });

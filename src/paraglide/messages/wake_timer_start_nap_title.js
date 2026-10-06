@@ -24,6 +24,6 @@ const en_wake_timer_start_nap_title = /** @type {(inputs: Wake_Timer_Start_Nap_T
 */
 export const wake_timer_start_nap_title = /** @type {((inputs?: Wake_Timer_Start_Nap_TitleInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Wake_Timer_Start_Nap_TitleInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_wake_timer_start_nap_title(inputs)
-	return en_wake_timer_start_nap_title(inputs)
+	if (locale === "en") return en_wake_timer_start_nap_title(inputs)
+	return fr_wake_timer_start_nap_title(inputs)
 });

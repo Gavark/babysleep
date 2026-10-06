@@ -24,6 +24,6 @@ const en_notif_btn_unsupported = /** @type {(inputs: Notif_Btn_UnsupportedInputs
 */
 export const notif_btn_unsupported = /** @type {((inputs?: Notif_Btn_UnsupportedInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Notif_Btn_UnsupportedInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_notif_btn_unsupported(inputs)
-	return en_notif_btn_unsupported(inputs)
+	if (locale === "en") return en_notif_btn_unsupported(inputs)
+	return fr_notif_btn_unsupported(inputs)
 });

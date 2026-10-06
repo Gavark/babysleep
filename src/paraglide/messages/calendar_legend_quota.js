@@ -24,6 +24,6 @@ const en_calendar_legend_quota = /** @type {(inputs: Calendar_Legend_QuotaInputs
 */
 export const calendar_legend_quota = /** @type {((inputs: Calendar_Legend_QuotaInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Calendar_Legend_QuotaInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_calendar_legend_quota(inputs)
-	return en_calendar_legend_quota(inputs)
+	if (locale === "en") return en_calendar_legend_quota(inputs)
+	return fr_calendar_legend_quota(inputs)
 });

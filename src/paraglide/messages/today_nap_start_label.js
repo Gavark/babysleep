@@ -24,6 +24,6 @@ const en_today_nap_start_label = /** @type {(inputs: Today_Nap_Start_LabelInputs
 */
 export const today_nap_start_label = /** @type {((inputs?: Today_Nap_Start_LabelInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Today_Nap_Start_LabelInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_today_nap_start_label(inputs)
-	return en_today_nap_start_label(inputs)
+	if (locale === "en") return en_today_nap_start_label(inputs)
+	return fr_today_nap_start_label(inputs)
 });

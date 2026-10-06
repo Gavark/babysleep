@@ -24,6 +24,6 @@ const en_admin_invitations_title = /** @type {(inputs: Admin_Invitations_TitleIn
 */
 export const admin_invitations_title = /** @type {((inputs?: Admin_Invitations_TitleInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Admin_Invitations_TitleInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_admin_invitations_title(inputs)
-	return en_admin_invitations_title(inputs)
+	if (locale === "en") return en_admin_invitations_title(inputs)
+	return fr_admin_invitations_title(inputs)
 });

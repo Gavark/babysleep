@@ -24,6 +24,6 @@ const en_landing_nav_login = /** @type {(inputs: Landing_Nav_LoginInputs) => Loc
 */
 export const landing_nav_login = /** @type {((inputs?: Landing_Nav_LoginInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Landing_Nav_LoginInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_landing_nav_login(inputs)
-	return en_landing_nav_login(inputs)
+	if (locale === "en") return en_landing_nav_login(inputs)
+	return fr_landing_nav_login(inputs)
 });

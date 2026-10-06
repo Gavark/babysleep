@@ -24,6 +24,6 @@ const en_today_bedtime_label = /** @type {(inputs: Today_Bedtime_LabelInputs) =>
 */
 export const today_bedtime_label = /** @type {((inputs?: Today_Bedtime_LabelInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Today_Bedtime_LabelInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_today_bedtime_label(inputs)
-	return en_today_bedtime_label(inputs)
+	if (locale === "en") return en_today_bedtime_label(inputs)
+	return fr_today_bedtime_label(inputs)
 });

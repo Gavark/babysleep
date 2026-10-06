@@ -24,6 +24,6 @@ const en_baby_form_desired_wake_label = /** @type {(inputs: Baby_Form_Desired_Wa
 */
 export const baby_form_desired_wake_label = /** @type {((inputs?: Baby_Form_Desired_Wake_LabelInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Baby_Form_Desired_Wake_LabelInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_baby_form_desired_wake_label(inputs)
-	return en_baby_form_desired_wake_label(inputs)
+	if (locale === "en") return en_baby_form_desired_wake_label(inputs)
+	return fr_baby_form_desired_wake_label(inputs)
 });

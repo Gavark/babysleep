@@ -24,6 +24,6 @@ const en_history_table_naps_total = /** @type {(inputs: History_Table_Naps_Total
 */
 export const history_table_naps_total = /** @type {((inputs?: History_Table_Naps_TotalInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<History_Table_Naps_TotalInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_history_table_naps_total(inputs)
-	return en_history_table_naps_total(inputs)
+	if (locale === "en") return en_history_table_naps_total(inputs)
+	return fr_history_table_naps_total(inputs)
 });

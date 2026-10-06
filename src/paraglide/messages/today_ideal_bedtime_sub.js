@@ -24,6 +24,6 @@ const en_today_ideal_bedtime_sub = /** @type {(inputs: Today_Ideal_Bedtime_SubIn
 */
 export const today_ideal_bedtime_sub = /** @type {((inputs: Today_Ideal_Bedtime_SubInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Today_Ideal_Bedtime_SubInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_today_ideal_bedtime_sub(inputs)
-	return en_today_ideal_bedtime_sub(inputs)
+	if (locale === "en") return en_today_ideal_bedtime_sub(inputs)
+	return fr_today_ideal_bedtime_sub(inputs)
 });

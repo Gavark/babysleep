@@ -24,6 +24,6 @@ const en_day_back_to_history = /** @type {(inputs: Day_Back_To_HistoryInputs) =>
 */
 export const day_back_to_history = /** @type {((inputs?: Day_Back_To_HistoryInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Day_Back_To_HistoryInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_day_back_to_history(inputs)
-	return en_day_back_to_history(inputs)
+	if (locale === "en") return en_day_back_to_history(inputs)
+	return fr_day_back_to_history(inputs)
 });

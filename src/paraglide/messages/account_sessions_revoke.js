@@ -24,6 +24,6 @@ const en_account_sessions_revoke = /** @type {(inputs: Account_Sessions_RevokeIn
 */
 export const account_sessions_revoke = /** @type {((inputs?: Account_Sessions_RevokeInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Account_Sessions_RevokeInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_account_sessions_revoke(inputs)
-	return en_account_sessions_revoke(inputs)
+	if (locale === "en") return en_account_sessions_revoke(inputs)
+	return fr_account_sessions_revoke(inputs)
 });

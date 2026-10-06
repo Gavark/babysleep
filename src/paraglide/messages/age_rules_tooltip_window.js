@@ -24,6 +24,6 @@ const en_age_rules_tooltip_window = /** @type {(inputs: Age_Rules_Tooltip_Window
 */
 export const age_rules_tooltip_window = /** @type {((inputs?: Age_Rules_Tooltip_WindowInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Age_Rules_Tooltip_WindowInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_age_rules_tooltip_window(inputs)
-	return en_age_rules_tooltip_window(inputs)
+	if (locale === "en") return en_age_rules_tooltip_window(inputs)
+	return fr_age_rules_tooltip_window(inputs)
 });

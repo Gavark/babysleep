@@ -24,6 +24,6 @@ const en_stats_chart_nap_rank_empty = /** @type {(inputs: Stats_Chart_Nap_Rank_E
 */
 export const stats_chart_nap_rank_empty = /** @type {((inputs?: Stats_Chart_Nap_Rank_EmptyInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Stats_Chart_Nap_Rank_EmptyInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_stats_chart_nap_rank_empty(inputs)
-	return en_stats_chart_nap_rank_empty(inputs)
+	if (locale === "en") return en_stats_chart_nap_rank_empty(inputs)
+	return fr_stats_chart_nap_rank_empty(inputs)
 });

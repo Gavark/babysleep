@@ -24,6 +24,6 @@ const en_stats_charts_nap_trend = /** @type {(inputs: Stats_Charts_Nap_TrendInpu
 */
 export const stats_charts_nap_trend = /** @type {((inputs?: Stats_Charts_Nap_TrendInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Stats_Charts_Nap_TrendInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_stats_charts_nap_trend(inputs)
-	return en_stats_charts_nap_trend(inputs)
+	if (locale === "en") return en_stats_charts_nap_trend(inputs)
+	return fr_stats_charts_nap_trend(inputs)
 });

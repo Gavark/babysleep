@@ -24,6 +24,6 @@ const en_day_entry_invalid_time = /** @type {(inputs: Day_Entry_Invalid_TimeInpu
 */
 export const day_entry_invalid_time = /** @type {((inputs: Day_Entry_Invalid_TimeInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Day_Entry_Invalid_TimeInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_day_entry_invalid_time(inputs)
-	return en_day_entry_invalid_time(inputs)
+	if (locale === "en") return en_day_entry_invalid_time(inputs)
+	return fr_day_entry_invalid_time(inputs)
 });

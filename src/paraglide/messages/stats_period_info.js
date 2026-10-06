@@ -24,6 +24,6 @@ const en_stats_period_info = /** @type {(inputs: Stats_Period_InfoInputs) => Loc
 */
 export const stats_period_info = /** @type {((inputs: Stats_Period_InfoInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Stats_Period_InfoInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_stats_period_info(inputs)
-	return en_stats_period_info(inputs)
+	if (locale === "en") return en_stats_period_info(inputs)
+	return fr_stats_period_info(inputs)
 });

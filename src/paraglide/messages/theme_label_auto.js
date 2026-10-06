@@ -24,6 +24,6 @@ const en_theme_label_auto = /** @type {(inputs: Theme_Label_AutoInputs) => Local
 */
 export const theme_label_auto = /** @type {((inputs?: Theme_Label_AutoInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Theme_Label_AutoInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_theme_label_auto(inputs)
-	return en_theme_label_auto(inputs)
+	if (locale === "en") return en_theme_label_auto(inputs)
+	return fr_theme_label_auto(inputs)
 });

@@ -24,6 +24,6 @@ const en_notif_device_added_last_seen = /** @type {(inputs: Notif_Device_Added_L
 */
 export const notif_device_added_last_seen = /** @type {((inputs: Notif_Device_Added_Last_SeenInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Notif_Device_Added_Last_SeenInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_notif_device_added_last_seen(inputs)
-	return en_notif_device_added_last_seen(inputs)
+	if (locale === "en") return en_notif_device_added_last_seen(inputs)
+	return fr_notif_device_added_last_seen(inputs)
 });

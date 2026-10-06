@@ -24,6 +24,6 @@ const en_theme_label_light = /** @type {(inputs: Theme_Label_LightInputs) => Loc
 */
 export const theme_label_light = /** @type {((inputs?: Theme_Label_LightInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Theme_Label_LightInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_theme_label_light(inputs)
-	return en_theme_label_light(inputs)
+	if (locale === "en") return en_theme_label_light(inputs)
+	return fr_theme_label_light(inputs)
 });

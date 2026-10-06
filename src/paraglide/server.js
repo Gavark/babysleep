@@ -23,7 +23,7 @@ import * as runtime from "./runtime.js";
  * - If URL doesn't match the determined locale, redirects to localized URL (only for document requests)
  * - De-localizes URLs before passing to server (e.g., `/fr/about` → `/about`)
  *
- * @see https://inlang.com/m/gerre34r/library-inlang-paraglideJs/middleware
+ * @see https://paraglidejs.com/middleware
  *
  * @template T - The return type of the resolve function
  *
@@ -81,7 +81,9 @@ import * as runtime from "./runtime.js";
  * // ✅ CORRECT - use original request when framework handles URL localization:
  * // paraglideMiddleware(req, () => handler.fetch(req))
  *
- * * *
+ * import { paraglideMiddleware } from './paraglide/server.js'
+ * import handler from '@tanstack/react-start/server-entry'
+ *
  * export default {
  *   fetch(req: Request): Promise<Response> {
  *     // TanStack Router handles URL rewriting via deLocalizeUrl/localizeUrl
@@ -92,11 +94,19 @@ import * as runtime from "./runtime.js";
  * ```
  */
 export async function paraglideMiddleware(request, resolve, options) {
-    if (!runtime.disableAsyncLocalStorage && !runtime.serverAsyncLocalStorage) {
+    let requestAsyncLocalStorage = runtime.serverAsyncLocalStorage;
+    requestAsyncLocalStorage = runtime.getServerAsyncLocalStorage();
+    if (!runtime.disableAsyncLocalStorage && !requestAsyncLocalStorage) {
       const { AsyncLocalStorage } = await import("async_hooks");
-      runtime.overwriteServerAsyncLocalStorage(new AsyncLocalStorage());
-    } else if (!runtime.serverAsyncLocalStorage) {
-      runtime.overwriteServerAsyncLocalStorage(createMockAsyncLocalStorage());
+      requestAsyncLocalStorage = runtime.getServerAsyncLocalStorage();
+      if (!requestAsyncLocalStorage) {
+        requestAsyncLocalStorage = new AsyncLocalStorage();
+        runtime.overwriteServerAsyncLocalStorage(requestAsyncLocalStorage);
+      }
+    }
+    if (!requestAsyncLocalStorage) {
+      requestAsyncLocalStorage = createMockAsyncLocalStorage();
+      runtime.overwriteServerAsyncLocalStorage(requestAsyncLocalStorage);
     }
     const url = resolveMiddlewareUrl(request, options?.effectiveRequestUrl);
     const origin = url.origin;
@@ -105,10 +115,13 @@ export async function paraglideMiddleware(request, resolve, options) {
         const newRequest = cloneRequestWithFallback(request, url);
         /** @type {Set<string>} */
         const messageCalls = new Set();
-        return /** @type {Response} */ (await runtime.serverAsyncLocalStorage?.run({ locale, origin, messageCalls }, () => resolve({ locale, request: newRequest })));
+        return /** @type {Response} */ (await requestAsyncLocalStorage?.run({ locale, origin, messageCalls }, () => resolve({ locale, request: newRequest })));
     }
     const strategy = runtime.getStrategyForUrl(url.href);
-    const decision = await runtime.shouldRedirect({ request, effectiveRequestUrl: url });
+    const decision = await runtime.shouldRedirect({
+        request,
+        effectiveRequestUrl: url,
+    });
     const locale = decision.locale;
     // if the client makes a request to a URL that doesn't match
     // the localizedUrl, redirect the client to the localized URL
@@ -147,7 +160,7 @@ export async function paraglideMiddleware(request, resolve, options) {
     // the message functions that have been called in this request
     /** @type {Set<string>} */
     const messageCalls = new Set();
-    const response = await runtime.serverAsyncLocalStorage?.run({ locale, origin, messageCalls }, () => resolve({ locale, request: newRequest }));
+    const response = await requestAsyncLocalStorage?.run({ locale, origin, messageCalls }, () => resolve({ locale, request: newRequest }));
     // Only modify HTML responses
     if (runtime.experimentalMiddlewareLocaleSplitting &&
         response.headers.get("Content-Type")?.includes("html")) {
@@ -164,7 +177,12 @@ export async function paraglideMiddleware(request, resolve, options) {
         const escapedMessages = messages
             .join(",")
             .replace(/<\/(script)/gi, "<\\/$1");
-        const script = `<script>globalThis.__paraglide = globalThis.__paraglide ?? {}; globalThis.__paraglide.ssr = { ${escapedMessages} }</script>`;
+        // Reuse the request's CSP nonce (if any) so the injected script is allowed under a strict CSP
+        const nonce = response.headers
+            .get("Content-Security-Policy")
+            ?.match(/'nonce-([\w+/=-]+)'/)?.[1];
+        const nonceAttr = nonce ? `nonce="${nonce}"` : "";
+        const script = `<script ${nonceAttr}>globalThis.__paraglide = globalThis.__paraglide ?? {}; globalThis.__paraglide.ssr = { ${escapedMessages} }</script>`;
         // Insert the script before the closing head tag
         const newBody = body.replace("</head>", `${script}</head>`);
         // Create a new response with the modified body
@@ -188,7 +206,8 @@ function resolveMiddlewareUrl(request, effectiveRequestUrl) {
     if (typeof effectiveRequestUrl === "function") {
         return new URL(effectiveRequestUrl(request), request.url);
     }
-    if (typeof effectiveRequestUrl === "string" || effectiveRequestUrl instanceof URL) {
+    if (typeof effectiveRequestUrl === "string" ||
+        effectiveRequestUrl instanceof URL) {
         return new URL(effectiveRequestUrl, request.url);
     }
     return new URL(request.url);

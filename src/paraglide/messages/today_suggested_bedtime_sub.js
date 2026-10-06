@@ -24,6 +24,6 @@ const en_today_suggested_bedtime_sub = /** @type {(inputs: Today_Suggested_Bedti
 */
 export const today_suggested_bedtime_sub = /** @type {((inputs?: Today_Suggested_Bedtime_SubInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Today_Suggested_Bedtime_SubInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_today_suggested_bedtime_sub(inputs)
-	return en_today_suggested_bedtime_sub(inputs)
+	if (locale === "en") return en_today_suggested_bedtime_sub(inputs)
+	return fr_today_suggested_bedtime_sub(inputs)
 });

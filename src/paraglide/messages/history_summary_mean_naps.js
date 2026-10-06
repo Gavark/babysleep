@@ -24,6 +24,6 @@ const en_history_summary_mean_naps = /** @type {(inputs: History_Summary_Mean_Na
 */
 export const history_summary_mean_naps = /** @type {((inputs?: History_Summary_Mean_NapsInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<History_Summary_Mean_NapsInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_history_summary_mean_naps(inputs)
-	return en_history_summary_mean_naps(inputs)
+	if (locale === "en") return en_history_summary_mean_naps(inputs)
+	return fr_history_summary_mean_naps(inputs)
 });

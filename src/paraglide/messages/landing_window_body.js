@@ -24,6 +24,6 @@ const en_landing_window_body = /** @type {(inputs: Landing_Window_BodyInputs) =>
 */
 export const landing_window_body = /** @type {((inputs?: Landing_Window_BodyInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Landing_Window_BodyInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_landing_window_body(inputs)
-	return en_landing_window_body(inputs)
+	if (locale === "en") return en_landing_window_body(inputs)
+	return fr_landing_window_body(inputs)
 });

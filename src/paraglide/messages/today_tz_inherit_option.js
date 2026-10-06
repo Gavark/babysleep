@@ -24,6 +24,6 @@ const en_today_tz_inherit_option = /** @type {(inputs: Today_Tz_Inherit_OptionIn
 */
 export const today_tz_inherit_option = /** @type {((inputs: Today_Tz_Inherit_OptionInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Today_Tz_Inherit_OptionInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_today_tz_inherit_option(inputs)
-	return en_today_tz_inherit_option(inputs)
+	if (locale === "en") return en_today_tz_inherit_option(inputs)
+	return fr_today_tz_inherit_option(inputs)
 });

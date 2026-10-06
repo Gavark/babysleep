@@ -24,6 +24,6 @@ const en_calendar_weekday_tue_short = /** @type {(inputs: Calendar_Weekday_Tue_S
 */
 export const calendar_weekday_tue_short = /** @type {((inputs?: Calendar_Weekday_Tue_ShortInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Calendar_Weekday_Tue_ShortInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_calendar_weekday_tue_short(inputs)
-	return en_calendar_weekday_tue_short(inputs)
+	if (locale === "en") return en_calendar_weekday_tue_short(inputs)
+	return fr_calendar_weekday_tue_short(inputs)
 });

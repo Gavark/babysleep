@@ -24,6 +24,6 @@ const en_auth_email_label = /** @type {(inputs: Auth_Email_LabelInputs) => Local
 */
 export const auth_email_label = /** @type {((inputs?: Auth_Email_LabelInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Auth_Email_LabelInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_auth_email_label(inputs)
-	return en_auth_email_label(inputs)
+	if (locale === "en") return en_auth_email_label(inputs)
+	return fr_auth_email_label(inputs)
 });

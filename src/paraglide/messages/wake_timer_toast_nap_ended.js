@@ -24,6 +24,6 @@ const en_wake_timer_toast_nap_ended = /** @type {(inputs: Wake_Timer_Toast_Nap_E
 */
 export const wake_timer_toast_nap_ended = /** @type {((inputs: Wake_Timer_Toast_Nap_EndedInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Wake_Timer_Toast_Nap_EndedInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_wake_timer_toast_nap_ended(inputs)
-	return en_wake_timer_toast_nap_ended(inputs)
+	if (locale === "en") return en_wake_timer_toast_nap_ended(inputs)
+	return fr_wake_timer_toast_nap_ended(inputs)
 });

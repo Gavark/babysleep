@@ -24,6 +24,6 @@ const en_csv_header_date = /** @type {(inputs: Csv_Header_DateInputs) => Localiz
 */
 export const csv_header_date = /** @type {((inputs?: Csv_Header_DateInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Csv_Header_DateInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_csv_header_date(inputs)
-	return en_csv_header_date(inputs)
+	if (locale === "en") return en_csv_header_date(inputs)
+	return fr_csv_header_date(inputs)
 });

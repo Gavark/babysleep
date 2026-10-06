@@ -24,6 +24,6 @@ const en_today_page_meta_months = /** @type {(inputs: Today_Page_Meta_MonthsInpu
 */
 export const today_page_meta_months = /** @type {((inputs: Today_Page_Meta_MonthsInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Today_Page_Meta_MonthsInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_today_page_meta_months(inputs)
-	return en_today_page_meta_months(inputs)
+	if (locale === "en") return en_today_page_meta_months(inputs)
+	return fr_today_page_meta_months(inputs)
 });

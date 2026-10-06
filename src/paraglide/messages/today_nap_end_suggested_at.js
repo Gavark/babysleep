@@ -24,6 +24,6 @@ const en_today_nap_end_suggested_at = /** @type {(inputs: Today_Nap_End_Suggeste
 */
 export const today_nap_end_suggested_at = /** @type {((inputs?: Today_Nap_End_Suggested_AtInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Today_Nap_End_Suggested_AtInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_today_nap_end_suggested_at(inputs)
-	return en_today_nap_end_suggested_at(inputs)
+	if (locale === "en") return en_today_nap_end_suggested_at(inputs)
+	return fr_today_nap_end_suggested_at(inputs)
 });

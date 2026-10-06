@@ -24,6 +24,6 @@ const en_account_sessions_title = /** @type {(inputs: Account_Sessions_TitleInpu
 */
 export const account_sessions_title = /** @type {((inputs?: Account_Sessions_TitleInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Account_Sessions_TitleInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_account_sessions_title(inputs)
-	return en_account_sessions_title(inputs)
+	if (locale === "en") return en_account_sessions_title(inputs)
+	return fr_account_sessions_title(inputs)
 });

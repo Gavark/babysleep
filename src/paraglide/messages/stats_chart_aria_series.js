@@ -24,6 +24,6 @@ const en_stats_chart_aria_series = /** @type {(inputs: Stats_Chart_Aria_SeriesIn
 */
 export const stats_chart_aria_series = /** @type {((inputs: Stats_Chart_Aria_SeriesInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Stats_Chart_Aria_SeriesInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_stats_chart_aria_series(inputs)
-	return en_stats_chart_aria_series(inputs)
+	if (locale === "en") return en_stats_chart_aria_series(inputs)
+	return fr_stats_chart_aria_series(inputs)
 });

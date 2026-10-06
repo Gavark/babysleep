@@ -24,6 +24,6 @@ const en_today_nap_save_title = /** @type {(inputs: Today_Nap_Save_TitleInputs) 
 */
 export const today_nap_save_title = /** @type {((inputs?: Today_Nap_Save_TitleInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Today_Nap_Save_TitleInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_today_nap_save_title(inputs)
-	return en_today_nap_save_title(inputs)
+	if (locale === "en") return en_today_nap_save_title(inputs)
+	return fr_today_nap_save_title(inputs)
 });

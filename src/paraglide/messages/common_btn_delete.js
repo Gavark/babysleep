@@ -24,6 +24,6 @@ const en_common_btn_delete = /** @type {(inputs: Common_Btn_DeleteInputs) => Loc
 */
 export const common_btn_delete = /** @type {((inputs?: Common_Btn_DeleteInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Common_Btn_DeleteInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_common_btn_delete(inputs)
-	return en_common_btn_delete(inputs)
+	if (locale === "en") return en_common_btn_delete(inputs)
+	return fr_common_btn_delete(inputs)
 });

@@ -24,6 +24,6 @@ const en_account_notifications_title = /** @type {(inputs: Account_Notifications
 */
 export const account_notifications_title = /** @type {((inputs?: Account_Notifications_TitleInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Account_Notifications_TitleInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_account_notifications_title(inputs)
-	return en_account_notifications_title(inputs)
+	if (locale === "en") return en_account_notifications_title(inputs)
+	return fr_account_notifications_title(inputs)
 });

@@ -24,6 +24,6 @@ const en_landing_feat_push_title = /** @type {(inputs: Landing_Feat_Push_TitleIn
 */
 export const landing_feat_push_title = /** @type {((inputs?: Landing_Feat_Push_TitleInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Landing_Feat_Push_TitleInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_landing_feat_push_title(inputs)
-	return en_landing_feat_push_title(inputs)
+	if (locale === "en") return en_landing_feat_push_title(inputs)
+	return fr_landing_feat_push_title(inputs)
 });

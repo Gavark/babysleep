@@ -24,6 +24,6 @@ const en_auth_signup_invite_only = /** @type {(inputs: Auth_Signup_Invite_OnlyIn
 */
 export const auth_signup_invite_only = /** @type {((inputs?: Auth_Signup_Invite_OnlyInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Auth_Signup_Invite_OnlyInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_auth_signup_invite_only(inputs)
-	return en_auth_signup_invite_only(inputs)
+	if (locale === "en") return en_auth_signup_invite_only(inputs)
+	return fr_auth_signup_invite_only(inputs)
 });

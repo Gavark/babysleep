@@ -24,6 +24,6 @@ const en_common_btn_next = /** @type {(inputs: Common_Btn_NextInputs) => Localiz
 */
 export const common_btn_next = /** @type {((inputs?: Common_Btn_NextInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Common_Btn_NextInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_common_btn_next(inputs)
-	return en_common_btn_next(inputs)
+	if (locale === "en") return en_common_btn_next(inputs)
+	return fr_common_btn_next(inputs)
 });

@@ -24,6 +24,6 @@ const en_auth_signup_disabled_admin = /** @type {(inputs: Auth_Signup_Disabled_A
 */
 export const auth_signup_disabled_admin = /** @type {((inputs?: Auth_Signup_Disabled_AdminInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Auth_Signup_Disabled_AdminInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_auth_signup_disabled_admin(inputs)
-	return en_auth_signup_disabled_admin(inputs)
+	if (locale === "en") return en_auth_signup_disabled_admin(inputs)
+	return fr_auth_signup_disabled_admin(inputs)
 });

@@ -24,6 +24,6 @@ const en_age_rules_col_night_sleep = /** @type {(inputs: Age_Rules_Col_Night_Sle
 */
 export const age_rules_col_night_sleep = /** @type {((inputs?: Age_Rules_Col_Night_SleepInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Age_Rules_Col_Night_SleepInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_age_rules_col_night_sleep(inputs)
-	return en_age_rules_col_night_sleep(inputs)
+	if (locale === "en") return en_age_rules_col_night_sleep(inputs)
+	return fr_age_rules_col_night_sleep(inputs)
 });

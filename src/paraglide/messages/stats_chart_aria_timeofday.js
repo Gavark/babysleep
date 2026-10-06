@@ -24,6 +24,6 @@ const en_stats_chart_aria_timeofday = /** @type {(inputs: Stats_Chart_Aria_Timeo
 */
 export const stats_chart_aria_timeofday = /** @type {((inputs: Stats_Chart_Aria_TimeofdayInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Stats_Chart_Aria_TimeofdayInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_stats_chart_aria_timeofday(inputs)
-	return en_stats_chart_aria_timeofday(inputs)
+	if (locale === "en") return en_stats_chart_aria_timeofday(inputs)
+	return fr_stats_chart_aria_timeofday(inputs)
 });

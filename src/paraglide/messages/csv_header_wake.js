@@ -24,6 +24,6 @@ const en_csv_header_wake = /** @type {(inputs: Csv_Header_WakeInputs) => Localiz
 */
 export const csv_header_wake = /** @type {((inputs?: Csv_Header_WakeInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Csv_Header_WakeInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_csv_header_wake(inputs)
-	return en_csv_header_wake(inputs)
+	if (locale === "en") return en_csv_header_wake(inputs)
+	return fr_csv_header_wake(inputs)
 });

@@ -24,6 +24,6 @@ const en_today_clear_field = /** @type {(inputs: Today_Clear_FieldInputs) => Loc
 */
 export const today_clear_field = /** @type {((inputs?: Today_Clear_FieldInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Today_Clear_FieldInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_today_clear_field(inputs)
-	return en_today_clear_field(inputs)
+	if (locale === "en") return en_today_clear_field(inputs)
+	return fr_today_clear_field(inputs)
 });

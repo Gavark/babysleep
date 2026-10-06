@@ -24,6 +24,6 @@ const en_day_delete_confirm = /** @type {(inputs: Day_Delete_ConfirmInputs) => L
 */
 export const day_delete_confirm = /** @type {((inputs?: Day_Delete_ConfirmInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Day_Delete_ConfirmInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_day_delete_confirm(inputs)
-	return en_day_delete_confirm(inputs)
+	if (locale === "en") return en_day_delete_confirm(inputs)
+	return fr_day_delete_confirm(inputs)
 });

@@ -24,6 +24,6 @@ const en_landing_window_naps = /** @type {(inputs: Landing_Window_NapsInputs) =>
 */
 export const landing_window_naps = /** @type {((inputs: Landing_Window_NapsInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Landing_Window_NapsInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_landing_window_naps(inputs)
-	return en_landing_window_naps(inputs)
+	if (locale === "en") return en_landing_window_naps(inputs)
+	return fr_landing_window_naps(inputs)
 });

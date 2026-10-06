@@ -24,6 +24,6 @@ const en_landing_hero_shot_alt = /** @type {(inputs: Landing_Hero_Shot_AltInputs
 */
 export const landing_hero_shot_alt = /** @type {((inputs?: Landing_Hero_Shot_AltInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Landing_Hero_Shot_AltInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_landing_hero_shot_alt(inputs)
-	return en_landing_hero_shot_alt(inputs)
+	if (locale === "en") return en_landing_hero_shot_alt(inputs)
+	return fr_landing_hero_shot_alt(inputs)
 });

@@ -24,6 +24,6 @@ const en_account_locale_option_fr = /** @type {(inputs: Account_Locale_Option_Fr
 */
 export const account_locale_option_fr = /** @type {((inputs?: Account_Locale_Option_FrInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Account_Locale_Option_FrInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_account_locale_option_fr(inputs)
-	return en_account_locale_option_fr(inputs)
+	if (locale === "en") return en_account_locale_option_fr(inputs)
+	return fr_account_locale_option_fr(inputs)
 });

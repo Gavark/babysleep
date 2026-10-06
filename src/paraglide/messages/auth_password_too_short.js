@@ -24,6 +24,6 @@ const en_auth_password_too_short = /** @type {(inputs: Auth_Password_Too_ShortIn
 */
 export const auth_password_too_short = /** @type {((inputs?: Auth_Password_Too_ShortInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Auth_Password_Too_ShortInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_auth_password_too_short(inputs)
-	return en_auth_password_too_short(inputs)
+	if (locale === "en") return en_auth_password_too_short(inputs)
+	return fr_auth_password_too_short(inputs)
 });

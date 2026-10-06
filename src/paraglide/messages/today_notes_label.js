@@ -24,6 +24,6 @@ const en_today_notes_label = /** @type {(inputs: Today_Notes_LabelInputs) => Loc
 */
 export const today_notes_label = /** @type {((inputs?: Today_Notes_LabelInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Today_Notes_LabelInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_today_notes_label(inputs)
-	return en_today_notes_label(inputs)
+	if (locale === "en") return en_today_notes_label(inputs)
+	return fr_today_notes_label(inputs)
 });

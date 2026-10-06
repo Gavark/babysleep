@@ -24,6 +24,6 @@ const en_babies_list_title = /** @type {(inputs: Babies_List_TitleInputs) => Loc
 */
 export const babies_list_title = /** @type {((inputs?: Babies_List_TitleInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Babies_List_TitleInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_babies_list_title(inputs)
-	return en_babies_list_title(inputs)
+	if (locale === "en") return en_babies_list_title(inputs)
+	return fr_babies_list_title(inputs)
 });

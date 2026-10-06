@@ -24,6 +24,6 @@ const en_baby_form_delete_btn = /** @type {(inputs: Baby_Form_Delete_BtnInputs) 
 */
 export const baby_form_delete_btn = /** @type {((inputs?: Baby_Form_Delete_BtnInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Baby_Form_Delete_BtnInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_baby_form_delete_btn(inputs)
-	return en_baby_form_delete_btn(inputs)
+	if (locale === "en") return en_baby_form_delete_btn(inputs)
+	return fr_baby_form_delete_btn(inputs)
 });

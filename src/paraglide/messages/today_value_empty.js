@@ -24,6 +24,6 @@ const en_today_value_empty = /** @type {(inputs: Today_Value_EmptyInputs) => Loc
 */
 export const today_value_empty = /** @type {((inputs?: Today_Value_EmptyInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Today_Value_EmptyInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_today_value_empty(inputs)
-	return en_today_value_empty(inputs)
+	if (locale === "en") return en_today_value_empty(inputs)
+	return fr_today_value_empty(inputs)
 });

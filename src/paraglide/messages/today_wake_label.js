@@ -24,6 +24,6 @@ const en_today_wake_label = /** @type {(inputs: Today_Wake_LabelInputs) => Local
 */
 export const today_wake_label = /** @type {((inputs?: Today_Wake_LabelInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Today_Wake_LabelInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_today_wake_label(inputs)
-	return en_today_wake_label(inputs)
+	if (locale === "en") return en_today_wake_label(inputs)
+	return fr_today_wake_label(inputs)
 });

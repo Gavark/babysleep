@@ -24,6 +24,6 @@ const en_stats_chart_smoothing_rolling = /** @type {(inputs: Stats_Chart_Smoothi
 */
 export const stats_chart_smoothing_rolling = /** @type {((inputs?: Stats_Chart_Smoothing_RollingInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Stats_Chart_Smoothing_RollingInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_stats_chart_smoothing_rolling(inputs)
-	return en_stats_chart_smoothing_rolling(inputs)
+	if (locale === "en") return en_stats_chart_smoothing_rolling(inputs)
+	return fr_stats_chart_smoothing_rolling(inputs)
 });

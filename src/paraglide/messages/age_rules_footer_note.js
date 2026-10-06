@@ -24,6 +24,6 @@ const en_age_rules_footer_note = /** @type {(inputs: Age_Rules_Footer_NoteInputs
 */
 export const age_rules_footer_note = /** @type {((inputs?: Age_Rules_Footer_NoteInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Age_Rules_Footer_NoteInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_age_rules_footer_note(inputs)
-	return en_age_rules_footer_note(inputs)
+	if (locale === "en") return en_age_rules_footer_note(inputs)
+	return fr_age_rules_footer_note(inputs)
 });

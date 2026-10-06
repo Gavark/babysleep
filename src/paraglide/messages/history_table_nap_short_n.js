@@ -24,6 +24,6 @@ const en_history_table_nap_short_n = /** @type {(inputs: History_Table_Nap_Short
 */
 export const history_table_nap_short_n = /** @type {((inputs: History_Table_Nap_Short_NInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<History_Table_Nap_Short_NInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_history_table_nap_short_n(inputs)
-	return en_history_table_nap_short_n(inputs)
+	if (locale === "en") return en_history_table_nap_short_n(inputs)
+	return fr_history_table_nap_short_n(inputs)
 });

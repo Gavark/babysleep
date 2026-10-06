@@ -24,6 +24,6 @@ const en_baby_form_delete_confirm = /** @type {(inputs: Baby_Form_Delete_Confirm
 */
 export const baby_form_delete_confirm = /** @type {((inputs?: Baby_Form_Delete_ConfirmInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Baby_Form_Delete_ConfirmInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_baby_form_delete_confirm(inputs)
-	return en_baby_form_delete_confirm(inputs)
+	if (locale === "en") return en_baby_form_delete_confirm(inputs)
+	return fr_baby_form_delete_confirm(inputs)
 });

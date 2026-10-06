@@ -24,6 +24,6 @@ const en_admin_invitations_forbidden = /** @type {(inputs: Admin_Invitations_For
 */
 export const admin_invitations_forbidden = /** @type {((inputs?: Admin_Invitations_ForbiddenInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Admin_Invitations_ForbiddenInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_admin_invitations_forbidden(inputs)
-	return en_admin_invitations_forbidden(inputs)
+	if (locale === "en") return en_admin_invitations_forbidden(inputs)
+	return fr_admin_invitations_forbidden(inputs)
 });

@@ -24,6 +24,6 @@ const en_landing_feat_stats_alt = /** @type {(inputs: Landing_Feat_Stats_AltInpu
 */
 export const landing_feat_stats_alt = /** @type {((inputs?: Landing_Feat_Stats_AltInputs, options?: { locale?: "fr" | "en" }) => LocalizedString) & import('../runtime.js').MessageMetadata<Landing_Feat_Stats_AltInputs, { locale?: "fr" | "en" }, {}>} */ ((inputs = {}, options = {}) => {
 	const locale = experimentalStaticLocale ?? options.locale ?? getLocale()
-	if (locale === "fr") return fr_landing_feat_stats_alt(inputs)
-	return en_landing_feat_stats_alt(inputs)
+	if (locale === "en") return en_landing_feat_stats_alt(inputs)
+	return fr_landing_feat_stats_alt(inputs)
 });
