@@ -1,6 +1,5 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vitest/config';
-import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
 
 export default defineConfig({
@@ -31,35 +30,10 @@ export default defineConfig({
       strategy: ['cookie', 'preferredLanguage', 'baseLocale'],
       cookieName: 'locale'
     }),
-    sveltekit(),
-    SvelteKitPWA({
-      registerType: 'autoUpdate',
-      strategies: 'injectManifest',
-      srcDir: 'src',
-      filename: 'service-worker.ts',
-      injectManifest: {
-        globPatterns: ['client/**/*.{js,css,ico,png,svg,webp,woff2}'],
-        // Landing-page and README imagery is served from static/screenshots/.
-        // It is marketing material, not app shell, so keep it out of the
-        // service worker precache: every install would otherwise download
-        // ~300 kB of screenshots it never shows offline.
-        globIgnores: ['client/screenshots/**']
-      },
-      manifest: {
-        name: 'BabySleep',
-        short_name: 'BabySleep',
-        start_url: '/',
-        display: 'standalone',
-        background_color: '#FBF8F3',
-        theme_color: '#C97A5D',
-        lang: 'fr',
-        icons: [
-          { src: '/icon-192.png', sizes: '192x192', type: 'image/png' },
-          { src: '/icon-512.png', sizes: '512x512', type: 'image/png' },
-          { src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
-        ]
-      }
-    })
+    // The service worker (src/service-worker.ts) and the web app manifest
+    // (static/manifest.webmanifest) are handled by SvelteKit itself, no PWA
+    // plugin involved.
+    sveltekit()
   ],
   server: { port: 5173 },
   test: { include: ['tests/**/*.test.ts'], environment: 'node' }

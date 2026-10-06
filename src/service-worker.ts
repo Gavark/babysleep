@@ -1,15 +1,46 @@
 /// <reference lib="webworker" />
 /* eslint-disable */
-import { precacheAndRoute } from 'workbox-precaching';
+import { build, files, version } from '$service-worker';
 
 declare const self: ServiceWorkerGlobalScope;
 
-// The build pipeline injects the manifest into self.__WB_MANIFEST.
-// @ts-ignore - injected at build time
-precacheAndRoute(self.__WB_MANIFEST);
+// Precache the hashed app assets plus the static files the shell needs.
+// Landing-page and README screenshots in static/screenshots/ are marketing
+// material, not app shell: keep them out, or every install would download
+// ~300 kB of images it never shows offline. HTML is never cached, so pages
+// still need the network.
+const CACHE = `babysleep-${version}`;
+const PRECACHE = [...build, ...files.filter((f) => !f.startsWith('/screenshots/'))];
+const PRECACHED = new Set(PRECACHE);
 
-self.addEventListener('install', () => self.skipWaiting());
-self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches
+      .open(CACHE)
+      .then((cache) => cache.addAll(PRECACHE))
+      .then(() => self.skipWaiting())
+  );
+});
+
+// Drop every other cache, including the workbox-precache-* ones left on
+// devices by the previous vite-pwa service worker.
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    (async () => {
+      for (const key of await caches.keys()) {
+        if (key !== CACHE) await caches.delete(key);
+      }
+      await self.clients.claim();
+    })()
+  );
+});
+
+self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+  const url = new URL(event.request.url);
+  if (url.origin !== self.location.origin || !PRECACHED.has(url.pathname)) return;
+  event.respondWith(caches.match(event.request).then((hit) => hit ?? fetch(event.request)));
+});
 
 type PushPayload = {
   kind: string;
