@@ -18,6 +18,9 @@ export const actions: Actions = {
     const ua = request.headers.get('user-agent') ?? null;
     const { db } = getDb();
     const res = await attemptLogin(db, { email, password }, ua);
+    if (!res.ok && res.reason === 'rate_limited') {
+      return fail(429, { error: m.auth_login_rate_limited(), email });
+    }
     if (!res.ok) return fail(400, { error: m.auth_login_invalid(), email });
     setSessionCookie(cookies, res.session.id);
     throw redirect(303, '/app');

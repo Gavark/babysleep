@@ -13,6 +13,11 @@ export function rateLimit(key: string, limit: number, windowSec: number): boolea
   return true;
 }
 
+/** Forget a key's count, e.g. after a successful login. */
+export function clearRateLimit(key: string): void {
+  buckets.delete(key);
+}
+
 /** Drop entries whose window has already expired. Bounds memory under
  *  spray-from-many-IPs traffic that would otherwise leak buckets forever
  *  (each unique IP creates an entry that only gets recycled when the SAME

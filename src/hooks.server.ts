@@ -88,9 +88,14 @@ export const handle: Handle = async ({ event, resolve }) => {
 
   const rawTheme = event.cookies.get('theme');
   event.locals.theme = rawTheme === 'light' || rawTheme === 'dark' ? rawTheme : 'auto';
+  // Per-IP flood guard. Behind a proxy whose source address isn't preserved
+  // (Docker Desktop NAT, or no ADDRESS_HEADER) every client shares one IP, so
+  // /login keeps a loose limit here; the real brute-force limit is per
+  // account, in attemptLogin.
   if ((path === '/login' || path === '/signup') && event.request.method === 'POST') {
     const ip = event.getClientAddress();
-    if (!rateLimit(`${path}:${ip}`, 5, 15 * 60)) {
+    const limit = path === '/login' ? 30 : 5;
+    if (!rateLimit(`${path}:${ip}`, limit, 15 * 60)) {
       return new Response('Trop de tentatives, réessaie dans 15 minutes.', {
         status: 429,
         headers: { 'Retry-After': '900' }

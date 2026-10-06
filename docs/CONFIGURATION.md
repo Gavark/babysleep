@@ -87,6 +87,29 @@ compose files. They tell SvelteKit which headers your reverse proxy uses to
 declare the original protocol/host. Caddy, Traefik, and Nginx all use these
 defaults. Leave them as-is unless your proxy uses different header names.
 
+### `ADDRESS_HEADER`, `XFF_DEPTH`
+
+Tell SvelteKit where to read the client's IP address, which BabySleep uses to
+rate-limit `/login` and `/signup`. Without them the app sees the proxy's own
+address, so every visitor shares one limit.
+
+`docker-compose.full.yml` sets `ADDRESS_HEADER=x-forwarded-for` and
+`XFF_DEPTH=1`: Caddy replaces any `X-Forwarded-For` sent by the client with
+the address it sees, so the last entry can be trusted. If you bring your own
+proxy with `docker-compose.yml`, set the same two variables only when that
+proxy is the sole way to reach the app and it overwrites (or appends to)
+`X-Forwarded-For`. Otherwise clients can spoof the header, and requests that
+don't carry it fail with a 500. Use a higher `XFF_DEPTH` when several proxies
+each append an entry (e.g. a CDN in front of your proxy).
+
+The header can only carry the address the proxy itself sees. Docker Desktop
+(Windows, macOS) does not preserve the client's source address on published
+ports, so Caddy, and in turn the app, see the Docker gateway for every
+request. The per-IP limit then acts as a global one, which is why it is kept
+loose on `/login` (30 attempts per 15 minutes). Brute force is limited per
+account instead: 5 failed attempts per email address per 15 minutes, whatever
+the IP.
+
 ## Backup sidecar (full compose only)
 
 These apply only when you run `docker-compose.full.yml`, which includes the

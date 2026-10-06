@@ -25,6 +25,7 @@
   "auth_login_title": "Connexion",
   "auth_login_submit": "Se connecter",
   "auth_login_invalid": "Identifiants invalides.",
+  "auth_login_rate_limited": "Trop de tentatives pour ce compte. Réessaie dans 15 minutes.",
   "auth_signup_title": "Inscription",
   "auth_signup_disabled_admin": "Inscription désactivée par l'administrateur.",
   "auth_signup_invite_only": "Inscription sur invitation uniquement. Demande un lien à l'administrateur.",

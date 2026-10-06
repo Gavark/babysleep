@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { rateLimit, purgeExpiredBuckets, _bucketCount } from '../../src/lib/server/rate-limit';
+import {
+  rateLimit,
+  clearRateLimit,
+  purgeExpiredBuckets,
+  _bucketCount
+} from '../../src/lib/server/rate-limit';
 
 describe('rateLimit', () => {
   it('allows up to limit then denies', () => {
@@ -11,6 +16,24 @@ describe('rateLimit', () => {
     expect(rateLimit('a', 1, 60)).toBe(true);
     expect(rateLimit('a', 1, 60)).toBe(false);
     expect(rateLimit('b', 1, 60)).toBe(true);
+  });
+});
+
+describe('clearRateLimit', () => {
+  it('resets a key so it can be used again', () => {
+    const k = `clear-${Math.random()}`;
+    rateLimit(k, 1, 60);
+    expect(rateLimit(k, 1, 60)).toBe(false);
+    clearRateLimit(k);
+    expect(rateLimit(k, 1, 60)).toBe(true);
+  });
+  it('leaves other keys alone', () => {
+    const a = `clear-a-${Math.random()}`;
+    const b = `clear-b-${Math.random()}`;
+    rateLimit(a, 1, 60);
+    rateLimit(b, 1, 60);
+    clearRateLimit(a);
+    expect(rateLimit(b, 1, 60)).toBe(false);
   });
 });
 
