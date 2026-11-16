@@ -193,8 +193,8 @@ docker compose -f docker-compose.full.yml up -d app
 ```
 
 The app applies pending Drizzle migrations at startup. Migrations to date are
-additive only (no drops, no destructive changes) — your data is safe across
-versions during `v0.x`.
+additive only (no drops, no destructive changes) — your data is kept from one
+version to the next.
 
 ---
 
@@ -238,10 +238,11 @@ phosphor-svelte for icons, Nunito Variable (self-hosted) for typography.
 
 ## Status & roadmap
 
-This is `v0.x` — the data model and config surface may break between minor
-versions. The schema is small (`users`, `babies`, `sleep_entries`, `sessions`,
-`invitations`) and migrations are additive, but I'm not committing to API
-stability until `v1.0`.
+BabySleep has been at `v1` since November 2026 and follows
+[SemVer](https://semver.org): within `v1.x`, no breaking change to the data
+model or the configuration (environment variables, compose files). A breaking
+change would only come with a `v2`, announced in the release notes with the
+steps to follow. Migrations stay additive.
 
 Things I want to add (no firm ETA):
 

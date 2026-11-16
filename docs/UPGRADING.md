@@ -1,10 +1,10 @@
 # Upgrading
 
-BabySleep follows [SemVer](https://semver.org). For `v0.x` releases I make no
-backward-compatibility promise on the data model or the configuration surface
-— breaking changes can land in any minor bump until the project reaches `v1.0`.
-That said, migrations are additive only so far (no drops, no destructive
-changes), so upgrades within `v0.x` should _in practice_ be safe.
+BabySleep follows [SemVer](https://semver.org). Within `v1.x` there is no
+breaking change to the data model or the configuration surface (environment
+variables, compose files); a breaking change would only come with a `v2`,
+announced in the release notes with the steps to follow. Migrations are
+additive only (no drops, no destructive changes).
 
 ## TL;DR
 
@@ -77,7 +77,7 @@ If the previous version doesn't understand a column the newer migration added,
 - Restore the pre-upgrade backup (see [BACKUP.md](./BACKUP.md#restore)), or
 - Stay on the newer version and fix forward.
 
-Practically speaking, all `v0.x` migrations so far only add columns/tables.
+Practically speaking, every migration so far only adds columns or tables.
 Older code ignores new columns harmlessly. Test on a fresh staging instance
 before doing this on data you care about.
 
@@ -113,12 +113,18 @@ warnings for non-trivial column changes — Drizzle handles them but the
 generated SQL can be surprising). All migrations to date have been a single
 `ALTER TABLE ... ADD COLUMN` each.
 
-## Major version bumps (future)
+## Major version bumps
 
-When `v1.0.0` ships, this page will gain a "migrating from v0.x" section
-covering any schema rename, env var reshuffle, or behaviour change relative
-to the latest `v0.x`. For now, no `v1.0` is on the horizon — the project is
-still feature-finding.
+### From v0.x to v1.0
+
+Nothing to do beyond the usual upgrade: `v1.0.0` has no migration, no
+renamed environment variable and no configuration change. It is a redesign
+of the interface; see the v1.0.0 release notes.
+
+### Future major versions
+
+A `v2` would get its own section here covering any schema rename, environment
+variable change or behaviour change, with the steps to follow.
 
 ## Got stuck?
 
