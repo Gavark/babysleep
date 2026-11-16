@@ -202,7 +202,32 @@ version to the next.
 docker compose exec app npm run reset-password -- your@email
 ```
 
-You'll be prompted for a new password.
+You'll be prompted for a new password. **No data is lost**: only the password
+hash is replaced in the database. Your babies, sleep entries and invitations
+are kept.
+
+However, **all your active sessions are signed out** (including the one you
+are using when you run the reset). This is deliberate: it stops a stolen
+session from staying valid with the old password. Sign in again with the new
+one.
+
+## Active sessions
+
+The `/account` page lists your open sessions (browser, last used, device).
+There are three ways to end them:
+
+- **End one session**: the "Revoke" button next to each row on `/account`.
+  The session you are using right now has no such button: for that one, use
+  "Sign out" at the bottom of `/account`.
+- **End all the others**: the "Change my password" section of `/account`
+  signs out every other session automatically once the change succeeds (yours
+  stays signed in).
+- **End them all at once**: the `reset-password` CLI above, or straight SQL:
+
+  ```bash
+  docker compose exec app sqlite3 /data/babysleep.sqlite \
+    "DELETE FROM sessions WHERE user_id = (SELECT id FROM users WHERE email='your@email');"
+  ```
 
 ---
 

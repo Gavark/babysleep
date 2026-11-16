@@ -222,9 +222,9 @@ volée reste valide avec l'ancien mot de passe. Tu te reconnectes avec le nouvea
 La page `/account` liste les sessions ouvertes (navigateur, dernière utilisation,
 device). Trois moyens de les couper :
 
-- **Couper une session précise** : bouton "Déconnecter" en face de chaque ligne
-  sur `/account`. Celle que tu utilises actuellement n'a pas le bouton : pour
-  elle, passe par le menu "Déconnexion" du header.
+- **Couper une session précise** : bouton "Révoquer" en face de chaque ligne
+  sur `/account`. Celle que tu utilises actuellement n'a pas ce bouton : pour
+  elle, utilise "Se déconnecter" en bas de `/account`.
 - **Couper toutes les autres** : la section "Changer mon mot de passe" de
   `/account` invalide automatiquement toutes les autres sessions une fois le
   changement réussi (la tienne reste).
