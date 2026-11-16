@@ -134,6 +134,71 @@ describe('createAutosave', () => {
     expect([...auto.dirty()].sort()).toEqual(['a', 'b']);
   });
 
+  it('treats a rejecting save like a failure', async () => {
+    const save = vi
+      .fn<(f: string[]) => Promise<boolean>>()
+      .mockRejectedValueOnce(new Error('boom'))
+      .mockResolvedValue(true);
+    const auto = createAutosave({ delayMs: 600, save, onState: () => {} });
+    auto.touch('a');
+    vi.advanceTimersByTime(600);
+    await vi.runAllTicks();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(auto.state()).toBe('error');
+    expect(auto.dirty().has('a')).toBe(true);
+    auto.flush();
+    expect(save).toHaveBeenCalledTimes(2);
+    expect(save.mock.calls[1][0]).toEqual(['a']);
+  });
+
+  it('treats a synchronously throwing save like a failure', async () => {
+    const save = vi
+      .fn<(f: string[]) => Promise<boolean>>()
+      .mockImplementationOnce(() => {
+        throw new Error('boom');
+      })
+      .mockResolvedValue(true);
+    const auto = createAutosave({ delayMs: 600, save, onState: () => {} });
+    auto.touch('a');
+    vi.advanceTimersByTime(600);
+    await vi.runAllTicks();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(auto.state()).toBe('error');
+    expect(auto.dirty().has('a')).toBe(true);
+    auto.touch('b');
+    vi.advanceTimersByTime(600);
+    expect(save).toHaveBeenCalledTimes(2);
+    expect(save.mock.calls[1][0].sort()).toEqual(['a', 'b']);
+  });
+
+  it('flush during a save with nothing new starts no second save', async () => {
+    const { auto, calls, save } = setup();
+    auto.touch('a');
+    vi.advanceTimersByTime(600);
+    auto.flush();
+    expect(save).toHaveBeenCalledTimes(1);
+    await settle(calls[0], true);
+    expect(auto.state()).toBe('saved');
+    expect(save).toHaveBeenCalledTimes(1);
+  });
+
+  it('touch then flush during a save sends exactly one follow-up', async () => {
+    const { auto, calls, save } = setup();
+    auto.touch('a');
+    vi.advanceTimersByTime(600);
+    auto.touch('b');
+    auto.flush();
+    expect(save).toHaveBeenCalledTimes(1);
+    await settle(calls[0], true);
+    expect(save).toHaveBeenCalledTimes(2);
+    expect(save.mock.calls[1][0]).toEqual(['b']);
+    await settle(calls[1], true);
+    expect(save).toHaveBeenCalledTimes(2);
+    expect(auto.state()).toBe('saved');
+  });
+
   it('flush with nothing dirty does nothing', () => {
     const { auto, save, states } = setup();
     auto.flush();

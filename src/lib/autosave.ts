@@ -34,6 +34,15 @@ export function createAutosave(opts: {
     }
   }
 
+  /** Calls `save` synchronously; a throw or rejection counts as a failed save. */
+  function safeSave(fields: string[]): Promise<boolean> {
+    try {
+      return Promise.resolve(opts.save(fields)).catch(() => false);
+    } catch {
+      return Promise.resolve(false);
+    }
+  }
+
   function send() {
     clearTimer();
     if (inFlight || dirty.size === 0) return;
@@ -41,7 +50,7 @@ export function createAutosave(opts: {
     inFlight = fields;
     retouched.clear();
     setState('saving');
-    opts.save(fields).then((ok) => {
+    safeSave(fields).then((ok) => {
       inFlight = null;
       if (!ok) {
         setState('error');
@@ -75,6 +84,7 @@ export function createAutosave(opts: {
     state(): SaveState {
       return current;
     },
+    /** Cancels the delay only; an in-flight save still completes and may call `onState` afterwards. */
     dispose() {
       clearTimer();
     }
