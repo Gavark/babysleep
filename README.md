@@ -18,7 +18,7 @@ leur propre serveur.
 ## C'est quoi ?
 
 BabySleep est une petite app web que tu fais tourner sur ta propre machine
-(Raspberry Pi, NAS, VPS, laptop — tout ce qui fait tourner Docker). Elle te
+(Raspberry Pi, NAS, VPS, laptop : tout ce qui fait tourner Docker). Elle te
 permet de :
 
 - Enregistrer l'heure de réveil, les siestes et le coucher de bébé
@@ -108,9 +108,9 @@ cp .env.example .env
 docker compose -f docker-compose.quickstart.yml up -d
 ```
 
-Ouvre <http://localhost:3000> dans ton navigateur — tu seras redirigé vers un
-wizard de configuration pour créer ton compte admin. Ensuite, connecte-toi et
-commence à enregistrer.
+Ouvre <http://localhost:3000> dans ton navigateur. Tu arrives sur un wizard de
+configuration qui crée ton compte admin, puis tu te connectes et tu commences
+à enregistrer.
 
 Ce compose met un petit Caddy devant l'app, en HTTP simple : sans proxy qui
 déclare le protocole, l'app refuse tous les formulaires (403). Il sert à
@@ -148,7 +148,7 @@ Toute la config passe par des variables d'environnement. Voir
 
 Les sessions sont protégées par des IDs aléatoires de 256 bits stockés dans
 des cookies `HttpOnly` + `Secure` + `SameSite=Lax` et validés en base à
-chaque requête — il n'y a pas de "session secret" à gérer.
+chaque requête. Il n'y a donc pas de "session secret" à gérer.
 
 ---
 
@@ -177,8 +177,8 @@ ou directement depuis la page Aujourd'hui.
 
 - Les clés VAPID sont générées automatiquement au premier démarrage du serveur
   et stockées en base (pas besoin de variable d'environnement pour démarrer).
-- Si tu utilises Caddy (ou n'importe quel reverse proxy avec HTTPS), tu n'as
-  rien à faire de plus — les notifications nécessitent HTTPS.
+- Les notifications exigent HTTPS. Si tu utilises Caddy (ou n'importe quel
+  reverse proxy avec HTTPS), tu n'as rien à faire de plus.
 - Tu peux gérer la liste de tes appareils abonnés et les révoquer un par un
   depuis `/account/notifications`.
 - Sur iPhone, il faut d'abord installer l'app à l'écran d'accueil (Partager →
@@ -199,8 +199,8 @@ docker compose -f docker-compose.full.yml up -d app
 ```
 
 L'app applique les migrations Drizzle en attente au démarrage. Les migrations
-à ce jour sont uniquement additives (aucun drop, aucun changement destructif) —
-tes données sont conservées d'une version à l'autre.
+à ce jour sont uniquement additives (aucun drop, aucun changement destructif),
+donc tes données sont conservées d'une version à l'autre.
 
 ---
 
@@ -215,7 +215,7 @@ seul le hash du mot de passe est remplacé en base. Tes bébés, tes saisies de
 sommeil et tes invitations sont conservés.
 
 En revanche, **toutes tes sessions actives sont déconnectées** (y compris celle
-que tu utilises au moment du reset) — c'est volontaire, ça évite qu'une session
+que tu utilises au moment du reset). C'est volontaire : ça évite qu'une session
 volée reste valide avec l'ancien mot de passe. Tu te reconnectes avec le nouveau.
 
 ## Sessions actives
@@ -224,8 +224,8 @@ La page `/account` liste les sessions ouvertes (navigateur, dernière utilisatio
 device). Trois moyens de les couper :
 
 - **Couper une session précise** : bouton "Déconnecter" en face de chaque ligne
-  sur `/account`. Celle que tu utilises actuellement n'a pas le bouton — utilise
-  le menu "Déconnexion" du header pour ça.
+  sur `/account`. Celle que tu utilises actuellement n'a pas le bouton : pour
+  elle, passe par le menu "Déconnexion" du header.
 - **Couper toutes les autres** : la section "Changer mon mot de passe" de
   `/account` invalide automatiquement toutes les autres sessions une fois le
   changement réussi (la tienne reste).
@@ -260,7 +260,7 @@ Type-check :
 npm run check
 ```
 
-Stack : SvelteKit 2 + Svelte 5 (runes) + TypeScript strict, Drizzle ORM sur
+Stack : SvelteKit 3 + Svelte 5 (runes) + TypeScript strict, Drizzle ORM sur
 better-sqlite3, argon2id via `@node-rs/argon2`, Chart.js pour les stats,
 phosphor-svelte pour les icônes, Nunito Variable (self-hosted) pour la typo.
 
