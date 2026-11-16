@@ -56,6 +56,25 @@ export function mergeServer(
 }
 
 /**
+ * Body of a `save` post: the date, then each requested field with its value,
+ * or a `clear` entry instead when it was emptied with ✕.
+ */
+export function buildSaveBody(
+  fields: DayFields,
+  names: readonly FieldName[],
+  clears: ReadonlySet<FieldName>,
+  date: string
+): FormData {
+  const body = new FormData();
+  body.set('date', date);
+  for (const name of names) {
+    if (clears.has(name)) body.append('clear', name);
+    else body.set(name, fields[name] ?? '');
+  }
+  return body;
+}
+
+/**
  * After a successful save: a sent field left empty without a `clear` was not
  * erased by the server (only ✕ erases), so show the server value again.
  */

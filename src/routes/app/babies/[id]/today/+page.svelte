@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { enhance, type SubmitFunction } from '$app/forms';
+  import { applyAction, deserialize, type ActionResult } from '$app/forms';
   import { beforeNavigate, refreshAll } from '$app/navigation';
   import { onMount, untrack } from 'svelte';
   import { SvelteSet } from 'svelte/reactivity';
@@ -7,7 +7,7 @@
   import { COMMON_TIMEZONES } from '$lib/tz';
   import { formatAgeBracket, formatLongDay } from '$lib/format';
   import {
-    FIELD_NAMES,
+    buildSaveBody,
     fieldsFromEntry,
     mergeServer,
     napPairs,
@@ -55,27 +55,67 @@
   /** Name of the form field holding focus: never overwritten by server data. */
   let focused = $state<string | null>(null);
 
-  let formEl = $state<HTMLFormElement | null>(null);
-  /** Fields the scheduler asked to send, picked up by the next submit event. */
-  let requested: string[] | null = null;
-  /** Settles the promise of the save in flight. */
-  let settle: ((ok: boolean) => void) | null = null;
+  /** False once the page is gone: a save still in flight then skips all UI work. */
+  let mounted = false;
+  /** This page's `save` action, fixed at mount so a late save never posts elsewhere. */
+  let actionUrl: string | null = null;
 
-  function save(names: string[]): Promise<boolean> {
-    // Only one save is ever in flight; never leave an older promise hanging.
-    settle?.(false);
-    return new Promise<boolean>((resolve) => {
-      settle = resolve;
-      requested = names;
-      formEl?.requestSubmit();
-      // `enhance` consumes `requested` synchronously in the submit event; if it
-      // is still set, no submission started and none will settle this promise.
-      if (requested) {
-        requested = null;
-        settle = null;
-        resolve(false);
+  /**
+   * Posts the requested fields straight to the `save` action, without the
+   * <form>, so a save started while leaving the page still goes out.
+   * Never rejects.
+   */
+  async function save(names: string[]): Promise<boolean> {
+    if (!actionUrl) return false;
+    const clearedSent = names.filter((name) => clears.has(name));
+    const body = buildSaveBody(fields, names, clears, data.today);
+    let result: ActionResult;
+    try {
+      const response = await fetch(actionUrl, {
+        method: 'POST',
+        headers: { accept: 'application/json', 'x-sveltekit-action': 'true' },
+        body,
+        cache: 'no-store',
+        keepalive: true
+      });
+      result = deserialize(await response.text());
+    } catch {
+      // Network down, aborted, or not an action result (e.g. a proxy page).
+      saveFailed = true;
+      return false;
+    }
+
+    if (result.type !== 'success') {
+      saveFailed = true;
+      // `failure` sets `form.error`; `redirect` (expired session) is followed.
+      // An `error` result would swap the page for the error page: keep the
+      // values on screen and show the banner instead.
+      if (mounted && (result.type === 'failure' || result.type === 'redirect')) {
+        try {
+          await applyAction(result);
+        } catch {
+          // Already counted as a failed save.
+        }
       }
-    });
+      return false;
+    }
+
+    for (const name of clearedSent) clears.delete(name);
+    saveFailed = false;
+    if (mounted) {
+      try {
+        await refreshAll();
+        if (!mounted) return true;
+        await applyAction(result);
+        // A field emptied with the keyboard kept its server value: show it
+        // again, unless it was cleared with ✕ or is being edited.
+        const keepEmpty = new Set([...clearedSent, ...clears, ...(focused ? [focused] : [])]);
+        fields = restoreEmptied(fields, fieldsFromEntry(data.entry), names, keepEmpty);
+      } catch {
+        // The save itself succeeded; only the refresh failed.
+      }
+    }
+    return true;
   }
 
   const autosave = createAutosave({
@@ -87,50 +127,12 @@
     save
   });
 
-  const submitForm: SubmitFunction = ({ formData, cancel }) => {
-    const names = requested;
-    requested = null;
-    if (!names) {
-      // Enter pressed in a field: send only what changed, not the whole form.
-      // Deferred: a submit requested from inside this submit event is ignored
-      // by the browser and would count as a failed save.
-      cancel();
-      queueMicrotask(() => autosave.flush());
-      return;
-    }
-    const resolve = settle ?? (() => {});
-    const sent = new Set(names);
-    // Values come from `fields`, not the DOM, which may not reflect a change
-    // made in the same tick (✕, "now" card actions).
-    for (const name of FIELD_NAMES) {
-      if (sent.has(name)) formData.set(name, fields[name] ?? '');
-      else formData.delete(name);
-    }
-    formData.delete('clear');
-    const clearedSent = names.filter((name) => clears.has(name));
-    for (const name of clearedSent) formData.append('clear', name);
-
-    return async ({ result, update }) => {
-      const ok = result.type === 'success';
-      if (ok) {
-        for (const name of clearedSent) clears.delete(name);
-        saveFailed = false;
-      } else saveFailed = true;
-      try {
-        // An `error` result (network down, server unreachable) would swap the
-        // page for the error page: keep the values on screen and show the banner.
-        if (result.type !== 'error') await update({ reset: false });
-        if (ok) {
-          // A field emptied with the keyboard kept its server value: show it again.
-          const keepEmpty = new Set([...clearedSent, ...clears]);
-          fields = restoreEmptied(fields, fieldsFromEntry(data.entry), names, keepEmpty);
-        }
-      } finally {
-        if (settle === resolve) settle = null;
-        resolve(ok);
-      }
-    };
-  };
+  function onSubmit(e: SubmitEvent) {
+    // Enter pressed in a field: send only what changed, never the whole form.
+    // A macrotask, so the flush runs after the browser's submit handling.
+    e.preventDefault();
+    setTimeout(() => autosave.flush(), 0);
+  }
 
   $effect(() => {
     const server = fieldsFromEntry(data.entry);
@@ -146,6 +148,8 @@
   beforeNavigate(() => autosave.flush());
 
   onMount(() => {
+    mounted = true;
+    actionUrl = new URL('?/save', location.href).href;
     const onVisibility = () => {
       if (document.visibilityState === 'visible') void refreshAll();
       else autosave.flush();
@@ -158,6 +162,7 @@
       window.removeEventListener('pagehide', onPageHide);
       autosave.flush();
       autosave.dispose();
+      mounted = false;
     };
   });
 
@@ -258,17 +263,13 @@
 {/if}
 
 <form
-  bind:this={formEl}
-  method="POST"
-  action="?/save"
   novalidate
   autocomplete="off"
   class="today-form"
-  use:enhance={submitForm}
+  onsubmit={onSubmit}
   onfocusin={onFocusIn}
   onfocusout={onFocusOut}
 >
-  <input type="hidden" name="date" value={data.today} />
 
   <div class="timeline">
     {#each items as item (item.key)}

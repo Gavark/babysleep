@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   FIELD_NAMES,
+  buildSaveBody,
   fieldsFromEntry,
   mergeServer,
   napPairs,
@@ -103,5 +104,36 @@ describe('restoreEmptied', () => {
     );
     expect(restored.bedtime).toBe('');
     expect(restored.nap1_start).toBe('09:30');
+  });
+});
+
+describe('buildSaveBody', () => {
+  const fields = { ...empty(), wake_time: '06:40', bedtime: '', nap1_pause_min: '15', notes: 'n' };
+  it('always posts the date', () => {
+    const body = buildSaveBody(fields, [], new Set(), '2026-11-16');
+    expect(body.get('date')).toBe('2026-11-16');
+    expect([...body.keys()]).toEqual(['date']);
+  });
+  it('posts the value of a requested field', () => {
+    const body = buildSaveBody(fields, ['wake_time', 'nap1_pause_min'], new Set(), '2026-11-16');
+    expect(body.get('wake_time')).toBe('06:40');
+    expect(body.get('nap1_pause_min')).toBe('15');
+    expect(body.getAll('clear')).toEqual([]);
+  });
+  it('posts only a clear entry for a cleared field', () => {
+    const body = buildSaveBody(fields, ['bedtime', 'wake_time'], new Set(['bedtime']), '2026-11-16');
+    expect(body.has('bedtime')).toBe(false);
+    expect(body.getAll('clear')).toEqual(['bedtime']);
+    expect(body.get('wake_time')).toBe('06:40');
+  });
+  it('leaves out fields that were not requested, even cleared ones', () => {
+    const body = buildSaveBody(fields, ['wake_time'], new Set(['bedtime']), '2026-11-16');
+    expect(body.has('notes')).toBe(false);
+    expect(body.has('bedtime')).toBe(false);
+    expect(body.getAll('clear')).toEqual([]);
+  });
+  it('posts an empty string for a requested field emptied without a clear', () => {
+    const body = buildSaveBody(fields, ['bedtime'], new Set(), '2026-11-16');
+    expect(body.get('bedtime')).toBe('');
   });
 });
