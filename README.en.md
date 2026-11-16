@@ -51,8 +51,6 @@ a single SQLite file on a Docker volume you control.
   is exceeded; works on Chrome/Firefox/Edge desktop and mobile, plus iOS
   Safari 16.4+ (PWA installed to the home screen).
 - **Timezone-aware** — per-user, per-baby, and per-entry overrides.
-- **Simple schema** — straightforward CSV import if you're migrating from
-  another tracker.
 
 Bilingual UI (FR / EN), auto-detected from the browser's Accept-Language
 header at first login, switchable from the header (🌐) or /account.

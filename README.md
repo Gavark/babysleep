@@ -57,7 +57,6 @@ dans un fichier SQLite unique sur un volume Docker que tu contrôles.
   d'éveil est dépassée ; fonctionne sur Chrome/Firefox/Edge desktop et mobile,
   Safari iOS 16.4+ (PWA installée à l'écran d'accueil).
 - **Fuseaux horaires** — overrides par utilisateur, par bébé et par entrée.
-- **Schéma simple** — facile à migrer depuis un autre tracker via CSV.
 
 UI bilingue FR / EN, auto-détection navigateur (Accept-Language) au premier
 login, modifiable depuis le header (🌐) ou /account.
