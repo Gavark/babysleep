@@ -217,13 +217,11 @@
 
 <style>
   .wake-timer-card {
-    position: sticky;
-    top: 0;
-    z-index: 10;
     background: var(--c-bg-card);
-    box-shadow: var(--shadow-md);
+    box-shadow: none;
+    border: 1.5px solid var(--c-primary);
     border-radius: var(--r-lg);
-    padding: var(--s-3) var(--s-4);
+    padding: var(--s-3);
     margin-bottom: var(--s-3);
     display: grid;
     gap: var(--s-2);
@@ -245,7 +243,7 @@
   .row-label.honey { color: var(--c-accent-honey); }
   .row-label.night { color: var(--c-cal-seg-night); font-size: var(--fs-md); }
   .counter {
-    font-size: var(--fs-2xl);
+    font-size: var(--fs-xl);
     font-weight: 700;
     line-height: 1;
     font-feature-settings: "tnum" 1;
