@@ -24,7 +24,7 @@
   import EnablePushButton from '$lib/components/EnablePushButton.svelte';
   import * as m from '$paraglide/messages';
 
-  let { data, form } = $props();
+  let { data } = $props();
 
   let pushHighlighted = $state(false);
 
@@ -52,6 +52,8 @@
   let saveState = $state<SaveState>('idle');
   /** Set by a failed save, cleared only by a successful one: drives the banner. */
   let saveFailed = $state(false);
+  /** Validation message from the server's last `failure`, cleared by a success. */
+  let serverError = $state<string | null>(null);
   /** Name of the form field holding focus: never overwritten by server data. */
   let focused = $state<string | null>(null);
 
@@ -82,15 +84,19 @@
     } catch {
       // Network down, aborted, or not an action result (e.g. a proxy page).
       saveFailed = true;
+      serverError = null;
       return false;
     }
 
     if (result.type !== 'success') {
       saveFailed = true;
-      // `failure` sets `form.error`; `redirect` (expired session) is followed.
-      // An `error` result would swap the page for the error page: keep the
-      // values on screen and show the banner instead.
-      if (mounted && (result.type === 'failure' || result.type === 'redirect')) {
+      // The server's validation message, shown in the banner. Not through
+      // `applyAction`: that would move focus away from the field being edited.
+      const message = result.type === 'failure' ? result.data?.error : null;
+      serverError = typeof message === 'string' ? message : null;
+      // An expired session redirects: follow it. An `error` result would swap
+      // the page for the error page: keep the values on screen instead.
+      if (mounted && result.type === 'redirect') {
         try {
           await applyAction(result);
         } catch {
@@ -100,16 +106,20 @@
       return false;
     }
 
+    // Success: clear the banner before any await, so a failed refresh below
+    // cannot leave it showing. No `applyAction` here: it resets focus.
     for (const name of clearedSent) clears.delete(name);
     saveFailed = false;
+    serverError = null;
+    // Snapshot now: focus events during the refresh must not empty the guard.
+    const focusedAtSave = focused;
     if (mounted) {
       try {
         await refreshAll();
         if (!mounted) return true;
-        await applyAction(result);
         // A field emptied with the keyboard kept its server value: show it
         // again, unless it was cleared with ✕ or is being edited.
-        const keepEmpty = new Set([...clearedSent, ...clears, ...(focused ? [focused] : [])]);
+        const keepEmpty = new Set([...clearedSent, ...clears, ...(focusedAtSave ? [focusedAtSave] : [])]);
         fields = restoreEmptied(fields, fieldsFromEntry(data.entry), names, keepEmpty);
       } catch {
         // The save itself succeeded; only the refresh failed.
@@ -255,9 +265,9 @@
   <p class="budget-warn">{m.today_day_budget_exceeded({ amount: formatDuration(budget.completedMin - budget.totalMin) })}</p>
 {/if}
 
-{#if saveFailed || form?.error}
+{#if saveFailed || serverError}
   <p class="error save-banner" role="alert">
-    <span>{form?.error ?? m.today_entry_save_failed()}</span>
+    <span>{serverError ?? m.today_entry_save_failed()}</span>
     <button type="button" class="btn btn-secondary btn-sm" onclick={() => autosave.flush()}>{m.today_save_retry()}</button>
   </p>
 {/if}
