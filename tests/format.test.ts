@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { formatDate, formatDateTime, formatAgeBracket } from '../src/lib/format';
+import { formatDate, formatDateTime, formatAgeBracket, formatLongDay } from '../src/lib/format';
 import { AGE_PARAMS } from '../src/lib/age-params';
 
 describe('formatDate', () => {
@@ -50,5 +50,14 @@ describe('formatAgeBracket', () => {
 
   it('keeps months below two years', () => {
     expect(formatAgeBracket({ ageMinMonths: 4, ageMaxMonths: 6 })).toMatch(/^4-6 /);
+  });
+});
+
+describe('formatLongDay', () => {
+  it('renders a capitalised long day in fr', () => {
+    expect(formatLongDay('2026-11-16', 'fr')).toBe('Lundi 16 novembre');
+  });
+  it('renders a capitalised long day in en', () => {
+    expect(formatLongDay('2026-11-16', 'en')).toBe('Monday 16 November');
   });
 });

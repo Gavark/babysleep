@@ -56,3 +56,14 @@ export function formatAgeBracket(p: Pick<AgeParams, 'ageMinMonths' | 'ageMaxMont
   }
   return m.age_bracket_months({ from: p.ageMinMonths, to: p.ageMaxMonths });
 }
+
+/** "Lundi 16 novembre" / "Monday 16 November" for an ISO date (YYYY-MM-DD). */
+export function formatLongDay(iso: string, locale: Locale): string {
+  const label = formatDate(new Date(`${iso}T12:00:00Z`), locale, {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    timeZone: 'UTC'
+  }).replace(/,/g, '');
+  return label.charAt(0).toUpperCase() + label.slice(1);
+}

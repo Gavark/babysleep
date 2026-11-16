@@ -1,0 +1,74 @@
+import { describe, it, expect } from 'vitest';
+import {
+  FIELD_NAMES,
+  fieldsFromEntry,
+  mergeServer,
+  napPairs,
+  visibleNapCount,
+  type DayFields
+} from '../../src/lib/day-form';
+
+const empty = (): DayFields => fieldsFromEntry(null);
+
+describe('FIELD_NAMES', () => {
+  it('has 28 unique names', () => {
+    expect(FIELD_NAMES).toHaveLength(28);
+    expect(new Set(FIELD_NAMES).size).toBe(28);
+  });
+});
+
+describe('fieldsFromEntry', () => {
+  it('gives empty strings for a missing entry', () => {
+    const f = fieldsFromEntry(null);
+    for (const name of FIELD_NAMES) expect(f[name]).toBe('');
+  });
+  it('maps camelCase entry keys to snake_case fields', () => {
+    const f = fieldsFromEntry({
+      wakeTime: '06:40',
+      nap1PauseMin: 10,
+      nap2PauseMin: 0,
+      notes: null,
+      timezone: 'Europe/Paris'
+    });
+    expect(f.wake_time).toBe('06:40');
+    expect(f.nap1_pause_min).toBe('10');
+    expect(f.nap2_pause_min).toBe('');
+    expect(f.notes).toBe('');
+    expect(f.timezone).toBe('Europe/Paris');
+  });
+});
+
+describe('mergeServer', () => {
+  it('takes server values except for kept fields', () => {
+    const merged = mergeServer(
+      { ...empty(), wake_time: '06:30', notes: 'local' },
+      { ...empty(), wake_time: '06:40', notes: 'serveur', bedtime: '20:00' },
+      new Set(['notes'])
+    );
+    expect(merged.wake_time).toBe('06:40');
+    expect(merged.notes).toBe('local');
+    expect(merged.bedtime).toBe('20:00');
+  });
+});
+
+describe('napPairs', () => {
+  it('always returns 8 pairs with numeric pauses', () => {
+    const pairs = napPairs({ ...empty(), nap1_pause_min: '15', nap2_start: '10:00' });
+    expect(pairs).toHaveLength(8);
+    expect(pairs[0].pauseMin).toBe(15);
+    expect(pairs[1]).toEqual({ start: '10:00', end: '', pauseMin: 0 });
+  });
+});
+
+describe('visibleNapCount', () => {
+  it('uses expected on an empty day', () => {
+    expect(visibleNapCount(empty(), 3)).toBe(3);
+  });
+  it('covers the highest filled nap', () => {
+    expect(visibleNapCount({ ...empty(), nap5_start: '14:00' }, 3)).toBe(5);
+  });
+  it('clamps to 1..8', () => {
+    expect(visibleNapCount(empty(), 0)).toBe(1);
+    expect(visibleNapCount(empty(), 12)).toBe(8);
+  });
+});
