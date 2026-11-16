@@ -32,11 +32,17 @@
     <span class="head-label">{@render label()}</span>
     <span class="head-value">{@render value()}</span>
   </button>
-  <div class="panel" id={panelId} hidden={!open}>
-    {@render children()}
-    <div class="panel-foot">
-      <SaveStatus state={saveState} />
-      <button type="button" class="btn btn-primary btn-sm" onclick={onsave}>{m.today_save_btn()}</button>
+  <!-- Kept in the DOM and animated open; `inert` takes a closed panel out of
+       focus order and the accessibility tree, as `hidden` did. -->
+  <div class="panel-wrap" class:open id={panelId} inert={!open}>
+    <div class="panel-clip">
+      <div class="panel">
+        {@render children()}
+        <div class="panel-foot">
+          <SaveStatus state={saveState} />
+          <button type="button" class="btn btn-primary btn-sm" onclick={onsave}>{m.today_save_btn()}</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -86,7 +92,22 @@
     gap: var(--s-3);
     padding: var(--s-2) var(--s-2) var(--s-3);
   }
-  .panel[hidden] { display: none; }
+  /* Open and close by animating the row height from 0 to its content. */
+  .panel-wrap {
+    display: grid;
+    grid-template-rows: 0fr;
+    visibility: hidden;
+    transition: grid-template-rows 150ms ease, visibility 0s linear 150ms;
+  }
+  .panel-wrap.open {
+    grid-template-rows: 1fr;
+    visibility: visible;
+    transition: grid-template-rows 150ms ease, visibility 0s;
+  }
+  .panel-clip { overflow: hidden; min-height: 0; }
+  @media (prefers-reduced-motion: reduce) {
+    .panel-wrap, .panel-wrap.open { transition: none; }
+  }
   .panel-foot {
     display: flex;
     align-items: center;

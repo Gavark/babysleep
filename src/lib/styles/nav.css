@@ -89,3 +89,15 @@
   gap: var(--s-2);
   padding: 0 var(--s-2) var(--s-2);
 }
+
+/* Page transitions (View Transitions, started in the app layout). The page
+   content slides in slightly; the header and the bottom bar stay put. */
+.nav-mobile { view-transition-name: app-header; }
+.bottom-nav { view-transition-name: bottom-nav; }
+@keyframes page-out { to { opacity: 0; transform: translateX(-8px); } }
+@keyframes page-in { from { opacity: 0; transform: translateX(8px); } }
+::view-transition-old(root) { animation: 150ms ease-in both page-out; }
+::view-transition-new(root) { animation: 150ms ease-out both page-in; }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+}

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
+  import { onNavigate } from '$app/navigation';
   import ThemeToggle from '$lib/components/ThemeToggle.svelte';
   import LocaleSwitcher from '$lib/components/LocaleSwitcher.svelte';
   import DropMenu from '$lib/components/DropMenu.svelte';
@@ -15,6 +16,21 @@
   import * as m from '$paraglide/messages';
 
   let { children, data } = $props();
+
+  // A short slide between pages (styles in $lib/styles/nav.css). Skipped
+  // without View Transitions support, when the system asks for reduced
+  // motion, and for a same-page navigation (calendar month, query change).
+  onNavigate((navigation) => {
+    if (!document.startViewTransition) return;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!navigation.to || navigation.from?.url.pathname === navigation.to.url.pathname) return;
+    return new Promise((resolve) => {
+      document.startViewTransition(async () => {
+        resolve();
+        await navigation.complete;
+      });
+    });
+  });
 
   const currentBaby = $derived(data.babies.find((b) => b.id === data.currentBabyId) ?? null);
 
