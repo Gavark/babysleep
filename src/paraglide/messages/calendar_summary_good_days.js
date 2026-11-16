@@ -6,7 +6,7 @@ import { getLocale, experimentalStaticLocale } from '../runtime.js';
 /** @typedef {{}} Calendar_Summary_Good_DaysInputs */
 
 const fr_calendar_summary_good_days = /** @type {(inputs: Calendar_Summary_Good_DaysInputs) => LocalizedString} */ () => {
-	return /** @type {LocalizedString} */ (`jours au but`)
+	return /** @type {LocalizedString} */ (`objectif atteint`)
 };
 
 const en_calendar_summary_good_days = /** @type {(inputs: Calendar_Summary_Good_DaysInputs) => LocalizedString} */ () => {

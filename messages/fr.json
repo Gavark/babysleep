@@ -305,7 +305,7 @@
   "calendar_summary_label": "Résumé du mois",
   "calendar_summary_avg_sleep": "sommeil moyen",
   "calendar_summary_avg_naps": "siestes / jour",
-  "calendar_summary_good_days": "jours au but",
+  "calendar_summary_good_days": "objectif atteint",
   "calendar_summary_good_days_value": "{good} / {total}",
   "calendar_week_of": "Semaine du {date}",
   "calendar_week_avg": "moy. {duration}",
