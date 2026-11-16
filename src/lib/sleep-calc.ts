@@ -15,6 +15,16 @@ export function ageInMonths(birthDateISO: string, override?: number | null, toda
   return Math.max(0, months);
 }
 
+/**
+ * Age on a given day (`YYYY-MM-DD`). Views that walk over dates (calendar
+ * months, past days) can land before the birth: that counts as 0 months
+ * rather than an error.
+ */
+export function ageInMonthsOnDate(birthDateISO: string, override: number | null | undefined, dateISO: string): number {
+  if (override == null && dateISO < birthDateISO) return 0;
+  return ageInMonths(birthDateISO, override ?? undefined, new Date(dateISO + 'T12:00:00Z'));
+}
+
 export function idealBedtime(wakeHHMM: string, nightSleepHours: number): string {
   const wakeMin = parseHHMM(wakeHHMM);
   const totalMin = wakeMin - Math.round(nightSleepHours * 60);

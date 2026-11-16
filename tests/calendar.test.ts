@@ -142,6 +142,12 @@ describe('heatmapClass', () => {
 describe('computeDayMetrics', () => {
   const baby: CalendarBaby = { birthDate: '2025-11-13', ageOverrideMonths: null };
 
+  it('does not throw for a day before the birth (month shown before birth)', () => {
+    const m = computeDayMetrics('2025-10-01', undefined, baby, '2026-05-21');
+    expect(m.hasAnyData).toBe(false);
+    expect(m.heatLevel).toBe('none');
+  });
+
   it('returns hasAnyData=false for missing entry', () => {
     const m = computeDayMetrics('2026-05-13', undefined, baby, '2026-05-21');
     expect(m.hasAnyData).toBe(false);

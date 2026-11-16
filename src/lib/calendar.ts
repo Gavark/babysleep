@@ -1,5 +1,5 @@
 import { parseHHMM, isValidHHMM } from '$lib/time';
-import { ageInMonths } from '$lib/sleep-calc';
+import { ageInMonthsOnDate } from '$lib/sleep-calc';
 import { paramsForAge } from '$lib/age-params';
 
 export type TimelineSegment = {
@@ -168,8 +168,7 @@ export function computeDayMetrics(
   baby: CalendarBaby,
   todayISO: string
 ): DayMetrics {
-  const refDate = new Date(date + 'T12:00:00Z');
-  const months = ageInMonths(baby.birthDate, baby.ageOverrideMonths ?? undefined, refDate);
+  const months = ageInMonthsOnDate(baby.birthDate, baby.ageOverrideMonths, date);
   const ageParams = paramsForAge(months);
   const recommendedMin = Math.round((ageParams.daySleepH + ageParams.nightSleepH) * 60);
 

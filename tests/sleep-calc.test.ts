@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { ageInMonths, idealBedtime, suggestNextNap, suggestedBedtime, NAP_WEIGHTS, suggestNapEnd, computeDaySleepBudget, formatDuration } from '$lib/sleep-calc';
+import { ageInMonths, ageInMonthsOnDate, idealBedtime, suggestNextNap, suggestedBedtime, NAP_WEIGHTS, suggestNapEnd, computeDaySleepBudget, formatDuration } from '$lib/sleep-calc';
 import type { NapPair } from '$lib/sleep-calc';
 
 describe('ageInMonths', () => {
@@ -356,5 +356,17 @@ describe('formatDuration', () => {
     expect(formatDuration(90)).toBe('1h30');
     expect(formatDuration(180)).toBe('3h');
     expect(formatDuration(125)).toBe('2h05');
+  });
+});
+
+describe('ageInMonthsOnDate', () => {
+  it('is the age on that day', () => {
+    expect(ageInMonthsOnDate('2025-01-15', null, '2025-07-15')).toBe(6);
+  });
+  it('is 0 for a day before the birth instead of throwing', () => {
+    expect(ageInMonthsOnDate('2025-01-15', null, '2024-12-31')).toBe(0);
+  });
+  it('keeps the manual override', () => {
+    expect(ageInMonthsOnDate('2025-01-15', 4, '2024-12-31')).toBe(4);
   });
 });

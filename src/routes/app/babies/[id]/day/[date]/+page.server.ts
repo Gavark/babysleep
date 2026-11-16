@@ -3,7 +3,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { getDb } from '$lib/server/db';
 import { getBabyForUser } from '$lib/server/babies';
 import { getEntryForBabyDate, upsertEntry, deleteEntry } from '$lib/server/sleep-entries';
-import { ageInMonths } from '$lib/sleep-calc';
+import { ageInMonthsOnDate } from '$lib/sleep-calc';
 import { paramsForAge } from '$lib/age-params';
 import { isValidHHMM } from '$lib/time';
 import { resolveTimezone } from '$lib/tz';
@@ -26,8 +26,7 @@ export const load: PageServerLoad = ({ locals, params }) => {
   const entry = getEntryForBabyDate(db, baby.id, date);
 
   // Compute baby age AT that date (not today's age — important for old entries)
-  const refDate = new Date(date + 'T12:00:00Z');
-  const months = ageInMonths(baby.birthDate, baby.ageOverrideMonths ?? undefined, refDate);
+  const months = ageInMonthsOnDate(baby.birthDate, baby.ageOverrideMonths, date);
   const ageParams = paramsForAge(months);
 
   const effectiveTz = resolveTimezone(entry?.timezone ?? null, baby.timezone, locals.user.timezone);

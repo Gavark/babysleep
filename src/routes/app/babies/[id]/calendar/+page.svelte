@@ -5,7 +5,7 @@
   import NightRatingPicker from '$lib/components/calendar/NightRatingPicker.svelte';
   import CaretLeft from 'phosphor-svelte/lib/CaretLeft';
   import CaretRight from 'phosphor-svelte/lib/CaretRight';
-  import { ageInMonths, formatDuration } from '$lib/sleep-calc';
+  import { ageInMonthsOnDate, formatDuration } from '$lib/sleep-calc';
   import { paramsForAge } from '$lib/age-params';
   import { formatDate, formatNumber } from '$lib/format';
   import { summarizeMonth } from '$lib/calendar';
@@ -24,13 +24,7 @@
   const todayHref = $derived(`/app/babies/${data.baby.id}/calendar`);
 
   const middleDate = $derived(`${data.year}-${String(data.month).padStart(2, '0')}-15`);
-  const ageMonths = $derived(
-    ageInMonths(
-      data.baby.birthDate,
-      data.baby.ageOverrideMonths ?? undefined,
-      new Date(middleDate + 'T12:00:00Z')
-    )
-  );
+  const ageMonths = $derived(ageInMonthsOnDate(data.baby.birthDate, data.baby.ageOverrideMonths, middleDate));
   const ap = $derived(paramsForAge(ageMonths));
   const quotaTotalMin = $derived(Math.round((ap.daySleepH + ap.nightSleepH) * 60));
   const quotaDayMin = $derived(Math.round(ap.daySleepH * 60));
