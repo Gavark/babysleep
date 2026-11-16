@@ -17,7 +17,7 @@ Built for parents who want to keep their family data on their own server.
 ## What is this?
 
 BabySleep is a small web app you run on your own machine (Raspberry Pi, NAS,
-VPS, laptop — whatever runs Docker). It helps you:
+VPS, laptop: whatever runs Docker). It helps you:
 
 - Log your baby's wake time, naps, and bedtime
 - See an age-appropriate suggestion for the next nap and tonight's bedtime
@@ -103,8 +103,8 @@ cp .env.example .env
 docker compose -f docker-compose.quickstart.yml up -d
 ```
 
-Open <http://localhost:3000> in your browser — you'll be sent to a setup wizard
-to create your admin account. After that, log in and start tracking.
+Open <http://localhost:3000> in your browser. A setup wizard creates your
+admin account; after that, log in and start tracking.
 
 This compose file puts a small Caddy in front of the app, over plain HTTP:
 without a proxy declaring the protocol, the app rejects every form (403). It is
@@ -141,7 +141,7 @@ for the full annotated list. Highlights:
 | `VAPID_SUBJECT` | no | Override the VAPID subject (default: `mailto:admin@<host>` derived from `ORIGIN`). |
 
 Sessions are secured by 256-bit random IDs stored in `HttpOnly` + `Secure` +
-`SameSite=Lax` cookies and validated against the database on every request —
+`SameSite=Lax` cookies and validated against the database on every request, so
 there is no "session secret" to manage.
 
 ---
@@ -171,8 +171,8 @@ from the Today page.
 
 - VAPID keys are generated automatically on first server start and stored in
   the database (no environment variable needed to bootstrap).
-- If you use Caddy (or any reverse proxy with HTTPS), there's nothing extra
-  to configure — push notifications require HTTPS.
+- Push notifications require HTTPS. If you use Caddy (or any reverse proxy
+  with HTTPS), there's nothing extra to configure.
 - You can review the list of subscribed devices and revoke them one by one
   from `/account/notifications`.
 - On iPhone, you must first install the app to the home screen (Share →
@@ -193,7 +193,7 @@ docker compose -f docker-compose.full.yml up -d app
 ```
 
 The app applies pending Drizzle migrations at startup. Migrations to date are
-additive only (no drops, no destructive changes) — your data is kept from one
+additive only (no drops, no destructive changes), so your data is kept from one
 version to the next.
 
 ---
@@ -230,7 +230,7 @@ Type-check:
 npm run check
 ```
 
-Stack: SvelteKit 2 + Svelte 5 (runes) + TypeScript strict, Drizzle ORM over
+Stack: SvelteKit 3 + Svelte 5 (runes) + TypeScript strict, Drizzle ORM over
 better-sqlite3, argon2id via `@node-rs/argon2`, Chart.js for stats,
 phosphor-svelte for icons, Nunito Variable (self-hosted) for typography.
 
