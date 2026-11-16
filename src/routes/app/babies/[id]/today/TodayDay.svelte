@@ -1,10 +1,10 @@
 <script lang="ts">
   import { applyAction, deserialize, type ActionResult } from '$app/forms';
-  import { beforeNavigate } from '$app/navigation';
+  import { beforeNavigate, refreshAll } from '$app/navigation';
   import { onMount, untrack } from 'svelte';
   import { SvelteSet } from 'svelte/reactivity';
   import { computeDaySleepBudget, formatDuration } from '$lib/sleep-calc';
-  import { COMMON_TIMEZONES } from '$lib/tz';
+  import { COMMON_TIMEZONES, todayISOInTZ } from '$lib/tz';
   import { formatAgeBracket, formatLongDay } from '$lib/format';
   import {
     FIELD_NAMES,
@@ -177,9 +177,34 @@
     }
   }
 
+  /** New day the page last tried to move to, so a clock the server disagrees with cannot reload in a loop. */
+  let rolloverTriedFor: string | null = null;
+
+  /**
+   * The page was left open past midnight: move to the new day, so a morning
+   * entry is not written to yesterday. Reloading goes through SvelteKit, whose
+   * fallback when the server is unreachable is a full page reload that would
+   * drop unsent edits; so reload only once the server has just answered.
+   * Edits pending for yesterday were flushed before and still go to yesterday.
+   */
+  async function rollOverIfNewDay(): Promise<boolean> {
+    const today = todayISOInTZ(effectiveTz);
+    if (today === saveDate || rolloverTriedFor === today) return false;
+    try {
+      const response = await fetch(entryUrl, { headers: { accept: 'application/json' }, cache: 'no-store' });
+      if (!response.ok || !mounted) return true;
+      rolloverTriedFor = today;
+      await refreshAll();
+    } catch {
+      // Offline: stay on this day and try again on the next return.
+    }
+    return true;
+  }
+
   /** Back to the foreground or back online: retry what failed, then catch up. */
-  function onReturn() {
+  async function onReturn() {
     autosave.flush();
+    if (await rollOverIfNewDay()) return;
     void fetchServerEntry();
   }
 
@@ -219,7 +244,12 @@
     document.addEventListener('visibilitychange', onVisibility);
     window.addEventListener('pagehide', onLeave);
     window.addEventListener('online', onReturn);
+    // A page kept on screen past midnight (tablet, desktop) never "returns".
+    const dayCheck = setInterval(() => {
+      if (document.visibilityState === 'visible') void rollOverIfNewDay();
+    }, 60_000);
     return () => {
+      clearInterval(dayCheck);
       document.removeEventListener('visibilitychange', onVisibility);
       window.removeEventListener('pagehide', onLeave);
       window.removeEventListener('online', onReturn);
