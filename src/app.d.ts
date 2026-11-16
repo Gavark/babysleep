@@ -7,6 +7,7 @@ declare global {
       user: User | null;
       session: Session | null;
       theme: 'auto' | 'light' | 'dark';
+      nav: import('$lib/nav').NavMode;
       locale: Locale;
     }
     interface PageData {
