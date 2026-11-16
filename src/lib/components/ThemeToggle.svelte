@@ -4,11 +4,23 @@
   import Moon from 'phosphor-svelte/lib/Moon';
   import * as m from '$paraglide/messages';
 
-  type ThemeValue = 'auto' | 'light' | 'dark';
+  import { themeFromAttr, type ThemeValue } from '$lib/theme';
 
   let { initial }: { initial: ThemeValue } = $props();
-  // svelte-ignore state_referenced_locally — `initial` is a one-time seed, theme is then user-controlled
+  // svelte-ignore state_referenced_locally — `initial` seeds the server render; the client then follows <html data-theme>
   let theme = $state<ThemeValue>(initial);
+
+  // Several toggles can be mounted at once (classic header and compact menu),
+  // and the menu's copy is re-created each time it opens: follow the
+  // attribute rather than a private copy of the state.
+  $effect(() => {
+    const el = document.documentElement;
+    const sync = () => { theme = themeFromAttr(el.getAttribute('data-theme')); };
+    sync();
+    const observer = new MutationObserver(sync);
+    observer.observe(el, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => observer.disconnect();
+  });
 
   const order: ThemeValue[] = ['auto', 'light', 'dark'];
 

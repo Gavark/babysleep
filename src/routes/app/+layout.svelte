@@ -119,11 +119,13 @@
   <p class="nav-try-new"><NavModeSwitch to="bottom" label={m.app_nav_try_new()} /></p>
 </div>
 
-{@render children()}
-
+<!-- Before the page content so it never becomes main's last child: pages
+     rely on `p:last-child` for their closing margin. It is position: fixed. -->
 {#if currentBaby}
   <BottomNav babyId={currentBaby.id} active={activeNavTab(page.url.pathname)} />
 {/if}
+
+{@render children()}
 
 <style>
   .app-header {
