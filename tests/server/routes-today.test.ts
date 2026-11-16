@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { buildEntryPatch } from '../../src/routes/app/babies/[id]/today/_logic';
+import { buildEntryPatch, isValidISODate } from '../../src/routes/app/babies/[id]/today/_logic';
 
 function fd(entries: Record<string, string | string[]>) {
   const f = new FormData();
@@ -34,5 +34,22 @@ describe('buildEntryPatch', () => {
   it('rejects an invalid time and an out-of-range pause', () => {
     expect(buildEntryPatch(fd({ wake_time: '25:00' }))).toEqual({ ok: false, kind: 'time', field: 'wake_time', value: '25:00' });
     expect(buildEntryPatch(fd({ nap1_pause_min: '601' }))).toEqual({ ok: false, kind: 'pause', field: 'nap1_pause_min', value: '601' });
+  });
+});
+
+describe('isValidISODate', () => {
+  it('accepts a real calendar date in YYYY-MM-DD form', () => {
+    expect(isValidISODate('2026-11-16')).toBe(true);
+    expect(isValidISODate('2024-02-29')).toBe(true);
+  });
+  it('rejects other shapes', () => {
+    for (const s of ['', 'undefined', 'null', '2026-1-16', '2026-11-16T00:00', ' 2026-11-16', '20261116', '2026/11/16']) {
+      expect(isValidISODate(s)).toBe(false);
+    }
+  });
+  it('rejects dates that do not exist', () => {
+    for (const s of ['2026-02-29', '2026-13-01', '2026-00-10', '2026-04-31', '2026-11-00']) {
+      expect(isValidISODate(s)).toBe(false);
+    }
   });
 });

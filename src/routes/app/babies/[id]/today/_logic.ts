@@ -25,6 +25,15 @@ function camel(s: string): string {
   return s.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
 }
 
+/** True for a `YYYY-MM-DD` string naming a day that exists in the calendar. */
+export function isValidISODate(s: string): boolean {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
+  if (!match) return false;
+  const [y, m, d] = [Number(match[1]), Number(match[2]), Number(match[3])];
+  const date = new Date(Date.UTC(y, m - 1, d));
+  return date.getUTCFullYear() === y && date.getUTCMonth() === m - 1 && date.getUTCDate() === d;
+}
+
 /** Builds the upsert patch from the save form. Pure: no DB, no i18n. */
 export function buildEntryPatch(form: FormData): EntryPatchResult {
   const patch: Record<string, string | number | null> = {};

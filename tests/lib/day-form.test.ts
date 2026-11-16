@@ -5,6 +5,7 @@ import {
   fieldsFromEntry,
   mergeServer,
   napPairs,
+  readPauseInput,
   restoreEmptied,
   visibleNapCount,
   type DayFields
@@ -135,5 +136,24 @@ describe('buildSaveBody', () => {
   it('posts an empty string for a requested field emptied without a clear', () => {
     const body = buildSaveBody(fields, ['bedtime'], new Set(), '2026-11-16');
     expect(body.get('bedtime')).toBe('');
+  });
+});
+
+describe('readPauseInput', () => {
+  it('keeps a positive whole number of minutes, trimmed and without leading zeros', () => {
+    expect(readPauseInput('15')).toEqual({ clear: false, value: '15' });
+    expect(readPauseInput(' 015 ')).toEqual({ clear: false, value: '15' });
+  });
+  it('leaves an emptied field to the keyboard rule (erases nothing)', () => {
+    expect(readPauseInput('')).toEqual({ clear: false, value: '' });
+    expect(readPauseInput('  ')).toEqual({ clear: false, value: '' });
+  });
+  it('clears the field, like the cross, for 0 or anything that is not a positive integer', () => {
+    for (const raw of ['0', '00', '-5', '2.5', 'abc', '1e2']) {
+      expect(readPauseInput(raw)).toEqual({ clear: true });
+    }
+  });
+  it('lets the server judge a whole number above its range', () => {
+    expect(readPauseInput('700')).toEqual({ clear: false, value: '700' });
   });
 });

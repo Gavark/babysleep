@@ -91,6 +91,21 @@ export function restoreEmptied(
   return restored;
 }
 
+export type PauseInput = { clear: true } | { clear: false; value: string };
+
+/**
+ * What a value typed into a pause field means. A positive whole number is kept
+ * (as canonical text); an empty field follows the keyboard rule (erases
+ * nothing); 0 or anything else that is not a positive integer clears the
+ * field, like ✕.
+ */
+export function readPauseInput(raw: string): PauseInput {
+  const v = raw.trim();
+  if (v === '') return { clear: false, value: '' };
+  if (!/^\d+$/.test(v) || Number(v) === 0) return { clear: true };
+  return { clear: false, value: String(Number(v)) };
+}
+
 export function napPairs(fields: DayFields): Array<{ start: string; end: string; pauseMin: number }> {
   return NAP_INDEXES.map((i) => ({
     start: fields[`nap${i}_start`] ?? '',
