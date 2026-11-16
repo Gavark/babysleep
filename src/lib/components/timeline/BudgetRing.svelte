@@ -21,7 +21,8 @@
   );
 </script>
 
-<svg class="ring" class:over width="56" height="56" viewBox="0 0 56 56" role="img" aria-label={label}>
+<!-- Drawn on a 56-unit grid and shown at 68 px: the text scales with it. -->
+<svg class="ring" class:over width="68" height="68" viewBox="0 0 56 56" role="img" aria-label={label}>
   <title>{label}</title>
   <circle class="track" cx="28" cy="28" r={R} fill="none" stroke-width="5" />
   <circle
