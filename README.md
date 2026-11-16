@@ -266,17 +266,13 @@ phosphor-svelte pour les icônes, Nunito Variable (self-hosted) pour la typo.
 
 ---
 
-## Statut & roadmap
+## Statut
 
 BabySleep est en `v1` depuis novembre 2026 et suit [SemVer](https://semver.org) :
 au sein de `v1.x`, pas de changement cassant sur le modèle de données ni sur la
 configuration (variables d'environnement, fichiers compose). Un changement
 cassant n'arriverait qu'avec une `v2`, annoncé dans les notes de version avec la
 marche à suivre. Les migrations restent additives.
-
-Ce que je veux ajouter (pas d'ETA ferme) :
-
-- Tags optionnels par jour (malade, crèche, vacances)
 
 ---
 

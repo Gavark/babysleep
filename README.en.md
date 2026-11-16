@@ -236,17 +236,13 @@ phosphor-svelte for icons, Nunito Variable (self-hosted) for typography.
 
 ---
 
-## Status & roadmap
+## Status
 
 BabySleep has been at `v1` since November 2026 and follows
 [SemVer](https://semver.org): within `v1.x`, no breaking change to the data
 model or the configuration (environment variables, compose files). A breaking
 change would only come with a `v2`, announced in the release notes with the
 steps to follow. Migrations stay additive.
-
-Things I want to add (no firm ETA):
-
-- Optional tags per day (sick, daycare, vacation)
 
 ---
 
