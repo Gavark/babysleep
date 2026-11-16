@@ -7,6 +7,11 @@
  *
  *   npm run demo              seed + serve on http://localhost:5199
  *   npm run demo -- --seed    seed only, no server
+ *   npm run demo -- --at=14:30
+ *                             build today as if it were 14:30 in the baby's
+ *                             zone (today's date stays the real one), for
+ *                             screenshots taken outside daytime; set the
+ *                             capture browser's clock to the same time.
  *
  * The generator is deterministic (fixed PRNG seed), so re-running it produces
  * the same history every time. Only "today" moves, so the wake-window timer
@@ -27,6 +32,12 @@ const BABY_NAME = 'Léo';
 const TZ = 'Europe/Paris';
 
 process.env.DATABASE_PATH = DB_PATH;
+
+/** `--at=HH:MM`: simulated time of day for today's entries (screenshots). */
+const AT = process.argv.find((a) => a.startsWith('--at='))?.slice(5) ?? null;
+if (AT !== null && !/^([01]\d|2[0-3]):[0-5]\d$/.test(AT)) {
+  throw new Error(`--at expects HH:MM, got ${AT}`);
+}
 
 // ---------------------------------------------------------------- utilities
 
@@ -180,7 +191,9 @@ async function buildHistory(todayISO: string): Promise<Day[]> {
   // live value: the last nap ended ~75 min ago, the next one is still ahead.
   const today = days[days.length - 1];
   const p = paramsForAge(monthsBetween(BIRTH_DATE, todayISO));
-  const nowMin = minutesInTZ(TZ);
+  const nowMin = AT === null
+    ? minutesInTZ(TZ)
+    : Number(AT.slice(0, 2)) * 60 + Number(AT.slice(3, 5));
   const lastNapEnd = nowMin - 75;
   const wakeMin = 6 * 60 + 40;
 
@@ -272,7 +285,7 @@ async function seed() {
     db.insert(schema.sleepEntries).values(row as never).run();
   }
 
-  console.log(`Seeded ${DB_PATH}: ${days.length} days for ${BABY_NAME}, up to ${todayISO}.`);
+  console.log(`Seeded ${DB_PATH}: ${days.length} days for ${BABY_NAME}, up to ${todayISO}${AT ? ` (today built as at ${AT})` : ''}.`);
   console.log(`Login: ${EMAIL} / ${PASSWORD}`);
 }
 

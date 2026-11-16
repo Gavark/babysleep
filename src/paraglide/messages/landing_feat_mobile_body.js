@@ -6,17 +6,17 @@ import { getLocale, experimentalStaticLocale } from '../runtime.js';
 /** @typedef {{}} Landing_Feat_Mobile_BodyInputs */
 
 const fr_landing_feat_mobile_body = /** @type {(inputs: Landing_Feat_Mobile_BodyInputs) => LocalizedString} */ () => {
-	return /** @type {LocalizedString} */ (`Installable depuis le navigateur. Sur petit écran, le calendrier passe en strip vertical.`)
+	return /** @type {LocalizedString} */ (`Installable depuis le navigateur. Sur téléphone, une barre d'onglets en bas de l'écran et un calendrier jour par jour, regroupé par semaine.`)
 };
 
 const en_landing_feat_mobile_body = /** @type {(inputs: Landing_Feat_Mobile_BodyInputs) => LocalizedString} */ () => {
-	return /** @type {LocalizedString} */ (`Installable straight from the browser. On a small screen the calendar becomes a vertical strip.`)
+	return /** @type {LocalizedString} */ (`Installable straight from the browser. On a phone, a tab bar at the bottom of the screen and a day-by-day calendar grouped by week.`)
 };
 
 /**
 * | output |
 * | --- |
-* | "Installable straight from the browser. On a small screen the calendar becomes a vertical strip." |
+* | "Installable straight from the browser. On a phone, a tab bar at the bottom of the screen and a day-by-day calendar grouped by week." |
 *
 * @param {Landing_Feat_Mobile_BodyInputs} inputs
 * @param {{ locale?: "fr" | "en" }} options

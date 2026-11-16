@@ -24,8 +24,8 @@ permet de :
 - Enregistrer l'heure de réveil, les siestes et le coucher de bébé
 - Voir une suggestion par tranche d'âge pour la prochaine sieste et l'heure
   de coucher du soir
-- Suivre l'évolution sur plusieurs semaines via un calendrier heatmap et une
-  page de stats
+- Suivre l'évolution sur plusieurs semaines via un calendrier et une page de
+  stats
 - Noter chaque nuit manuellement (bonne / moyenne / mauvaise) pour un repère
   visuel rapide
 - Partager l'accès avec ton/ta partenaire via des invitations privées
@@ -37,11 +37,14 @@ dans un fichier SQLite unique sur un volume Docker que tu contrôles.
 
 ## Fonctionnalités
 
-- **Vue Aujourd'hui** — formulaire rapide pour les saisies du jour avec un
-  timer live "fenêtre d'éveil" qui te dit quand caler la prochaine sieste.
-- **Calendrier** — grille mensuelle (ou strip vertical sur mobile) avec une
-  timeline 24h par jour, couleurs heatmap selon le % du quota de sommeil
-  recommandé pour l'âge, et une note manuelle par nuit (✓ / − / ✗).
+- **Vue Aujourd'hui** — la journée en frise : réveil, siestes, coucher, avec
+  les heures suggérées pour la suite et un timer live "fenêtre d'éveil".
+  Enregistrement automatique, pensé pour deux téléphones sur la même
+  journée.
+- **Calendrier** — grille mensuelle (ou liste par semaine sur mobile) avec une
+  timeline 24h par jour, la part du besoin de sommeil atteinte pour l'âge,
+  un résumé du mois et une note manuelle par nuit (✓ / − / ✗).
+- **Navigation mobile** — barre d'onglets en bas de l'écran sur téléphone.
 - **Historique** — tableau filtrable avec export CSV.
 - **Stats** — graphes des moyennes sur la période (heure de réveil, coucher,
   durée des siestes).
@@ -65,12 +68,12 @@ login, modifiable depuis le header (🌐) ou /account.
 
 <table>
   <tr>
-    <td width="50%"><img src="./static/screenshots/today.png" alt="Page Aujourd'hui avec le timer fenêtre d'éveil" /></td>
-    <td width="50%"><img src="./static/screenshots/calendar.png" alt="Calendrier mensuel avec heatmap et timeline 24 h" /></td>
+    <td width="50%"><img src="./static/screenshots/today.png" alt="Page Aujourd'hui en frise avec le timer fenêtre d'éveil" /></td>
+    <td width="50%"><img src="./static/screenshots/calendar.png" alt="Calendrier mensuel avec timeline 24 h et résumé du mois" /></td>
   </tr>
   <tr>
-    <td align="center"><sub>Aujourd'hui, avec le timer fenêtre d'éveil</sub></td>
-    <td align="center"><sub>Calendrier mensuel, heatmap et timeline 24 h</sub></td>
+    <td align="center"><sub>Aujourd'hui, la journée en frise</sub></td>
+    <td align="center"><sub>Calendrier mensuel, timeline 24 h et résumé du mois</sub></td>
   </tr>
   <tr>
     <td><img src="./static/screenshots/stats.png" alt="Graphes de stats sur une période" /></td>
@@ -81,11 +84,11 @@ login, modifiable depuis le header (🌐) ou /account.
     <td align="center"><sub>Historique filtrable, export CSV</sub></td>
   </tr>
   <tr>
-    <td><img src="./static/screenshots/mobile-calendar.png" alt="Calendrier en strip vertical sur mobile" /></td>
+    <td><img src="./static/screenshots/mobile-calendar.png" alt="Calendrier sur mobile, jours regroupés par semaine" /></td>
     <td><img src="./static/screenshots/today-dark.png" alt="Page Aujourd'hui en mode sombre" /></td>
   </tr>
   <tr>
-    <td align="center"><sub>Calendrier sur mobile (strip vertical)</sub></td>
+    <td align="center"><sub>Calendrier sur mobile, par semaine</sub></td>
     <td align="center"><sub>Mode sombre</sub></td>
   </tr>
 </table>

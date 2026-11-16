@@ -21,7 +21,7 @@ VPS, laptop — whatever runs Docker). It helps you:
 
 - Log your baby's wake time, naps, and bedtime
 - See an age-appropriate suggestion for the next nap and tonight's bedtime
-- Track progress over weeks with a calendar heatmap and a stats page
+- Track progress over weeks with a calendar and a stats page
 - Rate each night manually (good / so-so / rough) for at-a-glance review later
 - Share access with a partner via private invitations
 
@@ -32,11 +32,13 @@ a single SQLite file on a Docker volume you control.
 
 ## Features
 
-- **Today view** — quick form for today's wake / nap / bedtime entries with a
-  live "wake-window" timer so you know when the next nap is due.
-- **Calendar** — month grid (or vertical strip on mobile) with a 24h timeline
-  per day, heatmap colours based on % of age-recommended total sleep, and a
-  manual rating per night (✓ / − / ✗).
+- **Today view** — the day as a timeline: wake-up, naps, bedtime, with the
+  suggested times for what comes next and a live "wake-window" timer.
+  Autosave, built for two phones on the same day.
+- **Calendar** — month grid (or a list by week on mobile) with a 24h timeline
+  per day, the share of the age-recommended sleep reached, a month summary,
+  and a manual rating per night (✓ / − / ✗).
+- **Mobile navigation** — a tab bar at the bottom of the screen on phones.
 - **History** — filterable table with CSV export.
 - **Stats** — charts of averages over the period (wake time, bedtime, nap
   durations).
@@ -61,12 +63,12 @@ header at first login, switchable from the header (🌐) or /account.
 
 <table>
   <tr>
-    <td width="50%"><img src="./static/screenshots/today-en.png" alt="Today page with the wake-window timer" /></td>
-    <td width="50%"><img src="./static/screenshots/calendar-en.png" alt="Month calendar with heatmap and 24 h timeline" /></td>
+    <td width="50%"><img src="./static/screenshots/today-en.png" alt="Today page as a timeline with the wake-window timer" /></td>
+    <td width="50%"><img src="./static/screenshots/calendar-en.png" alt="Month calendar with 24 h timeline and month summary" /></td>
   </tr>
   <tr>
-    <td align="center"><sub>Today, with the wake-window timer</sub></td>
-    <td align="center"><sub>Month calendar, heatmap and 24 h timeline</sub></td>
+    <td align="center"><sub>Today, the day as a timeline</sub></td>
+    <td align="center"><sub>Month calendar, 24 h timeline and month summary</sub></td>
   </tr>
   <tr>
     <td><img src="./static/screenshots/stats-en.png" alt="Stats charts over a date range" /></td>
@@ -77,11 +79,11 @@ header at first login, switchable from the header (🌐) or /account.
     <td align="center"><sub>Filterable history, CSV export</sub></td>
   </tr>
   <tr>
-    <td><img src="./static/screenshots/mobile-calendar-en.png" alt="Calendar as a vertical strip on mobile" /></td>
+    <td><img src="./static/screenshots/mobile-calendar-en.png" alt="Calendar on mobile, days grouped by week" /></td>
     <td><img src="./static/screenshots/today-en-dark.png" alt="Today page in dark mode" /></td>
   </tr>
   <tr>
-    <td align="center"><sub>Calendar on mobile (vertical strip)</sub></td>
+    <td align="center"><sub>Calendar on mobile, by week</sub></td>
     <td align="center"><sub>Dark mode</sub></td>
   </tr>
 </table>

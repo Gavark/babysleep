@@ -106,7 +106,7 @@
       </div>
     </div>
     <div class="hero-shot">
-      {@render shot('feature-calendar', m.landing_hero_shot_alt(), 688, 508, true)}
+      {@render shot('feature-calendar', m.landing_hero_shot_alt(), 688, 509, true)}
     </div>
   </section>
 
@@ -120,7 +120,7 @@
           <p>{m.landing_feat_today_body()}</p>
         </div>
         <div class="cell-img">
-          {@render shot('feature-timer', m.landing_feat_today_alt(), 689, 161)}
+          {@render shot('feature-timer', m.landing_feat_today_alt(), 656, 157)}
         </div>
       </article>
 
@@ -140,7 +140,7 @@
           <p>{m.landing_feat_mobile_body()}</p>
         </div>
         <div class="cell-img cell-img-narrow">
-          {@render shot('feature-mobile', m.landing_feat_mobile_alt(), 343, 327)}
+          {@render shot('feature-mobile', m.landing_feat_mobile_alt(), 358, 294)}
         </div>
       </article>
 

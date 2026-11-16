@@ -6,17 +6,17 @@ import { getLocale, experimentalStaticLocale } from '../runtime.js';
 /** @typedef {{}} Landing_Feat_Mobile_AltInputs */
 
 const fr_landing_feat_mobile_alt = /** @type {(inputs: Landing_Feat_Mobile_AltInputs) => LocalizedString} */ () => {
-	return /** @type {LocalizedString} */ (`Calendrier en strip vertical sur mobile, un jour par ligne.`)
+	return /** @type {LocalizedString} */ (`Calendrier sur mobile : une semaine, un jour par ligne, avec l'axe des heures.`)
 };
 
 const en_landing_feat_mobile_alt = /** @type {(inputs: Landing_Feat_Mobile_AltInputs) => LocalizedString} */ () => {
-	return /** @type {LocalizedString} */ (`Calendar as a vertical strip on mobile, one day per row.`)
+	return /** @type {LocalizedString} */ (`Calendar on mobile: one week, one day per row, with the hour axis.`)
 };
 
 /**
 * | output |
 * | --- |
-* | "Calendar as a vertical strip on mobile, one day per row." |
+* | "Calendar on mobile: one week, one day per row, with the hour axis." |
 *
 * @param {Landing_Feat_Mobile_AltInputs} inputs
 * @param {{ locale?: "fr" | "en" }} options
