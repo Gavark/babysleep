@@ -55,6 +55,23 @@ export function mergeServer(
   return merged;
 }
 
+/**
+ * After a successful save: a sent field left empty without a `clear` was not
+ * erased by the server (only ✕ erases), so show the server value again.
+ */
+export function restoreEmptied(
+  local: DayFields,
+  server: DayFields,
+  sent: readonly FieldName[],
+  cleared: ReadonlySet<FieldName>
+): DayFields {
+  const restored: DayFields = { ...local };
+  for (const name of sent) {
+    if (restored[name] === '' && !cleared.has(name) && name in server) restored[name] = server[name];
+  }
+  return restored;
+}
+
 export function napPairs(fields: DayFields): Array<{ start: string; end: string; pauseMin: number }> {
   return NAP_INDEXES.map((i) => ({
     start: fields[`nap${i}_start`] ?? '',

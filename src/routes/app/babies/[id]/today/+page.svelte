@@ -1,6 +1,6 @@
 <script lang="ts">
   import { enhance, type SubmitFunction } from '$app/forms';
-  import { refreshAll } from '$app/navigation';
+  import { beforeNavigate, refreshAll } from '$app/navigation';
   import { onMount, untrack } from 'svelte';
   import { SvelteSet } from 'svelte/reactivity';
   import { computeDaySleepBudget, formatDuration } from '$lib/sleep-calc';
@@ -11,6 +11,7 @@
     fieldsFromEntry,
     mergeServer,
     napPairs,
+    restoreEmptied,
     visibleNapCount,
     type DayFields
   } from '$lib/day-form';
@@ -49,6 +50,8 @@
   /** Open row key: 'wake', 'nap1'…'nap8', 'bedtime', 'notes', 'tz'. */
   let openRow = $state<string | null>(null);
   let saveState = $state<SaveState>('idle');
+  /** Set by a failed save, cleared only by a successful one: drives the banner. */
+  let saveFailed = $state(false);
   /** Name of the form field holding focus: never overwritten by server data. */
   let focused = $state<string | null>(null);
 
@@ -75,15 +78,24 @@
     });
   }
 
-  const autosave = createAutosave({ delayMs: 600, onState: (s) => (saveState = s), save });
+  const autosave = createAutosave({
+    delayMs: 600,
+    onState: (s) => {
+      saveState = s;
+      if (s === 'error') saveFailed = true;
+    },
+    save
+  });
 
   const submitForm: SubmitFunction = ({ formData, cancel }) => {
     const names = requested;
     requested = null;
     if (!names) {
       // Enter pressed in a field: send only what changed, not the whole form.
+      // Deferred: a submit requested from inside this submit event is ignored
+      // by the browser and would count as a failed save.
       cancel();
-      autosave.flush();
+      queueMicrotask(() => autosave.flush());
       return;
     }
     const resolve = settle ?? (() => {});
@@ -100,11 +112,19 @@
 
     return async ({ result, update }) => {
       const ok = result.type === 'success';
-      if (ok) for (const name of clearedSent) clears.delete(name);
+      if (ok) {
+        for (const name of clearedSent) clears.delete(name);
+        saveFailed = false;
+      } else saveFailed = true;
       try {
         // An `error` result (network down, server unreachable) would swap the
         // page for the error page: keep the values on screen and show the banner.
         if (result.type !== 'error') await update({ reset: false });
+        if (ok) {
+          // A field emptied with the keyboard kept its server value: show it again.
+          const keepEmpty = new Set([...clearedSent, ...clears]);
+          fields = restoreEmptied(fields, fieldsFromEntry(data.entry), names, keepEmpty);
+        }
       } finally {
         if (settle === resolve) settle = null;
         resolve(ok);
@@ -121,13 +141,22 @@
     });
   });
 
+  // Never lose an edit still waiting in the delay: send it before the page
+  // goes away (in-app navigation, tab hidden, page unloaded).
+  beforeNavigate(() => autosave.flush());
+
   onMount(() => {
     const onVisibility = () => {
       if (document.visibilityState === 'visible') void refreshAll();
+      else autosave.flush();
     };
+    const onPageHide = () => autosave.flush();
     document.addEventListener('visibilitychange', onVisibility);
+    window.addEventListener('pagehide', onPageHide);
     return () => {
       document.removeEventListener('visibilitychange', onVisibility);
+      window.removeEventListener('pagehide', onPageHide);
+      autosave.flush();
       autosave.dispose();
     };
   });
@@ -136,6 +165,7 @@
     fields[name] = value;
     clears.delete(name);
     autosave.touch(name);
+    napCount = Math.max(napCount, visibleNapCount(fields, data.ageParams.naps));
   }
 
   function clearField(name: string) {
@@ -220,7 +250,7 @@
   <p class="budget-warn">{m.today_day_budget_exceeded({ amount: formatDuration(budget.completedMin - budget.totalMin) })}</p>
 {/if}
 
-{#if saveState === 'error' || form?.error}
+{#if saveFailed || form?.error}
   <p class="error save-banner" role="alert">
     <span>{form?.error ?? m.today_entry_save_failed()}</span>
     <button type="button" class="btn btn-secondary btn-sm" onclick={() => autosave.flush()}>{m.today_save_retry()}</button>
@@ -386,7 +416,7 @@
     </TimelineRow>
 
     <TimelineRow state="done" open={openRow === 'tz'} ontoggle={() => toggleRow('tz')} {saveState} onsave={saveRow}>
-      {#snippet label()}{m.today_tz_row({ tz: data.effectiveTz })}{/snippet}
+      {#snippet label()}{m.today_tz_row({ tz: fields.timezone || data.effectiveTz })}{/snippet}
       {#snippet value()}{/snippet}
       <label class="field">
         <span class="field-label">{m.today_tz_field_label()}</span>

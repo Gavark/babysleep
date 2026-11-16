@@ -4,6 +4,7 @@ import {
   fieldsFromEntry,
   mergeServer,
   napPairs,
+  restoreEmptied,
   visibleNapCount,
   type DayFields
 } from '../../src/lib/day-form';
@@ -70,5 +71,37 @@ describe('visibleNapCount', () => {
   it('clamps to 1..8', () => {
     expect(visibleNapCount(empty(), 0)).toBe(1);
     expect(visibleNapCount(empty(), 12)).toBe(8);
+  });
+});
+
+describe('restoreEmptied', () => {
+  it('puts back the server value of a sent field emptied with the keyboard', () => {
+    const restored = restoreEmptied(
+      { ...empty(), bedtime: '', wake_time: '06:50' },
+      { ...empty(), bedtime: '20:00', wake_time: '06:50' },
+      ['bedtime', 'wake_time'],
+      new Set()
+    );
+    expect(restored.bedtime).toBe('20:00');
+    expect(restored.wake_time).toBe('06:50');
+  });
+  it('leaves a field cleared with the cross empty', () => {
+    const restored = restoreEmptied(
+      { ...empty(), bedtime: '' },
+      { ...empty(), bedtime: '20:00' },
+      ['bedtime'],
+      new Set(['bedtime'])
+    );
+    expect(restored.bedtime).toBe('');
+  });
+  it('ignores fields that were not sent or are not empty', () => {
+    const restored = restoreEmptied(
+      { ...empty(), bedtime: '', nap1_start: '09:30' },
+      { ...empty(), bedtime: '20:00', nap1_start: '09:10' },
+      ['nap1_start'],
+      new Set()
+    );
+    expect(restored.bedtime).toBe('');
+    expect(restored.nap1_start).toBe('09:30');
   });
 });
