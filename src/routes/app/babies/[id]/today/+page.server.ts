@@ -2,19 +2,12 @@ import { error, fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { getDb } from '$lib/server/db';
 import { getBabyForUser } from '$lib/server/babies';
-import { getEntryForBabyDate, listEntriesInRange, upsertEntry } from '$lib/server/sleep-entries';
+import { getEntryForBabyDate, upsertEntry } from '$lib/server/sleep-entries';
 import { ageInMonths } from '$lib/sleep-calc';
 import { paramsForAge } from '$lib/age-params';
 import { todayISOInTZ, resolveTimezone } from '$lib/tz';
 import * as m from '$paraglide/messages';
 import { buildEntryPatch } from './_logic';
-
-function addDays(iso: string, n: number): string {
-  const [y, m, d] = iso.split('-').map(Number);
-  const dt = new Date(Date.UTC(y, m - 1, d));
-  dt.setUTCDate(dt.getUTCDate() + n);
-  return `${dt.getUTCFullYear()}-${String(dt.getUTCMonth() + 1).padStart(2, '0')}-${String(dt.getUTCDate()).padStart(2, '0')}`;
-}
 
 export const load: PageServerLoad = ({ locals, params }) => {
   if (!locals.user) throw redirect(303, '/login');
@@ -28,8 +21,7 @@ export const load: PageServerLoad = ({ locals, params }) => {
   const entry = getEntryForBabyDate(db, baby.id, today);
   const months = ageInMonths(baby.birthDate, baby.ageOverrideMonths ?? undefined);
   const params_ = paramsForAge(months);
-  const recent = listEntriesInRange(db, baby.id, addDays(today, -7), today);
-  return { baby, today, entry, ageMonths: months, ageParams: params_, recent, effectiveTz, userTimezone };
+  return { baby, today, entry, ageMonths: months, ageParams: params_, effectiveTz, userTimezone };
 };
 
 export const actions: Actions = {
