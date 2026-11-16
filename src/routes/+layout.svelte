@@ -2,6 +2,7 @@
   import '$lib/styles/tokens.css';
   import '$lib/styles/base.css';
   import '$lib/styles/components.css';
+  import '$lib/styles/nav.css';
   import LocaleSwitcher from '$lib/components/LocaleSwitcher.svelte';
   import { page } from '$app/state';
 

@@ -1,0 +1,91 @@
+/**
+ * Phone navigation trial. Below 640px the app layout renders two navigations
+ * and this file picks one: the compact header + bottom tab bar by default,
+ * the original rows when <html data-nav="classic">. From 640px up nothing
+ * here applies. Dropping the losing variant means deleting this file's
+ * matching rules along with the markup it targets.
+ */
+.nav-mobile, .bottom-nav, .nav-try-new { display: none; }
+
+@media (max-width: 639.98px) {
+  :root:not([data-nav="classic"]) .nav-classic { display: none; }
+
+  :root:not([data-nav="classic"]) .nav-mobile {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--s-3);
+    margin-bottom: var(--s-3);
+  }
+
+  :root:not([data-nav="classic"]) .bottom-nav {
+    display: flex;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 40;
+    background: var(--c-bg-card);
+    border-top: 1px solid var(--c-border);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Keep the end of every page reachable above the fixed bar. */
+  :root:not([data-nav="classic"]) body:has(.bottom-nav) main {
+    padding-bottom: calc(64px + var(--s-4) + env(safe-area-inset-bottom));
+  }
+
+  :root[data-nav="classic"] .nav-try-new { display: block; margin: 0 0 var(--s-2); }
+}
+
+.bottom-nav a {
+  flex: 1;
+  min-width: 0;
+  min-height: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  color: var(--c-text-muted);
+  text-decoration: none;
+}
+.bottom-nav a:hover { color: var(--c-link); text-decoration: none; }
+.bottom-nav a[aria-current="page"] { color: var(--c-link); font-weight: 600; }
+.bottom-nav a:focus-visible { outline: none; box-shadow: inset 0 0 0 3px var(--c-focus-ring); }
+
+/* Baby name in the compact header: never push the menu button off screen. */
+.nav-baby-name {
+  max-width: 60vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Entries of the compact header's drop-down panels. */
+.drop-item {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 44px;
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--r-sm);
+  color: var(--c-text);
+  font-size: var(--fs-md);
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.drop-item:hover { background: var(--c-bg-muted); color: var(--c-link); text-decoration: none; }
+.drop-item[aria-current="true"] { color: var(--c-link); font-weight: 600; }
+.drop-sep { margin: var(--s-2) 0; }
+.drop-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+  padding: 0 var(--s-2) var(--s-2);
+}
