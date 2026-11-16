@@ -6,7 +6,7 @@ import { getLocale, experimentalStaticLocale } from '../runtime.js';
 /** @typedef {{}} Calendar_Legend_GoodInputs */
 
 const fr_calendar_legend_good = /** @type {(inputs: Calendar_Legend_GoodInputs) => LocalizedString} */ () => {
-	return /** @type {LocalizedString} */ (`≥ 90 % du besoin`)
+	return /** @type {LocalizedString} */ (`≥ 90 % du besoin`)
 };
 
 const en_calendar_legend_good = /** @type {(inputs: Calendar_Legend_GoodInputs) => LocalizedString} */ () => {

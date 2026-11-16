@@ -22,7 +22,8 @@
   const dayLabel = $derived(formatLongDay(metrics.date));
   const dayShort = $derived(dayLabel.split(' ')[0].slice(0, 3));
   const totalStr = $derived(formatDuration(metrics.totalSleepMin));
-  const pct = $derived(Math.round(metrics.ratio * 100));
+  // Floored, so the number shown agrees with the colour thresholds (89.6 % is not 90 %).
+  const pct = $derived(Math.floor(metrics.ratio * 100));
   const ariaLabel = $derived(buildAriaLabel(metrics, dayLabel));
   const tooltipText = $derived(buildTooltip(metrics, dayLabel, pct));
   const badgeKind = $derived(metrics.nightRating);
@@ -41,7 +42,7 @@
   function buildAriaLabel(metrics: DayMetrics, day: string): string {
     if (!metrics.hasAnyData) return `${day} — ${m.calendar_cell_no_data()}`;
     const parts = [day, m.calendar_cell_total_sleep({ duration: formatDuration(metrics.totalSleepMin) })];
-    if (metrics.isComplete) parts.push(m.calendar_cell_pct_of_quota({ pct: Math.round(metrics.ratio * 100) }));
+    if (metrics.isComplete) parts.push(m.calendar_cell_pct_of_quota({ pct: Math.floor(metrics.ratio * 100) }));
     else parts.push(m.calendar_cell_incomplete());
     return parts.join(' — ');
   }
@@ -74,7 +75,7 @@
       <span class="num">{dayNum}<small>{dayShort}</small></span>
       <span class="rating" aria-hidden="true">{@render rating(20)}</span>
       <span class="timeline" class:empty={!metrics.hasAnyData} aria-hidden="true">{@render segments()}</span>
-      <span class="total" class:low class:partial>{totalText}</span>
+      <span class="total" class:low class:partial>{totalText}{#if metrics.isComplete}<small class="pct">{pct} %</small>{/if}</span>
     {:else}
       <span class="num">{dayNum}<span class="rating" aria-hidden="true">{@render rating(16)}</span></span>
       <span class="timeline" class:empty={!metrics.hasAnyData} aria-hidden="true">{@render segments()}</span>
@@ -128,6 +129,7 @@
   }
   .cell:hover { filter: brightness(0.97); }
   .cell.today { outline: 2px solid var(--c-primary); outline-offset: -2px; }
+  .heat-partial, .heat-none, .cell.padding { border-left-width: 1px; }
   .heat-good { --q: var(--c-accent-sage); }
   .heat-ok   { --q: var(--c-accent-honey); }
   .heat-meh  { --q: var(--c-primary); }
@@ -167,6 +169,8 @@
   .total { display: block; text-align: center; font-weight: 600; color: var(--c-text); margin-top: var(--s-1); font-size: var(--fs-xs); font-feature-settings: "tnum" 1; }
   .total.low { color: var(--c-danger); }
   .total.partial { color: var(--c-text-muted); font-weight: 400; }
+  /* The share of the need in words, so the quality bar is not colour-only. */
+  .pct { display: block; font-weight: 400; color: var(--c-text-muted); font-size: 10px; }
 
   /* Columns shared with the hour axis in CalendarStrip. */
   .cell.mode-strip {

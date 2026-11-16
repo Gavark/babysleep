@@ -32,21 +32,21 @@
   <span></span>
 </div>
 
-<div class="cal-strip" aria-label={m.calendar_strip_label()} role="list">
+<ol class="cal-strip" aria-label={m.calendar_strip_label()}>
   {#each weeks as week (week.weekStart)}
-    <div class="week" role="listitem">
-      <h3 class="week-head">
+    <li class="week">
+      <h2 class="week-head">
         <span>{weekLabel(week.weekStart)}</span>
         {#if week.avgSleepMin !== null}<span>{m.calendar_week_avg({ duration: formatDuration(week.avgSleepMin) })}</span>{/if}
-      </h3>
+      </h2>
       <ul>
         {#each week.days as cell (cell.date)}
           <li><DayCell metrics={cell} {babyId} mode="strip" {locale} {onSelect} /></li>
         {/each}
       </ul>
-    </div>
+    </li>
   {/each}
-</div>
+</ol>
 
 <style>
   .axis {
@@ -68,9 +68,10 @@
   .hours span { position: absolute; transform: translateX(-50%); }
   .hours span:first-child { transform: none; }
   .hours span:last-child { transform: translateX(-100%); }
-  .cal-strip { display: flex; flex-direction: column; gap: var(--s-3); }
+  .cal-strip { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--s-3); }
   .week-head {
     display: flex;
+    line-height: 1.5;
     justify-content: space-between;
     margin: 0 0 var(--s-1);
     padding: 0 var(--s-1);

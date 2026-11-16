@@ -6,7 +6,7 @@ import { getLocale, experimentalStaticLocale } from '../runtime.js';
 /** @typedef {{}} Calendar_Legend_MehInputs */
 
 const fr_calendar_legend_meh = /** @type {(inputs: Calendar_Legend_MehInputs) => LocalizedString} */ () => {
-	return /** @type {LocalizedString} */ (`50–70 %`)
+	return /** @type {LocalizedString} */ (`50–70 %`)
 };
 
 const en_calendar_legend_meh = /** @type {(inputs: Calendar_Legend_MehInputs) => LocalizedString} */ () => {

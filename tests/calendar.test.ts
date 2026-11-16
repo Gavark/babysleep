@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { buildMonthGrid, buildTimelineSegments, computeDayMetrics, heatmapClass, type CalendarEntry, type CalendarBaby } from '../src/lib/calendar';
+import { buildMonthGrid, buildTimelineSegments, computeDayMetrics, heatmapClass, summarizeMonth, groupByWeek, type CalendarEntry, type CalendarBaby, type DayMetrics } from '../src/lib/calendar';
 
 describe('buildMonthGrid', () => {
   it('returns 35 or 42 cells (multiple of 7)', () => {
@@ -258,7 +258,6 @@ describe('computeDayMetrics', () => {
   });
 });
 
-import { summarizeMonth, groupByWeek, type DayMetrics } from '../src/lib/calendar';
 
 function day(date: string, over: Partial<DayMetrics> = {}): DayMetrics {
   return {

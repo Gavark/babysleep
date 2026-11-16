@@ -83,7 +83,7 @@
       night: formatDuration(quotaNightMin)
     })}
   </p>
-  <div class="legend" aria-label={m.calendar_legend_label()}>
+  <div class="legend" role="group" aria-label={m.calendar_legend_label()}>
     <span><i class="sw seg-night"></i>{m.calendar_legend_night()}</span>
     <span><i class="sw seg-nap"></i>{m.calendar_seg_nap()}</span>
     <span><i class="sw q-good"></i>{m.calendar_legend_good()}</span>
