@@ -10,6 +10,16 @@
     onclear: () => void;
   };
   let { name, type, label, value, onchange, onclear }: Props = $props();
+
+  /**
+   * Hands the typed value to the page, then shows what the page kept: a value
+   * it cleared or normalised (a pause of 0, say) may leave `value` unchanged,
+   * which would not update the input by itself.
+   */
+  function change(input: HTMLInputElement) {
+    onchange(input.value);
+    if (input.value !== value) input.value = value;
+  }
 </script>
 
 <label class="field">
@@ -25,7 +35,7 @@
         {name}
         {value}
         autocomplete="off"
-        onchange={(e) => onchange(e.currentTarget.value)}
+        onchange={(e) => change(e.currentTarget)}
       />
     {:else}
       <input
@@ -34,7 +44,7 @@
         {name}
         {value}
         autocomplete="off"
-        onchange={(e) => onchange(e.currentTarget.value)}
+        onchange={(e) => change(e.currentTarget)}
       />
     {/if}
     {#if value}
