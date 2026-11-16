@@ -62,12 +62,9 @@ const CASES: Array<[string, string, string[], number]> = [
   // No terracotta dark enough for 4.5:1 on the tinted surfaces still reads as
   // the brand accent, so those fall back to the text colour.
   ['strong on soft', 'c-text', ['c-bg-soft'], AA_BODY],
-  [
-    'calendar day total',
-    'c-text',
-    ['c-cal-heat-good', 'c-cal-heat-ok', 'c-cal-heat-meh', 'c-cal-heat-bad', 'c-cal-heat-none'],
-    AA_BODY
-  ],
+  // Calendar days now sit on the card; a total under 70 % of the need is red.
+  ['calendar day total', 'c-text', ['c-bg-card'], AA_BODY],
+  ['calendar low total', 'c-danger', ['c-bg-card'], AA_BODY],
   // Muted secondary copy.
   ['muted text', 'c-text-muted', ['c-bg-app', 'c-bg-card'], AA_BODY],
   // Button and active-tab labels sit on the fill and are body-size.

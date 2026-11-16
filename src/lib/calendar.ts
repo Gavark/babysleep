@@ -235,3 +235,55 @@ export function computeDayMetrics(
     nightRating
   };
 }
+
+/** A day counts towards the summaries only when wake and bedtime are entered. */
+function completeDays(cells: readonly DayMetrics[]): DayMetrics[] {
+  return cells.filter((c) => c.inMonth && c.isComplete);
+}
+
+function averageMinutes(days: readonly DayMetrics[]): number | null {
+  if (days.length === 0) return null;
+  return Math.round(days.reduce((sum, d) => sum + d.totalSleepMin, 0) / days.length);
+}
+
+export type MonthSummary = {
+  completeDays: number;
+  avgSleepMin: number | null;
+  avgNaps: number | null;
+  /** Complete days at 90 % of the need or more. */
+  goodDays: number;
+};
+
+export function summarizeMonth(cells: readonly DayMetrics[]): MonthSummary {
+  const days = completeDays(cells);
+  const avgNaps = days.length === 0
+    ? null
+    : Math.round((days.reduce((sum, d) => sum + d.napCount, 0) / days.length) * 10) / 10;
+  return {
+    completeDays: days.length,
+    avgSleepMin: averageMinutes(days),
+    avgNaps,
+    goodDays: days.filter((d) => d.ratio >= 0.9).length
+  };
+}
+
+export type CalendarWeek = {
+  /** Monday of the week, possibly in the previous month. */
+  weekStart: string;
+  /** In-month days of the week, in date order. */
+  days: DayMetrics[];
+  avgSleepMin: number | null;
+};
+
+export function groupByWeek(cells: readonly DayMetrics[]): CalendarWeek[] {
+  const weeks: CalendarWeek[] = [];
+  for (const cell of cells) {
+    if (!cell.inMonth) continue;
+    const weekStart = addDaysISO(cell.date, -dayOfWeekISOMonZero(cell.date));
+    const last = weeks[weeks.length - 1];
+    if (last && last.weekStart === weekStart) last.days.push(cell);
+    else weeks.push({ weekStart, days: [cell], avgSleepMin: null });
+  }
+  for (const w of weeks) w.avgSleepMin = averageMinutes(completeDays(w.days));
+  return weeks;
+}

@@ -26,6 +26,10 @@
   const ariaLabel = $derived(buildAriaLabel(metrics, dayLabel));
   const tooltipText = $derived(buildTooltip(metrics, dayLabel, pct));
   const badgeKind = $derived(metrics.nightRating);
+  /** Under 70 % of the need on a complete day. */
+  const low = $derived(metrics.isComplete && metrics.ratio < 0.7);
+  const partial = $derived(metrics.hasAnyData && !metrics.isComplete);
+  const totalText = $derived(metrics.hasAnyData ? (partial ? `${totalStr} *` : totalStr) : '');
 
   function formatLongDay(iso: string): string {
     const [y, m, d] = iso.split('-').map(Number);
@@ -67,50 +71,45 @@
     title={tooltipText}
   >
     {#if mode === 'strip'}
-      <span
-        class="badge badge-strip"
-        class:badge-good={badgeKind === 'good'}
-        class:badge-medium={badgeKind === 'medium'}
-        class:badge-bad={badgeKind === 'bad'}
-        aria-hidden="true"
-      >
-        {#if badgeKind === 'good'}<CheckCircle size={32} weight="fill" />
-        {:else if badgeKind === 'medium'}<MinusCircle size={32} weight="fill" />
-        {:else if badgeKind === 'bad'}<XCircle size={32} weight="fill" />
-        {/if}
-      </span>
       <span class="num">{dayNum}<small>{dayShort}</small></span>
-      <span class="timeline" aria-hidden="true">
-        {#each metrics.segments as s (s.startMin)}
-          <span
-            class="seg {s.kind}"
-            style="left: {(s.startMin / 1440) * 100}%; width: {((s.endMin - s.startMin) / 1440) * 100}%"
-          ></span>
-        {/each}
-      </span>
-      <span class="total">{metrics.hasAnyData ? totalStr : ''}</span>
+      <span class="rating" aria-hidden="true">{@render rating(20)}</span>
+      <span class="timeline" class:empty={!metrics.hasAnyData} aria-hidden="true">{@render segments()}</span>
+      <span class="total" class:low class:partial>{totalText}</span>
     {:else}
-      <span class="num">{dayNum}{#if !metrics.isComplete && metrics.hasAnyData}<span class="partial-mark" aria-hidden="true">…</span>{:else if badgeKind}<span class="badge badge-grid badge-{badgeKind}" aria-hidden="true">{#if badgeKind === 'good'}<CheckCircle size={16} weight="fill" />{:else if badgeKind === 'medium'}<MinusCircle size={16} weight="fill" />{:else if badgeKind === 'bad'}<XCircle size={16} weight="fill" />{/if}</span>{/if}</span>
-      <span class="timeline" aria-hidden="true">
-        {#each metrics.segments as s (s.startMin)}
-          <span
-            class="seg {s.kind}"
-            style="left: {(s.startMin / 1440) * 100}%; width: {((s.endMin - s.startMin) / 1440) * 100}%"
-          ></span>
-        {/each}
-      </span>
-      {#if metrics.hasAnyData}<span class="total">{totalStr}</span>{/if}
+      <span class="num">{dayNum}<span class="rating" aria-hidden="true">{@render rating(16)}</span></span>
+      <span class="timeline" class:empty={!metrics.hasAnyData} aria-hidden="true">{@render segments()}</span>
+      {#if metrics.hasAnyData}<span class="total" class:low class:partial>{totalText}</span>{/if}
     {/if}
   </button>
 {/if}
 
+{#snippet rating(size: number)}
+  {#if badgeKind === 'good'}<span class="rate good"><CheckCircle {size} weight="fill" /></span>
+  {:else if badgeKind === 'medium'}<span class="rate medium"><MinusCircle {size} weight="fill" /></span>
+  {:else if badgeKind === 'bad'}<span class="rate bad"><XCircle {size} weight="fill" /></span>
+  {/if}
+{/snippet}
+
+{#snippet segments()}
+  {#each metrics.segments as s (s.startMin)}
+    <span
+      class="seg {s.kind}"
+      style="left: {(s.startMin / 1440) * 100}%; width: {((s.endMin - s.startMin) / 1440) * 100}%"
+    ></span>
+  {/each}
+{/snippet}
+
 <style>
+  /* The day's quality (share of the sleep need) is a thin bar, so the
+     background stays neutral and the night rating keeps its own colours. */
   .cell {
+    --q: var(--c-border);
     display: block;
     width: 100%;
     border: 1px solid var(--c-border);
+    border-left: 4px solid var(--q);
     border-radius: var(--r-md);
-    background: var(--c-cal-heat-none);
+    background: var(--c-bg-card);
     color: var(--c-text);
     text-decoration: none;
     padding: var(--s-2);
@@ -125,39 +124,54 @@
   .cell.padding {
     opacity: 0.35;
     pointer-events: none;
+    background: transparent;
   }
   .cell:hover { filter: brightness(0.97); }
   .cell.today { outline: 2px solid var(--c-primary); outline-offset: -2px; }
-  .heat-good { background: var(--c-cal-heat-good); }
-  .heat-ok   { background: var(--c-cal-heat-ok); }
-  .heat-meh  { background: var(--c-cal-heat-meh); }
-  .heat-bad  { background: var(--c-cal-heat-bad); }
-  .heat-partial { background: transparent; }
-  .heat-none { background: var(--c-cal-heat-none); }
+  .heat-good { --q: var(--c-accent-sage); }
+  .heat-ok   { --q: var(--c-accent-honey); }
+  .heat-meh  { --q: var(--c-primary); }
+  .heat-bad  { --q: var(--c-danger); }
 
   .num { font-weight: 600; font-size: var(--fs-sm); display: flex; justify-content: space-between; align-items: center; }
-  .num small { font-weight: 400; font-size: var(--fs-xs); opacity: 0.6; margin-left: var(--s-1); }
-  .partial-mark { font-weight: 400; opacity: 0.6; }
+  .num small { font-weight: 400; font-size: var(--fs-xs); color: var(--c-text-muted); margin-left: var(--s-1); }
 
-  .badge { display: inline-flex; align-items: center; justify-content: center; line-height: 0; background: transparent; }
-  .badge :global(svg) { display: block; background: transparent; }
-  .badge.badge-good   { color: var(--c-accent-sage); }
-  .badge.badge-medium { color: var(--c-accent-honey); }
-  .badge.badge-bad    { color: var(--c-danger); }
+  /* Not `.badge`: that global class adds a pill background. */
+  .rating { display: inline-flex; align-items: center; justify-content: center; line-height: 0; }
+  .rate { display: inline-flex; line-height: 0; }
+  .rate :global(svg) { display: block; }
+  .rate.good   { color: var(--c-accent-sage); }
+  .rate.medium { color: var(--c-accent-honey); }
+  .rate.bad    { color: var(--c-danger); }
 
-  .timeline { position: relative; display: block; height: 14px; margin-top: var(--s-1); background: rgba(0,0,0,0.05); border-radius: 3px; overflow: hidden; }
+  /* 24 h ribbon with a faint mark every 6 hours. */
+  .timeline {
+    position: relative;
+    display: block;
+    height: 14px;
+    margin-top: var(--s-1);
+    border-radius: 3px;
+    overflow: hidden;
+    background:
+      linear-gradient(90deg, transparent calc(25% - 0.5px), var(--c-border) calc(25% - 0.5px), var(--c-border) calc(25% + 0.5px), transparent calc(25% + 0.5px),
+        transparent calc(50% - 0.5px), var(--c-border) calc(50% - 0.5px), var(--c-border) calc(50% + 0.5px), transparent calc(50% + 0.5px),
+        transparent calc(75% - 0.5px), var(--c-border) calc(75% - 0.5px), var(--c-border) calc(75% + 0.5px), transparent calc(75% + 0.5px)),
+      var(--c-bg-muted);
+  }
+  /* Days without data: no hour marks, so the month reads at a glance. */
+  .timeline.empty { background: var(--c-bg-muted); }
   .seg { position: absolute; top: 1px; bottom: 1px; border-radius: 2px; }
   .seg.nap { background: var(--c-cal-seg-nap); }
   .seg.night { background: var(--c-cal-seg-night); }
 
-  /* 12px sitting on a heat tint: --c-primary measured 2.24:1 on the worst
-     one, and no terracotta dark enough to clear 4.5:1 there still reads
-     as the brand accent. The text colour does, at 8.9:1 or better. */
-  .total { display: block; text-align: center; font-weight: 600; color: var(--c-text); margin-top: var(--s-1); font-size: var(--fs-xs); }
+  .total { display: block; text-align: center; font-weight: 600; color: var(--c-text); margin-top: var(--s-1); font-size: var(--fs-xs); font-feature-settings: "tnum" 1; }
+  .total.low { color: var(--c-danger); }
+  .total.partial { color: var(--c-text-muted); font-weight: 400; }
 
+  /* Columns shared with the hour axis in CalendarStrip. */
   .cell.mode-strip {
     display: grid;
-    grid-template-columns: 36px 56px 1fr 56px;
+    grid-template-columns: 44px 20px 1fr 52px;
     align-items: center;
     gap: var(--s-2);
     min-height: 0;

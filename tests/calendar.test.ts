@@ -257,3 +257,75 @@ describe('computeDayMetrics', () => {
     expect(m.recommendedMin).toBe(810);
   });
 });
+
+import { summarizeMonth, groupByWeek, type DayMetrics } from '../src/lib/calendar';
+
+function day(date: string, over: Partial<DayMetrics> = {}): DayMetrics {
+  return {
+    date, inMonth: true, isToday: false, hasAnyData: true, isComplete: true,
+    totalSleepMin: 720, recommendedMin: 780, ratio: 720 / 780, heatLevel: 'good',
+    segments: [], wakeTime: '06:40', bedtime: '19:30', napCount: 3, nightRating: null,
+    ...over
+  };
+}
+
+describe('summarizeMonth', () => {
+  it('averages complete in-month days only', () => {
+    const s = summarizeMonth([
+      day('2026-10-31', { inMonth: false, totalSleepMin: 100, napCount: 9 }),
+      day('2026-11-01', { totalSleepMin: 700, napCount: 3, ratio: 0.95 }),
+      day('2026-11-02', { totalSleepMin: 800, napCount: 2, ratio: 0.85 }),
+      day('2026-11-03', { isComplete: false, totalSleepMin: 200, napCount: 1, ratio: 0.3 }),
+      day('2026-11-04', { hasAnyData: false, isComplete: false, totalSleepMin: 0, napCount: 0, ratio: 0 })
+    ]);
+    expect(s).toEqual({ completeDays: 2, avgSleepMin: 750, avgNaps: 2.5, goodDays: 1 });
+  });
+
+  it('counts a day as good from 90 % of the need', () => {
+    expect(summarizeMonth([day('2026-11-01', { ratio: 0.9 })]).goodDays).toBe(1);
+    expect(summarizeMonth([day('2026-11-01', { ratio: 0.899 })]).goodDays).toBe(0);
+  });
+
+  it('returns nulls when no day is complete', () => {
+    expect(summarizeMonth([day('2026-11-01', { isComplete: false })])).toEqual({
+      completeDays: 0, avgSleepMin: null, avgNaps: null, goodDays: 0
+    });
+  });
+
+  it('rounds the averages (minutes to the unit, naps to one decimal)', () => {
+    const s = summarizeMonth([
+      day('2026-11-01', { totalSleepMin: 700, napCount: 3 }),
+      day('2026-11-02', { totalSleepMin: 701, napCount: 3 }),
+      day('2026-11-03', { totalSleepMin: 701, napCount: 2 })
+    ]);
+    expect(s.avgSleepMin).toBe(701);
+    expect(s.avgNaps).toBe(2.7);
+  });
+});
+
+describe('groupByWeek', () => {
+  it('groups in-month days by week starting on Monday', () => {
+    const weeks = groupByWeek([
+      day('2026-10-26', { inMonth: false }),
+      day('2026-11-01'),
+      day('2026-11-02'),
+      day('2026-11-08'),
+      day('2026-11-09')
+    ]);
+    expect(weeks.map((w) => [w.weekStart, w.days.map((d) => d.date)])).toEqual([
+      ['2026-10-26', ['2026-11-01']],
+      ['2026-11-02', ['2026-11-02', '2026-11-08']],
+      ['2026-11-09', ['2026-11-09']]
+    ]);
+  });
+
+  it('averages complete days of each week, null when none', () => {
+    const weeks = groupByWeek([
+      day('2026-11-02', { totalSleepMin: 700 }),
+      day('2026-11-03', { totalSleepMin: 761 }),
+      day('2026-11-04', { isComplete: false, totalSleepMin: 100 }),
+      day('2026-11-09', { isComplete: false })
+    ]);
+    expect(weeks.map((w) => w.avgSleepMin)).toEqual([731, null]);
+  });
+});

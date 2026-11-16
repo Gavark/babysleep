@@ -7,7 +7,8 @@
   import CaretRight from 'phosphor-svelte/lib/CaretRight';
   import { ageInMonths, formatDuration } from '$lib/sleep-calc';
   import { paramsForAge } from '$lib/age-params';
-  import { formatDate } from '$lib/format';
+  import { formatDate, formatNumber } from '$lib/format';
+  import { summarizeMonth } from '$lib/calendar';
   import * as m from '$paraglide/messages';
 
   let { data } = $props();
@@ -34,6 +35,7 @@
   const quotaTotalMin = $derived(Math.round((ap.daySleepH + ap.nightSleepH) * 60));
   const quotaDayMin = $derived(Math.round(ap.daySleepH * 60));
   const quotaNightMin = $derived(Math.round(ap.nightSleepH * 60));
+  const summary = $derived(summarizeMonth(data.cells));
 
   function formatMonth(y: number, m: number): string {
     return formatDate(new Date(Date.UTC(y, m - 1, 15)), data.locale, {
@@ -67,6 +69,31 @@
   <a class="btn btn-secondary btn-sm today-btn" href={todayHref}>{m.app_nav_today()}</a>
 </nav>
 
+<section class="summary" aria-label={m.calendar_summary_label()}>
+  <div class="tiles">
+    <div><b>{summary.avgSleepMin === null ? '—' : formatDuration(summary.avgSleepMin)}</b><span>{m.calendar_summary_avg_sleep()}</span></div>
+    <div><b>{summary.avgNaps === null ? '—' : formatNumber(summary.avgNaps, data.locale, { maximumFractionDigits: 1 })}</b><span>{m.calendar_summary_avg_naps()}</span></div>
+    <div><b>{m.calendar_summary_good_days_value({ good: summary.goodDays, total: summary.completeDays })}</b><span>{m.calendar_summary_good_days()}</span></div>
+  </div>
+  <p class="quota">
+    {m.calendar_legend_quota({
+      months: ageMonths,
+      total: formatDuration(quotaTotalMin),
+      day: formatDuration(quotaDayMin),
+      night: formatDuration(quotaNightMin)
+    })}
+  </p>
+  <div class="legend" aria-label={m.calendar_legend_label()}>
+    <span><i class="sw seg-night"></i>{m.calendar_legend_night()}</span>
+    <span><i class="sw seg-nap"></i>{m.calendar_seg_nap()}</span>
+    <span><i class="sw q-good"></i>{m.calendar_legend_good()}</span>
+    <span><i class="sw q-ok"></i>{m.calendar_legend_ok()}</span>
+    <span><i class="sw q-meh"></i>{m.calendar_legend_meh()}</span>
+    <span><i class="sw q-bad"></i>{m.calendar_legend_bad()}</span>
+    <span>{m.calendar_legend_partial()}</span>
+  </div>
+</section>
+
 <div class="cal-desktop"><CalendarGrid cells={data.cells} babyId={data.baby.id} locale={data.locale} onSelect={(d) => pickerDate = d} /></div>
 <div class="cal-mobile"><CalendarStrip cells={data.cells} babyId={data.baby.id} locale={data.locale} onSelect={(d) => pickerDate = d} /></div>
 
@@ -79,33 +106,6 @@
     onClose={() => pickerDate = null}
   />
 {/if}
-
-<footer class="cal-legend" aria-label={m.calendar_legend_label()}>
-  <p class="legend-quota">
-    {m.calendar_legend_quota({
-      months: ageMonths,
-      total: formatDuration(quotaTotalMin),
-      day: formatDuration(quotaDayMin),
-      night: formatDuration(quotaNightMin)
-    })}
-  </p>
-
-  <p class="legend-label">{m.calendar_legend_heatmap_label()}</p>
-  <div class="legend-row">
-    <span class="legend-item"><span class="swatch heat-good"></span>{m.calendar_heat_good()}</span>
-    <span class="legend-item"><span class="swatch heat-ok"></span>{m.calendar_heat_ok()}</span>
-    <span class="legend-item"><span class="swatch heat-meh"></span>{m.calendar_heat_meh()}</span>
-    <span class="legend-item"><span class="swatch heat-bad"></span>{m.calendar_heat_bad()}</span>
-    <span class="legend-item"><span class="swatch heat-none"></span>{m.calendar_heat_none()}</span>
-    <span class="legend-item"><span class="swatch heat-partial"></span>{m.calendar_heat_partial()}</span>
-  </div>
-
-  <p class="legend-label">{m.calendar_legend_segments_label()}</p>
-  <div class="legend-row">
-    <span class="legend-item"><span class="swatch seg-nap"></span>{m.calendar_seg_nap()}</span>
-    <span class="legend-item"><span class="swatch seg-night"></span>{m.calendar_seg_night()}</span>
-  </div>
-</footer>
 
 <style>
   .cal-nav {
@@ -131,46 +131,31 @@
     .cal-mobile { display: none; }
   }
 
-  .cal-legend {
-    margin-top: var(--s-4);
-    padding: var(--s-3);
-    background: var(--c-bg-muted);
+  .summary { margin-bottom: var(--s-3); }
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-2); }
+  .tiles div {
+    background: var(--c-bg-card);
     border-radius: var(--r-md);
+    padding: var(--s-2);
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+  }
+  .tiles b { display: block; font-size: var(--fs-lg); font-feature-settings: "tnum" 1; }
+  .tiles span { font-size: var(--fs-xs); color: var(--c-text-muted); }
+  .quota { margin: var(--s-2) 0 var(--s-1); font-size: var(--fs-xs); color: var(--c-text-muted); }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-1) var(--s-3);
     font-size: var(--fs-xs);
     color: var(--c-text-muted);
   }
-  .legend-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--s-2);
-    align-items: center;
-    margin-bottom: var(--s-2);
-  }
-  .swatch {
-    display: inline-block;
-    width: 14px;
-    height: 14px;
-    border-radius: 3px;
-    border: 1px solid var(--c-border);
-  }
-  .swatch.heat-good    { background: var(--c-cal-heat-good); }
-  .swatch.heat-ok      { background: var(--c-cal-heat-ok); }
-  .swatch.heat-meh     { background: var(--c-cal-heat-meh); }
-  .swatch.heat-bad     { background: var(--c-cal-heat-bad); }
-  .swatch.heat-none    { background: var(--c-cal-heat-none); }
-  .swatch.heat-partial { background: transparent; border-style: dashed; }
-  .swatch.seg-nap      { background: var(--c-cal-seg-nap); border-color: var(--c-cal-seg-nap); }
-  .swatch.seg-night    { background: var(--c-cal-seg-night); border-color: var(--c-cal-seg-night); }
-  .legend-item { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
-  .legend-quota {
-    margin: 0 0 var(--s-2);
-    font-size: var(--fs-sm);
-    color: var(--c-text);
-  }
-  .legend-label {
-    margin: var(--s-1) 0 var(--s-1);
-    font-weight: 600;
-    color: var(--c-text);
-    font-size: var(--fs-xs);
-  }
+  .legend span { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+  .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; }
+  .sw.seg-night { background: var(--c-cal-seg-night); }
+  .sw.seg-nap { background: var(--c-cal-seg-nap); }
+  .sw.q-good { background: var(--c-accent-sage); width: 4px; }
+  .sw.q-ok { background: var(--c-accent-honey); width: 4px; }
+  .sw.q-meh { background: var(--c-primary); width: 4px; }
+  .sw.q-bad { background: var(--c-danger); width: 4px; }
 </style>
