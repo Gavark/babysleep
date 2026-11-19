@@ -11,7 +11,6 @@ import {
 } from '$lib/server/auth/session';
 import { bootstrapAdmin, hasNoUsers } from '$lib/server/auth/bootstrap';
 import { resolveLocale, type Locale } from '$lib/server/auth/locale';
-import { parseNavMode } from '$lib/nav';
 import { scanAndFire, purgeStaleScheduledPushes } from '$lib/server/push/scheduler';
 import { overwriteGetLocale, overwriteServerAsyncLocalStorage } from '$paraglide/runtime';
 
@@ -89,7 +88,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 
   const rawTheme = event.cookies.get('theme');
   event.locals.theme = rawTheme === 'light' || rawTheme === 'dark' ? rawTheme : 'auto';
-  event.locals.nav = parseNavMode(event.cookies.get('nav'));
   // Per-IP flood guard. Behind a proxy whose source address isn't preserved
   // (Docker Desktop NAT, or no ADDRESS_HEADER) every client shares one IP, so
   // /login keeps a loose limit here; the real brute-force limit is per
@@ -153,7 +151,6 @@ export const handle: Handle = async ({ event, resolve }) => {
         // correctly on the now-rewritten string.
         let out = html.replace('<html lang="fr"', `<html lang="${locale}"`);
         if (dataTheme) out = out.replace('<html', `<html data-theme="${dataTheme}"`);
-        if (event.locals.nav === 'classic') out = out.replace('<html', '<html data-nav="classic"');
         return out;
       }
     })

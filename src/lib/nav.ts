@@ -1,14 +1,3 @@
-/**
- * Phone navigation trial: 'bottom' (compact header + bottom tab bar, the
- * default) or 'classic' (the original stacked rows). Stored per device in the
- * `nav` cookie and mirrored as `data-nav="classic"` on <html>.
- */
-export type NavMode = 'bottom' | 'classic';
-
-export function parseNavMode(raw: string | null | undefined): NavMode {
-  return raw === 'classic' ? 'classic' : 'bottom';
-}
-
 export type NavTab = 'today' | 'history' | 'calendar' | 'stats';
 
 const TAB_PATH = /^\/app\/babies\/\d+\/(today|history|calendar|stats)\/?$/;

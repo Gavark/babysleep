@@ -1,16 +1,14 @@
 /**
- * Phone navigation trial. Below 640px the app layout renders two navigations
- * and this file picks one: the compact header + bottom tab bar by default,
- * the original rows when <html data-nav="classic">. From 640px up nothing
- * here applies. Dropping the losing variant means deleting this file's
- * matching rules along with the markup it targets.
+ * Phone navigation. Below 640px the app layout shows the compact header and
+ * the bottom tab bar instead of the desktop rows (.nav-classic); from 640px
+ * up only the desktop rows show.
  */
-.nav-mobile, .bottom-nav, .nav-try-new { display: none; }
+.nav-mobile, .bottom-nav { display: none; }
 
 @media (max-width: 639.98px) {
-  :root:not([data-nav="classic"]) .nav-classic { display: none; }
+  .nav-classic { display: none; }
 
-  :root:not([data-nav="classic"]) .nav-mobile {
+  .nav-mobile {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -18,7 +16,7 @@
     margin-bottom: var(--s-3);
   }
 
-  :root:not([data-nav="classic"]) .bottom-nav {
+  .bottom-nav {
     display: flex;
     position: fixed;
     left: 0;
@@ -31,11 +29,9 @@
   }
 
   /* Keep the end of every page reachable above the fixed bar. */
-  :root:not([data-nav="classic"]) body:has(.bottom-nav) main {
+  body:has(.bottom-nav) main {
     padding-bottom: calc(64px + var(--s-4) + env(safe-area-inset-bottom));
   }
-
-  :root[data-nav="classic"] .nav-try-new { display: block; margin: 0 0 var(--s-2); }
 }
 
 .bottom-nav a {

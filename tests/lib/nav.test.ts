@@ -1,14 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseNavMode, activeNavTab } from '../../src/lib/nav';
-
-describe('parseNavMode', () => {
-  it('returns classic only for the exact value', () => {
-    expect(parseNavMode('classic')).toBe('classic');
-  });
-  it.each([undefined, null, '', 'bottom', 'foo', 'CLASSIC'])('falls back to bottom for %s', (raw) => {
-    expect(parseNavMode(raw)).toBe('bottom');
-  });
-});
+import { activeNavTab } from '../../src/lib/nav';
 
 describe('activeNavTab', () => {
   it.each([

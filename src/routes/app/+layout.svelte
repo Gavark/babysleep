@@ -5,7 +5,6 @@
   import LocaleSwitcher from '$lib/components/LocaleSwitcher.svelte';
   import DropMenu from '$lib/components/DropMenu.svelte';
   import BottomNav from '$lib/components/BottomNav.svelte';
-  import NavModeSwitch from '$lib/components/NavModeSwitch.svelte';
   import { activeNavTab } from '$lib/nav';
   import Bed from 'phosphor-svelte/lib/Bed';
   import UserCircle from 'phosphor-svelte/lib/UserCircle';
@@ -87,7 +86,6 @@
       <LocaleSwitcher current={data.locale} />
       <ThemeToggle initial={data.theme ?? 'auto'} />
     </div>
-    <NavModeSwitch to="classic" label={m.app_nav_use_classic()} />
   </DropMenu>
 </header>
 
@@ -132,7 +130,6 @@
     </nav>
   {/if}
 
-  <p class="nav-try-new"><NavModeSwitch to="bottom" label={m.app_nav_try_new()} /></p>
 </div>
 
 <!-- Before the page content so it never becomes main's last child: pages
