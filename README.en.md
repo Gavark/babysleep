@@ -53,7 +53,8 @@ a single SQLite file on a Docker volume you control.
 - **Timezone-aware** — per-user, per-baby, and per-entry overrides.
 
 Bilingual UI (FR / EN), auto-detected from the browser's Accept-Language
-header at first login, switchable from the header (🌐) or /account.
+header at first login, switchable from the header (🌐, inside the ☰ menu on
+phones) or /account.
 
 ---
 

@@ -59,7 +59,8 @@ dans un fichier SQLite unique sur un volume Docker que tu contrôles.
 - **Fuseaux horaires** — overrides par utilisateur, par bébé et par entrée.
 
 UI bilingue FR / EN, auto-détection navigateur (Accept-Language) au premier
-login, modifiable depuis le header (🌐) ou /account.
+login, modifiable depuis le header (🌐, dans le menu ☰ sur téléphone) ou
+/account.
 
 ---
 
