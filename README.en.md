@@ -160,6 +160,12 @@ docker compose -f docker-compose.full.yml exec backup sh /usr/local/bin/run-back
 If you use the minimal compose, bring your own backup tooling (restic, borg, …)
 pointed at the `babysleep_data` Docker volume.
 
+Snapshots stay on the machine that hosts the app. To keep a copy elsewhere,
+[docs/BACKUP.md](./docs/BACKUP.md#off-site) has an rclone example for Linux
+and, for a Windows host, `scripts/sync-backups-offsite.ps1`: a scheduled task
+that copies the recent snapshots into a synced folder every night (Google
+Drive, OneDrive, a network share) and keeps only the last 7 days there.
+
 ---
 
 ## Web Push notifications
