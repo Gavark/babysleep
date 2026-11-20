@@ -77,6 +77,10 @@ what changed and *why*, not how (the diff already shows how).
   (and a comment).
 - Svelte 5 runes (`$state`, `$derived`, `$props`, `$effect`). No `export let`.
 - Pure functions go in `src/lib/` and have unit tests in `tests/`.
+- Import them as `#lib/…` with the real extension (`#lib/format.ts`,
+  `#lib/server/db/index.ts`, `#lib/components/X.svelte`), and translated
+  messages as `#paraglide/messages.js`. These are subpath imports from
+  `package.json` "imports"; `$lib` no longer exists.
 - Server-only modules live under `src/lib/server/`. Don't import them from
   components or pure libs — SvelteKit will refuse to bundle.
 - CSS uses the design tokens in `src/lib/styles/tokens.css`. Hard-coded colour

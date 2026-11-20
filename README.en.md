@@ -264,6 +264,11 @@ Stack: SvelteKit 3 + Svelte 5 (runes) + TypeScript strict, Drizzle ORM over
 better-sqlite3, argon2id via `@node-rs/argon2`, Chart.js for stats,
 phosphor-svelte for icons, Nunito Variable (self-hosted) for typography.
 
+Internal imports: `#lib/…` for `src/lib/` and `#paraglide/…` for translated
+messages, with the file extension (`#lib/format.ts`). They are Node subpath
+imports declared in the `imports` field of `package.json`, not SvelteKit's
+deprecated `$lib` aliases.
+
 ---
 
 ## Status
