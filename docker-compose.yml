@@ -13,7 +13,7 @@
 
 services:
   app:
-    image: ghcr.io/gavark/babysleep:v1.1.1
+    image: ghcr.io/gavark/babysleep:v1.1.2
     # Falls back to building from source if the image isn't pulled (e.g. for users
     # who prefer to build from source, or before the first GHCR push exists).
     build:
