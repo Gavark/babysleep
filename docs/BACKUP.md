@@ -127,3 +127,55 @@ cleanest pattern is a separate cron on the host:
 
 (Adjust paths and the rclone remote name to match your setup. Run after `0 3`
 so the sidecar has already produced today's snapshot.)
+
+### Windows host: Task Scheduler + a synced folder
+
+If Docker runs on a Windows machine, the simplest off-site target is a folder
+your cloud client already syncs: Google Drive for desktop, OneDrive, Dropbox,
+or a mapped NAS share. [`scripts/sync-backups-offsite.ps1`](../scripts/sync-backups-offsite.ps1)
+copies the snapshots from `./backups/` into that folder and rotates them there:
+
+- **Copy:** every `*.sqlite` in `./backups/` younger than `-RetentionDays`
+  (default 7) that is missing at the destination, named snapshots included. Each
+  copy is checked against the original with SHA256; a mismatch removes the copy
+  and fails the run.
+- **Rotation:** destination snapshots older than `-RetentionDays` are deleted.
+  If the destination has no recent snapshot at all (e.g. the sidecar has been
+  failing for a week), nothing is deleted, so the folder is never emptied.
+- **Log:** `./backups/sync-offsite.log` (last 500 lines). The exit code is
+  non-zero on failure, so Task Scheduler's _Last Run Result_ shows it too.
+
+Check what it would do first:
+
+```powershell
+powershell -File scripts\sync-backups-offsite.ps1 -Destination 'G:\My Drive\Backups\BabySleep' -DryRun
+```
+
+Then register a daily task (run from the repo checkout):
+
+```powershell
+$script = (Resolve-Path scripts\sync-backups-offsite.ps1).Path
+$dest   = 'G:\My Drive\Backups\BabySleep'
+$action = New-ScheduledTaskAction -Execute 'powershell.exe' `
+  -Argument "-NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$script`" -Destination `"$dest`""
+$trigger  = New-ScheduledTaskTrigger -Daily -At '23:00'
+$settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -AllowStartIfOnBatteries `
+  -DontStopIfGoingOnBatteries -ExecutionTimeLimit (New-TimeSpan -Minutes 15)
+$principal = New-ScheduledTaskPrincipal -UserId "$env:USERDOMAIN\$env:USERNAME" -LogonType Interactive
+Register-ScheduledTask -TaskPath '\BabySleep\' -TaskName 'Off-site backup' `
+  -Action $action -Trigger $trigger -Settings $settings -Principal $principal
+```
+
+Things to get right:
+
+- **Timing:** the trigger uses the **host's** clock, while the sidecar's
+  `BACKUP_SCHEDULE` uses the container's `TZ`. Convert one to the other and
+  leave at least half an hour after the snapshot (it is safe to run earlier,
+  that day's snapshot just goes over the next night). `-StartWhenAvailable`
+  catches up a run missed while the machine was off.
+- **Logged-in session:** a drive letter like `G:` exists only while the sync
+  client runs in your session, so the task uses an interactive logon. When the
+  drive is missing the run fails and touches nothing.
+- **Deleted files:** rotation deletes through the sync client, so they usually
+  land in the provider's trash for a while (30 days on Google Drive) before
+  they are really gone.
