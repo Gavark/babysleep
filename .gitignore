@@ -23,3 +23,6 @@ Caddyfile
 # volumes, sidecars for other apps). Deployment detail, not project config.
 docker-compose.local.yml
 docker-compose.override.yml
+
+# Understand-Anything plugin output (knowledge graph, intermediates)
+.ua/
