@@ -1,10 +1,10 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import type { AgeParams } from '$lib/age-params';
-  import type { Locale } from '$lib/server/auth/locale';
-  import { formatDate } from '$lib/format';
-  import { formatDuration } from '$lib/sleep-calc';
-  import { deriveTimerState, nextEmptyNapSlot, inProgressNapSlot, type TimerInput, type TimerState } from '$lib/wake-timer';
+  import type { AgeParams } from '#lib/age-params.ts';
+  import type { Locale } from '#lib/server/auth/locale.ts';
+  import { formatDate } from '#lib/format.ts';
+  import { formatDuration } from '#lib/sleep-calc.ts';
+  import { deriveTimerState, nextEmptyNapSlot, inProgressNapSlot, type TimerInput, type TimerState } from '#lib/wake-timer.ts';
   import Sun from 'phosphor-svelte/lib/Sun';
   import Cloud from 'phosphor-svelte/lib/Cloud';
   import Moon from 'phosphor-svelte/lib/Moon';
@@ -14,7 +14,7 @@
   import Pause from 'phosphor-svelte/lib/Pause';
   import Plus from 'phosphor-svelte/lib/Plus';
   import X from 'phosphor-svelte/lib/X';
-  import * as m from '$paraglide/messages';
+  import * as m from '#paraglide/messages.js';
 
   type Props = {
     wakeTime: string;

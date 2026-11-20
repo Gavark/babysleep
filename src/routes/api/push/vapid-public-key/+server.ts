@@ -1,6 +1,6 @@
 import type { RequestHandler } from './$types';
-import { getDb } from '$lib/server/db';
-import { getVapidKeys } from '$lib/server/push/vapid';
+import { getDb } from '#lib/server/db/index.ts';
+import { getVapidKeys } from '#lib/server/push/vapid.ts';
 
 /**
  * Return the VAPID public key as a base64url string for the browser's

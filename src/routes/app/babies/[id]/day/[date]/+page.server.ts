@@ -1,13 +1,13 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { getDb } from '$lib/server/db';
-import { getBabyForUser } from '$lib/server/babies';
-import { getEntryForBabyDate, upsertEntry, deleteEntry } from '$lib/server/sleep-entries';
-import { ageInMonthsOnDate } from '$lib/sleep-calc';
-import { paramsForAge } from '$lib/age-params';
-import { isValidHHMM } from '$lib/time';
-import { resolveTimezone } from '$lib/tz';
-import * as msg from '$paraglide/messages';
+import { getDb } from '#lib/server/db/index.ts';
+import { getBabyForUser } from '#lib/server/babies.ts';
+import { getEntryForBabyDate, upsertEntry, deleteEntry } from '#lib/server/sleep-entries.ts';
+import { ageInMonthsOnDate } from '#lib/sleep-calc.ts';
+import { paramsForAge } from '#lib/age-params.ts';
+import { isValidHHMM } from '#lib/time.ts';
+import { resolveTimezone } from '#lib/tz.ts';
+import * as msg from '#paraglide/messages.js';
 
 function camel(s: string): string {
   return s.replace(/_([a-z])/g, (_, c) => c.toUpperCase());

@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { getDb } from '$lib/server/db';
-import { deleteSession } from '$lib/server/auth/session';
+import { getDb } from '#lib/server/db/index.ts';
+import { deleteSession } from '#lib/server/auth/session.ts';
 
 export const POST: RequestHandler = async ({ locals, cookies }) => {
   if (locals.session) {

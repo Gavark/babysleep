@@ -1,6 +1,6 @@
 import type { Locale } from './server/auth/locale';
 import type { AgeParams } from './age-params';
-import * as m from '$paraglide/messages';
+import * as m from '#paraglide/messages.js';
 
 /**
  * Both locales render dates as DD/MM/YYYY by default:

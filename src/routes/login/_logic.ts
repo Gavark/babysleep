@@ -1,10 +1,10 @@
 import { eq } from 'drizzle-orm';
 import type { drizzle } from 'drizzle-orm/better-sqlite3';
-import * as schema from '$lib/server/db/schema';
-import { hashPassword, verifyPassword, MAX_PASSWORD_LEN } from '$lib/server/auth/password';
-import { createSession } from '$lib/server/auth/session';
-import { normalizeEmail } from '$lib/server/auth/email';
-import { rateLimit, clearRateLimit } from '$lib/server/rate-limit';
+import * as schema from '#lib/server/db/schema.ts';
+import { hashPassword, verifyPassword, MAX_PASSWORD_LEN } from '#lib/server/auth/password.ts';
+import { createSession } from '#lib/server/auth/session.ts';
+import { normalizeEmail } from '#lib/server/auth/email.ts';
+import { rateLimit, clearRateLimit } from '#lib/server/rate-limit.ts';
 
 type DB = ReturnType<typeof drizzle<typeof schema>>;
 

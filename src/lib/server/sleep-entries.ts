@@ -1,7 +1,7 @@
 import { and, eq, gte, lte, lt, desc } from 'drizzle-orm';
 import type { drizzle } from 'drizzle-orm/better-sqlite3';
 import * as schema from './db/schema';
-import { parseHHMM, formatHHMM } from '$lib/time';
+import { parseHHMM, formatHHMM } from '#lib/time.ts';
 import { recomputeNextPush } from './push/schedule';
 
 type DB = ReturnType<typeof drizzle<typeof schema>>;

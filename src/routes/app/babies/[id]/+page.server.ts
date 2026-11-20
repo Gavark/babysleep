@@ -1,9 +1,9 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { getDb } from '$lib/server/db';
-import { getBabyForUser, updateBaby, deleteBaby } from '$lib/server/babies';
-import { isValidTimezone } from '$lib/tz';
-import * as m from '$paraglide/messages';
+import { getDb } from '#lib/server/db/index.ts';
+import { getBabyForUser, updateBaby, deleteBaby } from '#lib/server/babies.ts';
+import { isValidTimezone } from '#lib/tz.ts';
+import * as m from '#paraglide/messages.js';
 
 export const load: PageServerLoad = ({ locals, params }) => {
   if (!locals.user) throw redirect(303, '/login');

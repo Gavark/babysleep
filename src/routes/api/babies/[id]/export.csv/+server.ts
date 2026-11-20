@@ -1,9 +1,9 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { getDb } from '$lib/server/db';
-import { getBabyForUser } from '$lib/server/babies';
-import { listEntriesInRange, getMostRecentEntryBefore } from '$lib/server/sleep-entries';
-import { buildSleepCsv } from '$lib/server/csv';
+import { getDb } from '#lib/server/db/index.ts';
+import { getBabyForUser } from '#lib/server/babies.ts';
+import { listEntriesInRange, getMostRecentEntryBefore } from '#lib/server/sleep-entries.ts';
+import { buildSleepCsv } from '#lib/server/csv.ts';
 
 function isISODate(s: string | null): boolean {
   return !!s && /^\d{4}-\d{2}-\d{2}$/.test(s);

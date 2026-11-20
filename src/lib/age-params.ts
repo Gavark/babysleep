@@ -1,6 +1,6 @@
 export type AgeParams = {
   /** Stable identity for the bracket. NOT display text: render it with
-   *  formatAgeBracket() from $lib/format, which is locale-aware. */
+   *  formatAgeBracket() from #lib/format, which is locale-aware. */
   key: string;
   ageMinMonths: number;
   ageMaxMonths: number;

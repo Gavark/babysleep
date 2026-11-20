@@ -3,8 +3,8 @@
   import ListBullets from 'phosphor-svelte/lib/ListBullets';
   import CalendarBlank from 'phosphor-svelte/lib/CalendarBlank';
   import ChartBar from 'phosphor-svelte/lib/ChartBar';
-  import type { NavTab } from '$lib/nav';
-  import * as m from '$paraglide/messages';
+  import type { NavTab } from '#lib/nav.ts';
+  import * as m from '#paraglide/messages.js';
 
   let { babyId, active }: { babyId: number; active: NavTab | null } = $props();
 
@@ -16,7 +16,7 @@
   ] as const;
 </script>
 
-<!-- Styled and shown from $lib/styles/nav.css (phone widths only). -->
+<!-- Styled and shown from #lib/styles/nav.css (phone widths only). -->
 <nav class="bottom-nav" aria-label={m.app_nav_menu()}>
   {#each tabs as t (t.tab)}
     {@const Icon = t.icon}

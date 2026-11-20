@@ -1,9 +1,9 @@
 import { eq } from 'drizzle-orm';
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { getDb } from '$lib/server/db';
-import * as schema from '$lib/server/db/schema';
-import { SUPPORTED_LOCALES, type Locale } from '$lib/server/auth/locale';
+import { getDb } from '#lib/server/db/index.ts';
+import * as schema from '#lib/server/db/schema.ts';
+import { SUPPORTED_LOCALES, type Locale } from '#lib/server/auth/locale.ts';
 
 export const POST: RequestHandler = async ({ request, locals, cookies }) => {
   const body = await request.json().catch(() => null);

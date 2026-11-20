@@ -2,7 +2,7 @@
   import { enhance } from '$app/forms';
   import Plus from 'phosphor-svelte/lib/Plus';
   import Pencil from 'phosphor-svelte/lib/Pencil';
-  import * as m from '$paraglide/messages';
+  import * as m from '#paraglide/messages.js';
   let { data, form } = $props();
 </script>
 

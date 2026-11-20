@@ -1,4 +1,4 @@
-import { parseHHMM } from '$lib/time';
+import { parseHHMM } from '#lib/time.ts';
 
 /**
  * A stored sleep entry, as returned by the DB layer. Only the nap columns are

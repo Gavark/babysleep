@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { parseHHMM, formatHHMM, isValidHHMM } from '$lib/time';
-  import { formatDuration } from '$lib/sleep-calc';
+  import { parseHHMM, formatHHMM, isValidHHMM } from '#lib/time.ts';
+  import { formatDuration } from '#lib/sleep-calc.ts';
   import Download from 'phosphor-svelte/lib/Download';
   import Calendar from 'phosphor-svelte/lib/Calendar';
   import CalendarBlank from 'phosphor-svelte/lib/CalendarBlank';
@@ -12,7 +12,7 @@
   import CheckCircle from 'phosphor-svelte/lib/CheckCircle';
   import MinusCircle from 'phosphor-svelte/lib/MinusCircle';
   import XCircle from 'phosphor-svelte/lib/XCircle';
-  import * as m from '$paraglide/messages';
+  import * as m from '#paraglide/messages.js';
   let { data } = $props();
 
   function napCount(r: any) {

@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { formatAgeBracket } from '$lib/format';
-  import * as m from '$paraglide/messages';
+  import { formatAgeBracket } from '#lib/format.ts';
+  import * as m from '#paraglide/messages.js';
   import Info from 'phosphor-svelte/lib/Info';
-  import { formatDuration } from '$lib/sleep-calc';
+  import { formatDuration } from '#lib/sleep-calc.ts';
 
   let { data } = $props();
 

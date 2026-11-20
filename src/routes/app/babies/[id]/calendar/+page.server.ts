@@ -1,11 +1,11 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { getDb } from '$lib/server/db';
-import { getBabyForUser } from '$lib/server/babies';
-import { listEntriesInRange, setNightRating, type NightRating } from '$lib/server/sleep-entries';
-import { buildMonthGrid, computeDayMetrics, type DayMetrics } from '$lib/calendar';
-import { resolveTimezone, todayISOInTZ } from '$lib/tz';
-import * as m from '$paraglide/messages';
+import { getDb } from '#lib/server/db/index.ts';
+import { getBabyForUser } from '#lib/server/babies.ts';
+import { listEntriesInRange, setNightRating, type NightRating } from '#lib/server/sleep-entries.ts';
+import { buildMonthGrid, computeDayMetrics, type DayMetrics } from '#lib/calendar.ts';
+import { resolveTimezone, todayISOInTZ } from '#lib/tz.ts';
+import * as m from '#paraglide/messages.js';
 
 function parseMonth(raw: string | null, todayISO: string): { year: number; month: number } {
   if (raw && /^\d{4}-\d{2}$/.test(raw)) {

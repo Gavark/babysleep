@@ -1,8 +1,8 @@
 <script lang="ts">
-  import type { DayMetrics } from '$lib/calendar';
-  import type { Locale } from '$lib/server/auth/locale';
+  import type { DayMetrics } from '#lib/calendar.ts';
+  import type { Locale } from '#lib/server/auth/locale.ts';
   import DayCell from './DayCell.svelte';
-  import * as m from '$paraglide/messages';
+  import * as m from '#paraglide/messages.js';
 
   type Props = {
     cells: DayMetrics[];

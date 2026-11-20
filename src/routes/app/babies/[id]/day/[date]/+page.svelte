@@ -3,9 +3,9 @@
   import {
     idealBedtime, suggestNextNap, suggestedBedtime, suggestNapEnd,
     computeDaySleepBudget, formatDuration, type NapPair
-  } from '$lib/sleep-calc';
-  import { isValidHHMM } from '$lib/time';
-  import { COMMON_TIMEZONES } from '$lib/tz';
+  } from '#lib/sleep-calc.ts';
+  import { isValidHHMM } from '#lib/time.ts';
+  import { COMMON_TIMEZONES } from '#lib/tz.ts';
   import ArrowLeft from 'phosphor-svelte/lib/ArrowLeft';
   import Sun from 'phosphor-svelte/lib/Sun';
   import Moon from 'phosphor-svelte/lib/Moon';
@@ -14,8 +14,8 @@
   import FloppyDisk from 'phosphor-svelte/lib/FloppyDisk';
   import Cloud from 'phosphor-svelte/lib/Cloud';
   import Trash from 'phosphor-svelte/lib/Trash';
-  import { formatAgeBracket } from '$lib/format';
-  import * as m from '$paraglide/messages';
+  import { formatAgeBracket } from '#lib/format.ts';
+  import * as m from '#paraglide/messages.js';
 
   let { data, form } = $props();
 

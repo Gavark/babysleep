@@ -1,10 +1,10 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getDb } from '$lib/server/db';
-import { getBabyForUser } from '$lib/server/babies';
-import { listEntriesInRange } from '$lib/server/sleep-entries';
-import { resolveTimezone, todayISOInTZ } from '$lib/tz';
-import { aggregateByMonthAndRank } from '$lib/naps';
+import { getDb } from '#lib/server/db/index.ts';
+import { getBabyForUser } from '#lib/server/babies.ts';
+import { listEntriesInRange } from '#lib/server/sleep-entries.ts';
+import { resolveTimezone, todayISOInTZ } from '#lib/tz.ts';
+import { aggregateByMonthAndRank } from '#lib/naps.ts';
 
 function addDaysISO(iso: string, n: number): string {
   const [y, m, d] = iso.split('-').map(Number);

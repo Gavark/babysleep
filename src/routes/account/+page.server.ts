@@ -1,11 +1,11 @@
 import { redirect, fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { getDb, schema } from '$lib/server/db';
-import { listSessionsForUser } from '$lib/server/auth/session';
-import { isValidTimezone } from '$lib/tz';
-import { SUPPORTED_LOCALES, type Locale } from '$lib/server/auth/locale';
+import { getDb, schema } from '#lib/server/db/index.ts';
+import { listSessionsForUser } from '#lib/server/auth/session.ts';
+import { isValidTimezone } from '#lib/tz.ts';
+import { SUPPORTED_LOCALES, type Locale } from '#lib/server/auth/locale.ts';
 import { eq } from 'drizzle-orm';
-import * as m from '$paraglide/messages';
+import * as m from '#paraglide/messages.js';
 
 export const load: PageServerLoad = ({ locals }) => {
   if (!locals.user) throw redirect(303, '/login');

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { isValidTimezone, todayISOInTZ, resolveTimezone } from '$lib/tz';
+import { isValidTimezone, todayISOInTZ, resolveTimezone } from '#lib/tz.ts';
 
 describe('isValidTimezone', () => {
   it('accepts IANA names', () => {

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import LocaleSwitcher from '$lib/components/LocaleSwitcher.svelte';
-  import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+  import LocaleSwitcher from '#lib/components/LocaleSwitcher.svelte';
+  import ThemeToggle from '#lib/components/ThemeToggle.svelte';
   import SignIn from 'phosphor-svelte/lib/SignIn';
   import GithubLogo from 'phosphor-svelte/lib/GithubLogo';
   import Users from 'phosphor-svelte/lib/Users';
@@ -10,8 +10,8 @@
   import Key from 'phosphor-svelte/lib/Key';
   import FileCsv from 'phosphor-svelte/lib/FileCsv';
   import ArrowRight from 'phosphor-svelte/lib/ArrowRight';
-  import { formatAgeBracket } from '$lib/format';
-  import * as m from '$paraglide/messages';
+  import { formatAgeBracket } from '#lib/format.ts';
+  import * as m from '#paraglide/messages.js';
 
   let { data } = $props();
 

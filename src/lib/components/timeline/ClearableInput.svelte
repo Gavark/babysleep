@@ -1,5 +1,5 @@
 <script lang="ts">
-  import * as m from '$paraglide/messages';
+  import * as m from '#paraglide/messages.js';
 
   type Props = {
     name: string;

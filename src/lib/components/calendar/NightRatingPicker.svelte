@@ -6,10 +6,10 @@
   import Eraser from 'phosphor-svelte/lib/Eraser';
   import PencilSimple from 'phosphor-svelte/lib/PencilSimple';
   import X from 'phosphor-svelte/lib/X';
-  import type { NightRating } from '$lib/calendar';
-  import type { Locale } from '$lib/server/auth/locale';
-  import { formatDate } from '$lib/format';
-  import * as m from '$paraglide/messages';
+  import type { NightRating } from '#lib/calendar.ts';
+  import type { Locale } from '#lib/server/auth/locale.ts';
+  import { formatDate } from '#lib/format.ts';
+  import * as m from '#paraglide/messages.js';
 
   type Props = {
     date: string;

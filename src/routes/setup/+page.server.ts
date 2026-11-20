@@ -1,9 +1,9 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { getDb } from '$lib/server/db';
-import { hasNoUsers, createFirstAdmin } from '$lib/server/auth/bootstrap';
-import { parseAcceptLanguage, SUPPORTED_LOCALES } from '$lib/server/auth/locale';
-import * as m from '$paraglide/messages';
+import { getDb } from '#lib/server/db/index.ts';
+import { hasNoUsers, createFirstAdmin } from '#lib/server/auth/bootstrap.ts';
+import { parseAcceptLanguage, SUPPORTED_LOCALES } from '#lib/server/auth/locale.ts';
+import * as m from '#paraglide/messages.js';
 
 export const load: PageServerLoad = () => {
   const { db } = getDb();

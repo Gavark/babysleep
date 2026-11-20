@@ -1,8 +1,8 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { getDb } from '$lib/server/db';
-import { getBabyForUser } from '$lib/server/babies';
-import { getEntryForBabyDate } from '$lib/server/sleep-entries';
+import { getDb } from '#lib/server/db/index.ts';
+import { getBabyForUser } from '#lib/server/babies.ts';
+import { getEntryForBabyDate } from '#lib/server/sleep-entries.ts';
 import { isValidISODate } from '../../../../../app/babies/[id]/today/_logic';
 
 /** One day's entry (or null), read by the Today page when it comes back to the foreground. */

@@ -1,6 +1,6 @@
-import { parseHHMM, isValidHHMM } from '$lib/time';
-import { ageInMonthsOnDate } from '$lib/sleep-calc';
-import { paramsForAge } from '$lib/age-params';
+import { parseHHMM, isValidHHMM } from '#lib/time.ts';
+import { ageInMonthsOnDate } from '#lib/sleep-calc.ts';
+import { paramsForAge } from '#lib/age-params.ts';
 
 export type TimelineSegment = {
   kind: 'nap' | 'night';
@@ -33,7 +33,7 @@ export type GridCell = { readonly date: string; readonly inMonth: boolean };
 
 /**
  * Calendar-facing structural subset of a baby. Defined locally to avoid
- * pulling in $lib/server/* paths from this pure module.
+ * pulling in #lib/server/* paths from this pure module.
  */
 export type CalendarBaby = {
   birthDate: string;            // YYYY-MM-DD
@@ -42,7 +42,7 @@ export type CalendarBaby = {
 
 /**
  * Calendar-facing structural subset of a sleep entry. Defined locally to avoid
- * pulling in $lib/server/* paths from this pure module.
+ * pulling in #lib/server/* paths from this pure module.
  */
 export type CalendarEntry = {
   wakeTime: string | null;

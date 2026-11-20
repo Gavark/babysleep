@@ -7,7 +7,7 @@ import { paraglideVitePlugin } from '@inlang/paraglide-js';
 export default defineConfig({
   // Plugin order matters: paraglideVitePlugin must run before sveltekit() so
   // its codegen output in src/paraglide/ is in place when SvelteKit scans the
-  // source tree. Reordering breaks $paraglide imports at build time.
+  // source tree. Reordering breaks #paraglide imports at build time.
   plugins: [
     paraglideVitePlugin({
       project: './project.inlang',
@@ -56,14 +56,9 @@ export default defineConfig({
           'form-action': ['self'],
           'frame-ancestors': ['none']
         }
-      },
-      // SvelteKit 3 no longer generates $lib (it moved to #lib in package.json
-      // "imports"). Declaring it here keeps the existing imports working;
-      // `alias` is deprecated, so switching to #lib is a separate change.
-      alias: {
-        $lib: 'src/lib',
-        $paraglide: 'src/paraglide'
       }
+      // No `alias` here: #lib and #paraglide are Node subpath imports declared
+      // in package.json "imports", which Vite, TypeScript and tsx resolve natively.
     })
   ],
   server: { port: 5173 },

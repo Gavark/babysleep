@@ -1,7 +1,7 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
   import UserPlus from 'phosphor-svelte/lib/UserPlus';
-  import * as m from '$paraglide/messages';
+  import * as m from '#paraglide/messages.js';
   let { data, form } = $props();
 </script>
 

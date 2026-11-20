@@ -1,9 +1,9 @@
 import { error, redirect } from '@sveltejs/kit';
 import { eq, and } from 'drizzle-orm';
 import type { RequestHandler } from './$types';
-import { getDb } from '$lib/server/db';
-import { deleteSubscriptionByEndpoint } from '$lib/server/push/subscribe';
-import * as schema from '$lib/server/db/schema';
+import { getDb } from '#lib/server/db/index.ts';
+import { deleteSubscriptionByEndpoint } from '#lib/server/push/subscribe.ts';
+import * as schema from '#lib/server/db/schema.ts';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
   if (!locals.user) throw redirect(303, '/login');

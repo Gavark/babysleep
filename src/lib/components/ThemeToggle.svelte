@@ -2,9 +2,9 @@
   import CircleHalf from 'phosphor-svelte/lib/CircleHalf';
   import Sun from 'phosphor-svelte/lib/Sun';
   import Moon from 'phosphor-svelte/lib/Moon';
-  import * as m from '$paraglide/messages';
+  import * as m from '#paraglide/messages.js';
 
-  import { themeFromAttr, type ThemeValue } from '$lib/theme';
+  import { themeFromAttr, type ThemeValue } from '#lib/theme.ts';
 
   let { initial }: { initial: ThemeValue } = $props();
   // svelte-ignore state_referenced_locally — `initial` seeds the server render; the client then follows <html data-theme>

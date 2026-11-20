@@ -1,9 +1,9 @@
 import type { drizzle } from 'drizzle-orm/better-sqlite3';
 import { eq } from 'drizzle-orm';
-import * as schema from '$lib/server/db/schema';
-import { hashPassword, isStrongEnough } from '$lib/server/auth/password';
-import { findUsableInvitation, markInvitationUsed } from '$lib/server/auth/invitations';
-import { normalizeEmail, isValidEmail } from '$lib/server/auth/email';
+import * as schema from '#lib/server/db/schema.ts';
+import { hashPassword, isStrongEnough } from '#lib/server/auth/password.ts';
+import { findUsableInvitation, markInvitationUsed } from '#lib/server/auth/invitations.ts';
+import { normalizeEmail, isValidEmail } from '#lib/server/auth/email.ts';
 
 type DB = ReturnType<typeof drizzle<typeof schema>>;
 

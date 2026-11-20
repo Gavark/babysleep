@@ -1,13 +1,13 @@
 <script lang="ts">
-  import type { DayMetrics } from '$lib/calendar';
-  import { heatmapClass } from '$lib/calendar';
-  import type { Locale } from '$lib/server/auth/locale';
-  import { formatDate } from '$lib/format';
-  import { formatDuration } from '$lib/sleep-calc';
+  import type { DayMetrics } from '#lib/calendar.ts';
+  import { heatmapClass } from '#lib/calendar.ts';
+  import type { Locale } from '#lib/server/auth/locale.ts';
+  import { formatDate } from '#lib/format.ts';
+  import { formatDuration } from '#lib/sleep-calc.ts';
   import CheckCircle from 'phosphor-svelte/lib/CheckCircle';
   import MinusCircle from 'phosphor-svelte/lib/MinusCircle';
   import XCircle from 'phosphor-svelte/lib/XCircle';
-  import * as m from '$paraglide/messages';
+  import * as m from '#paraglide/messages.js';
 
   type Props = {
     metrics: DayMetrics;

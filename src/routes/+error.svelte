@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/state';
   import House from 'phosphor-svelte/lib/House';
-  import * as m from '$paraglide/messages';
+  import * as m from '#paraglide/messages.js';
 </script>
 
 <div class="error-page">

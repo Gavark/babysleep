@@ -1,4 +1,4 @@
-import { isValidHHMM, parseHHMM, formatHHMM } from '$lib/time';
+import { isValidHHMM, parseHHMM, formatHHMM } from '#lib/time.ts';
 
 export type TimerInput = {
   wakeTime: string;

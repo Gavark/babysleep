@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { formatDuration } from '$lib/sleep-calc';
-  import * as m from '$paraglide/messages';
+  import { formatDuration } from '#lib/sleep-calc.ts';
+  import * as m from '#paraglide/messages.js';
 
   type Props = { completedMin: number; totalMin: number; remainingMin: number };
   let { completedMin, totalMin, remainingMin }: Props = $props();

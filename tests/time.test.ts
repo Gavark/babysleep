@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseHHMM, formatHHMM, isValidHHMM, diffMinutesMod, addMinutesMod } from '$lib/time';
+import { parseHHMM, formatHHMM, isValidHHMM, diffMinutesMod, addMinutesMod } from '#lib/time.ts';
 
 describe('parseHHMM', () => {
   it('parses 07:00 to 420 minutes', () => {

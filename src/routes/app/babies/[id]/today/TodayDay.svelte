@@ -3,9 +3,9 @@
   import { beforeNavigate, refreshAll } from '$app/navigation';
   import { onMount, untrack } from 'svelte';
   import { SvelteSet } from 'svelte/reactivity';
-  import { computeDaySleepBudget, formatDuration } from '$lib/sleep-calc';
-  import { COMMON_TIMEZONES, todayISOInTZ } from '$lib/tz';
-  import { formatAgeBracket, formatLongDay } from '$lib/format';
+  import { computeDaySleepBudget, formatDuration } from '#lib/sleep-calc.ts';
+  import { COMMON_TIMEZONES, todayISOInTZ } from '#lib/tz.ts';
+  import { formatAgeBracket, formatLongDay } from '#lib/format.ts';
   import {
     FIELD_NAMES,
     PAUSE_FIELDS,
@@ -17,15 +17,15 @@
     restoreEmptied,
     visibleNapCount,
     type DayFields
-  } from '$lib/day-form';
-  import { buildTimeline, type TimelineRow as Row } from '$lib/timeline';
-  import { createAutosave, type SaveState } from '$lib/autosave';
-  import WakeTimer from '$lib/components/WakeTimer.svelte';
-  import TimelineRow from '$lib/components/timeline/TimelineRow.svelte';
-  import ClearableInput from '$lib/components/timeline/ClearableInput.svelte';
-  import BudgetRing from '$lib/components/timeline/BudgetRing.svelte';
-  import EnablePushButton from '$lib/components/EnablePushButton.svelte';
-  import * as m from '$paraglide/messages';
+  } from '#lib/day-form.ts';
+  import { buildTimeline, type TimelineRow as Row } from '#lib/timeline.ts';
+  import { createAutosave, type SaveState } from '#lib/autosave.ts';
+  import WakeTimer from '#lib/components/WakeTimer.svelte';
+  import TimelineRow from '#lib/components/timeline/TimelineRow.svelte';
+  import ClearableInput from '#lib/components/timeline/ClearableInput.svelte';
+  import BudgetRing from '#lib/components/timeline/BudgetRing.svelte';
+  import EnablePushButton from '#lib/components/EnablePushButton.svelte';
+  import * as m from '#paraglide/messages.js';
   import type { PageData } from './$types';
 
   type Entry = PageData['entry'];

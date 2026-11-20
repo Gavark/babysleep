@@ -1,6 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { AGE_PARAMS } from '$lib/age-params';
+import { AGE_PARAMS } from '#lib/age-params.ts';
 
 /**
  * `/` is the public landing page for anonymous visitors. Signed-in users keep

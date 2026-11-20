@@ -1,5 +1,5 @@
-import { isValidHHMM } from '$lib/time';
-import { isValidTimezone } from '$lib/tz';
+import { isValidHHMM } from '#lib/time.ts';
+import { isValidTimezone } from '#lib/tz.ts';
 
 export type EntryPatchResult =
   | { ok: true; patch: Record<string, string | number | null>; droppedNulls: number; explicitClears: number; entryTz: string | null | undefined }

@@ -34,7 +34,7 @@
 </script>
 
 <script lang="ts">
-  import { readChartTheme, onChartThemeChange, withAlpha, type ChartTheme } from '$lib/charts/theme';
+  import { readChartTheme, onChartThemeChange, withAlpha, type ChartTheme } from '#lib/charts/theme.ts';
 
   let {
     type,

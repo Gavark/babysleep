@@ -1,12 +1,12 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { getDb } from '$lib/server/db';
-import { getBabyForUser } from '$lib/server/babies';
-import { getEntryForBabyDate, upsertEntry } from '$lib/server/sleep-entries';
-import { ageInMonths } from '$lib/sleep-calc';
-import { paramsForAge } from '$lib/age-params';
-import { todayISOInTZ, resolveTimezone } from '$lib/tz';
-import * as m from '$paraglide/messages';
+import { getDb } from '#lib/server/db/index.ts';
+import { getBabyForUser } from '#lib/server/babies.ts';
+import { getEntryForBabyDate, upsertEntry } from '#lib/server/sleep-entries.ts';
+import { ageInMonths } from '#lib/sleep-calc.ts';
+import { paramsForAge } from '#lib/age-params.ts';
+import { todayISOInTZ, resolveTimezone } from '#lib/tz.ts';
+import * as m from '#paraglide/messages.js';
 import { buildEntryPatch, isValidISODate } from './_logic';
 
 export const load: PageServerLoad = ({ locals, params }) => {

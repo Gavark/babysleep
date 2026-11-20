@@ -1,12 +1,12 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
-  import { COMMON_TIMEZONES } from '$lib/tz';
+  import { COMMON_TIMEZONES } from '#lib/tz.ts';
   import ArrowLeft from 'phosphor-svelte/lib/ArrowLeft';
   import SignOut from 'phosphor-svelte/lib/SignOut';
   import FloppyDisk from 'phosphor-svelte/lib/FloppyDisk';
   import Trash from 'phosphor-svelte/lib/Trash';
-  import { formatDate, formatDateTime } from '$lib/format';
-  import * as m from '$paraglide/messages';
+  import { formatDate, formatDateTime } from '#lib/format.ts';
+  import * as m from '#paraglide/messages.js';
   let { data, form } = $props();
 </script>
 

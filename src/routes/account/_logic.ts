@@ -1,8 +1,8 @@
 import { eq } from 'drizzle-orm';
 import type { drizzle } from 'drizzle-orm/better-sqlite3';
-import * as schema from '$lib/server/db/schema';
-import { hashPassword, verifyPassword, isStrongEnough } from '$lib/server/auth/password';
-import { deleteOtherSessionsForUser } from '$lib/server/auth/session';
+import * as schema from '#lib/server/db/schema.ts';
+import { hashPassword, verifyPassword, isStrongEnough } from '#lib/server/auth/password.ts';
+import { deleteOtherSessionsForUser } from '#lib/server/auth/session.ts';
 
 type DB = ReturnType<typeof drizzle<typeof schema>>;
 

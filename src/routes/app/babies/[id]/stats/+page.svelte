@@ -1,17 +1,17 @@
 <script lang="ts">
-  import ChartCanvas from '$lib/components/ChartCanvas.svelte';
-  import { parseHHMM } from '$lib/time';
-  import { dayNapMinutes, napCount, aggregateByRank, napSeriesByRank, maxNapRank } from '$lib/naps';
+  import ChartCanvas from '#lib/components/ChartCanvas.svelte';
+  import { parseHHMM } from '#lib/time.ts';
+  import { dayNapMinutes, napCount, aggregateByRank, napSeriesByRank, maxNapRank } from '#lib/naps.ts';
   import Sun from 'phosphor-svelte/lib/Sun';
   import Moon from 'phosphor-svelte/lib/Moon';
   import Bed from 'phosphor-svelte/lib/Bed';
   import Cloud from 'phosphor-svelte/lib/Cloud';
   import Coffee from 'phosphor-svelte/lib/Coffee';
-  import * as m from '$paraglide/messages';
+  import * as m from '#paraglide/messages.js';
   import {
     seriesStats, toNightHours, axisRange, tickStep, formatDayMonth, formatFullDate, rollingMean,
     formatMonth
-  } from '$lib/charts/transforms';
+  } from '#lib/charts/transforms.ts';
 
   let { data } = $props();
 

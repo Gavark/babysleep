@@ -1,10 +1,10 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { getDb } from '$lib/server/db';
-import { findUsableInvitation } from '$lib/server/auth/invitations';
-import { parseAcceptLanguage, SUPPORTED_LOCALES } from '$lib/server/auth/locale';
+import { getDb } from '#lib/server/db/index.ts';
+import { findUsableInvitation } from '#lib/server/auth/invitations.ts';
+import { parseAcceptLanguage, SUPPORTED_LOCALES } from '#lib/server/auth/locale.ts';
 import { signupWithToken } from './_logic';
-import * as m from '$paraglide/messages';
+import * as m from '#paraglide/messages.js';
 
 export const load: PageServerLoad = ({ url, locals }) => {
   if (locals.user) throw redirect(303, '/app');

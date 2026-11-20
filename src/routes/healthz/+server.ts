@@ -1,5 +1,5 @@
 import type { RequestHandler } from './$types';
-import { getDb } from '$lib/server/db';
+import { getDb } from '#lib/server/db/index.ts';
 
 export const GET: RequestHandler = () => {
   try {

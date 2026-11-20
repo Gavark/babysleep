@@ -1,15 +1,15 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import CalendarGrid from '$lib/components/calendar/CalendarGrid.svelte';
-  import CalendarStrip from '$lib/components/calendar/CalendarStrip.svelte';
-  import NightRatingPicker from '$lib/components/calendar/NightRatingPicker.svelte';
+  import CalendarGrid from '#lib/components/calendar/CalendarGrid.svelte';
+  import CalendarStrip from '#lib/components/calendar/CalendarStrip.svelte';
+  import NightRatingPicker from '#lib/components/calendar/NightRatingPicker.svelte';
   import CaretLeft from 'phosphor-svelte/lib/CaretLeft';
   import CaretRight from 'phosphor-svelte/lib/CaretRight';
-  import { ageInMonthsOnDate, formatDuration } from '$lib/sleep-calc';
-  import { paramsForAge } from '$lib/age-params';
-  import { formatDate, formatNumber } from '$lib/format';
-  import { summarizeMonth } from '$lib/calendar';
-  import * as m from '$paraglide/messages';
+  import { ageInMonthsOnDate, formatDuration } from '#lib/sleep-calc.ts';
+  import { paramsForAge } from '#lib/age-params.ts';
+  import { formatDate, formatNumber } from '#lib/format.ts';
+  import { summarizeMonth } from '#lib/calendar.ts';
+  import * as m from '#paraglide/messages.js';
 
   let { data } = $props();
 

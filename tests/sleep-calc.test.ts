@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { ageInMonths, ageInMonthsOnDate, idealBedtime, suggestNextNap, suggestedBedtime, NAP_WEIGHTS, suggestNapEnd, computeDaySleepBudget, formatDuration } from '$lib/sleep-calc';
-import type { NapPair } from '$lib/sleep-calc';
+import { ageInMonths, ageInMonthsOnDate, idealBedtime, suggestNextNap, suggestedBedtime, NAP_WEIGHTS, suggestNapEnd, computeDaySleepBudget, formatDuration } from '#lib/sleep-calc.ts';
+import type { NapPair } from '#lib/sleep-calc.ts';
 
 describe('ageInMonths', () => {
   it('returns whole months between two dates', () => {

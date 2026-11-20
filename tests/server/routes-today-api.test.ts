@@ -4,7 +4,7 @@ import { getEntryForBabyDate, upsertEntry } from '../../src/lib/server/sleep-ent
 
 let globalTdb: ReturnType<typeof makeTestDb>;
 
-vi.mock('$lib/server/db', () => ({
+vi.mock('#lib/server/db/index.ts', () => ({
   getDb: () => globalTdb
 }));
 

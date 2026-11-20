@@ -1,8 +1,8 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { getDb } from '$lib/server/db';
-import { createBaby, listBabies } from '$lib/server/babies';
-import * as m from '$paraglide/messages';
+import { getDb } from '#lib/server/db/index.ts';
+import { createBaby, listBabies } from '#lib/server/babies.ts';
+import * as m from '#paraglide/messages.js';
 
 export const load: PageServerLoad = ({ locals }) => {
   if (!locals.user) throw redirect(303, '/login');

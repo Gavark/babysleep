@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { groupByWeek, type DayMetrics } from '$lib/calendar';
-  import type { Locale } from '$lib/server/auth/locale';
-  import { formatDate } from '$lib/format';
-  import { formatDuration } from '$lib/sleep-calc';
+  import { groupByWeek, type DayMetrics } from '#lib/calendar.ts';
+  import type { Locale } from '#lib/server/auth/locale.ts';
+  import { formatDate } from '#lib/format.ts';
+  import { formatDuration } from '#lib/sleep-calc.ts';
   import DayCell from './DayCell.svelte';
-  import * as m from '$paraglide/messages';
+  import * as m from '#paraglide/messages.js';
 
   type Props = {
     cells: DayMetrics[];

@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import type { SaveState } from '$lib/autosave';
+  import type { SaveState } from '#lib/autosave.ts';
   import SaveStatus from './SaveStatus.svelte';
-  import * as m from '$paraglide/messages';
+  import * as m from '#paraglide/messages.js';
 
   type Props = {
     state: 'done' | 'progress' | 'upcoming';

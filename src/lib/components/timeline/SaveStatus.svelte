@@ -1,7 +1,7 @@
 <script lang="ts">
-  import type { SaveState } from '$lib/autosave';
+  import type { SaveState } from '#lib/autosave.ts';
   import Check from 'phosphor-svelte/lib/Check';
-  import * as m from '$paraglide/messages';
+  import * as m from '#paraglide/messages.js';
 
   let { state }: { state: SaveState } = $props();
 </script>

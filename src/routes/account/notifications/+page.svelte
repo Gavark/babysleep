@@ -2,9 +2,9 @@
   import { enhance } from '$app/forms';
   import ArrowLeft from 'phosphor-svelte/lib/ArrowLeft';
   import Trash from 'phosphor-svelte/lib/Trash';
-  import EnablePushButton from '$lib/components/EnablePushButton.svelte';
-  import { formatDateTime } from '$lib/format';
-  import * as m from '$paraglide/messages';
+  import EnablePushButton from '#lib/components/EnablePushButton.svelte';
+  import { formatDateTime } from '#lib/format.ts';
+  import * as m from '#paraglide/messages.js';
 
   let { data, form } = $props();
 </script>

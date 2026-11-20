@@ -1,18 +1,18 @@
 import type { Handle } from '@sveltejs/kit/hooks';
 import { redirect } from '@sveltejs/kit';
 import { AsyncLocalStorage } from 'node:async_hooks';
-import { getDb } from '$lib/server/db';
-import { rateLimit, purgeExpiredBuckets } from '$lib/server/rate-limit';
+import { getDb } from '#lib/server/db/index.ts';
+import { rateLimit, purgeExpiredBuckets } from '#lib/server/rate-limit.ts';
 import {
   getSessionWithUser,
   refreshSessionIfStale,
   purgeExpiredSessions,
   SESSION_TTL_SEC
-} from '$lib/server/auth/session';
-import { bootstrapAdmin, hasNoUsers } from '$lib/server/auth/bootstrap';
-import { resolveLocale, type Locale } from '$lib/server/auth/locale';
-import { scanAndFire, purgeStaleScheduledPushes } from '$lib/server/push/scheduler';
-import { overwriteGetLocale, overwriteServerAsyncLocalStorage } from '$paraglide/runtime';
+} from '#lib/server/auth/session.ts';
+import { bootstrapAdmin, hasNoUsers } from '#lib/server/auth/bootstrap.ts';
+import { resolveLocale, type Locale } from '#lib/server/auth/locale.ts';
+import { scanAndFire, purgeStaleScheduledPushes } from '#lib/server/push/scheduler.ts';
+import { overwriteGetLocale, overwriteServerAsyncLocalStorage } from '#paraglide/runtime.js';
 
 const { db } = getDb();
 

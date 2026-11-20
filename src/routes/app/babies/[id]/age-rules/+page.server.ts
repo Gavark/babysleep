@@ -1,9 +1,9 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getDb } from '$lib/server/db';
-import { getBabyForUser } from '$lib/server/babies';
-import { ageInMonths } from '$lib/sleep-calc';
-import { AGE_PARAMS, findCurrentBracketIdx } from '$lib/age-params';
+import { getDb } from '#lib/server/db/index.ts';
+import { getBabyForUser } from '#lib/server/babies.ts';
+import { ageInMonths } from '#lib/sleep-calc.ts';
+import { AGE_PARAMS, findCurrentBracketIdx } from '#lib/age-params.ts';
 
 export const load: PageServerLoad = ({ locals, params }) => {
   if (!locals.user) throw redirect(303, '/login');

@@ -3,8 +3,8 @@
   import ArrowLeft from 'phosphor-svelte/lib/ArrowLeft';
   import Plus from 'phosphor-svelte/lib/Plus';
   import Copy from 'phosphor-svelte/lib/Copy';
-  import { formatDate } from '$lib/format';
-  import * as m from '$paraglide/messages';
+  import { formatDate } from '#lib/format.ts';
+  import * as m from '#paraglide/messages.js';
   let { data } = $props();
 
   type InvitationStatus = 'used' | 'expired' | 'pending';

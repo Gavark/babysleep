@@ -1,8 +1,8 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { getDb } from '$lib/server/db';
-import { createInvitation, listInvitations } from '$lib/server/auth/invitations';
-import * as m from '$paraglide/messages';
+import { getDb } from '#lib/server/db/index.ts';
+import { createInvitation, listInvitations } from '#lib/server/auth/invitations.ts';
+import * as m from '#paraglide/messages.js';
 
 function requireAdmin(locals: App.Locals) {
   if (!locals.user) throw redirect(303, '/login');

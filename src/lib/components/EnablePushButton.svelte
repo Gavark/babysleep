@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import Bell from 'phosphor-svelte/lib/Bell';
-  import * as m from '$paraglide/messages';
+  import * as m from '#paraglide/messages.js';
 
   type PushState = 'idle' | 'checking' | 'subscribing' | 'active' | 'denied' | 'unsupported';
   let pushState = $state<PushState>('checking');

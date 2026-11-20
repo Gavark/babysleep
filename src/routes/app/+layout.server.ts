@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
-import { getDb } from '$lib/server/db';
-import { listBabies } from '$lib/server/babies';
+import { getDb } from '#lib/server/db/index.ts';
+import { listBabies } from '#lib/server/babies.ts';
 
 export const load: LayoutServerLoad = async ({ locals, cookies, params, parent }) => {
   if (!locals.user) throw redirect(303, '/login');

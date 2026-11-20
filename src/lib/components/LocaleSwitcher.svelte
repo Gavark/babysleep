@@ -2,7 +2,7 @@
   import Globe from 'phosphor-svelte/lib/Globe';
   import CaretDown from 'phosphor-svelte/lib/CaretDown';
   import Check from 'phosphor-svelte/lib/Check';
-  import type { Locale } from '$lib/server/auth/locale';
+  import type { Locale } from '#lib/server/auth/locale.ts';
 
   let { current }: { current: Locale } = $props();
 

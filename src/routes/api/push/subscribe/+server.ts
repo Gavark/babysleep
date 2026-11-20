@@ -1,8 +1,8 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { getDb } from '$lib/server/db';
-import { registerSubscription } from '$lib/server/push/subscribe';
-import { rateLimit } from '$lib/server/rate-limit';
+import { getDb } from '#lib/server/db/index.ts';
+import { registerSubscription } from '#lib/server/push/subscribe.ts';
+import { rateLimit } from '#lib/server/rate-limit.ts';
 
 export const POST: RequestHandler = async ({ request, locals, getClientAddress }) => {
   if (!locals.user) throw redirect(303, '/login');

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { AGE_PARAMS, paramsForAge, findCurrentBracketIdx } from '$lib/age-params';
+import { AGE_PARAMS, paramsForAge, findCurrentBracketIdx } from '#lib/age-params.ts';
 
 describe('AGE_PARAMS', () => {
   it('has 8 tiers', () => {

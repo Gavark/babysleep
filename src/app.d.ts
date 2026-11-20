@@ -1,5 +1,5 @@
-import type { Session, User } from '$lib/server/db/schema';
-import type { Locale } from '$lib/server/auth/locale';
+import type { Session, User } from '#lib/server/db/schema.ts';
+import type { Locale } from '#lib/server/auth/locale.ts';
 
 declare global {
   namespace App {

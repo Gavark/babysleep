@@ -1,8 +1,8 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getDb } from '$lib/server/db';
-import { getBabyForUser } from '$lib/server/babies';
-import { listEntriesInRange, summariesForBaby } from '$lib/server/sleep-entries';
+import { getDb } from '#lib/server/db/index.ts';
+import { getBabyForUser } from '#lib/server/babies.ts';
+import { listEntriesInRange, summariesForBaby } from '#lib/server/sleep-entries.ts';
 
 function todayISO(): string {
   const d = new Date();

@@ -1,22 +1,22 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { onNavigate } from '$app/navigation';
-  import ThemeToggle from '$lib/components/ThemeToggle.svelte';
-  import LocaleSwitcher from '$lib/components/LocaleSwitcher.svelte';
-  import DropMenu from '$lib/components/DropMenu.svelte';
-  import BottomNav from '$lib/components/BottomNav.svelte';
-  import { activeNavTab } from '$lib/nav';
+  import ThemeToggle from '#lib/components/ThemeToggle.svelte';
+  import LocaleSwitcher from '#lib/components/LocaleSwitcher.svelte';
+  import DropMenu from '#lib/components/DropMenu.svelte';
+  import BottomNav from '#lib/components/BottomNav.svelte';
+  import { activeNavTab } from '#lib/nav.ts';
   import Bed from 'phosphor-svelte/lib/Bed';
   import UserCircle from 'phosphor-svelte/lib/UserCircle';
   import Envelope from 'phosphor-svelte/lib/Envelope';
   import ArrowLeft from 'phosphor-svelte/lib/ArrowLeft';
   import CaretDown from 'phosphor-svelte/lib/CaretDown';
   import List from 'phosphor-svelte/lib/List';
-  import * as m from '$paraglide/messages';
+  import * as m from '#paraglide/messages.js';
 
   let { children, data } = $props();
 
-  // A short slide between pages (styles in $lib/styles/nav.css). Skipped
+  // A short slide between pages (styles in #lib/styles/nav.css). Skipped
   // without View Transitions support, when the system asks for reduced
   // motion, and for a same-page navigation (calendar month, query change).
   onNavigate((navigation) => {
@@ -45,7 +45,7 @@
 </script>
 
 <!-- Phone navigation trial: both navigations are rendered and
-     $lib/styles/nav.css shows one of them (see that file). -->
+     #lib/styles/nav.css shows one of them (see that file). -->
 <header class="nav-mobile">
   {#if currentBaby}
     <DropMenu label={m.app_nav_switch_baby()}>

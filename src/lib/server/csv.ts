@@ -1,6 +1,6 @@
-import { parseHHMM, formatHHMM } from '$lib/time';
-import type { Locale } from '$lib/server/auth/locale';
-import * as m from '$paraglide/messages';
+import { parseHHMM, formatHHMM } from '#lib/time.ts';
+import type { Locale } from '#lib/server/auth/locale.ts';
+import * as m from '#paraglide/messages.js';
 
 type Row = {
   date: string;

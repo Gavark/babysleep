@@ -1,7 +1,7 @@
 import { and, eq } from 'drizzle-orm';
 import type { drizzle } from 'drizzle-orm/better-sqlite3';
 import * as schema from './db/schema';
-import { isValidTimezone } from '$lib/tz';
+import { isValidTimezone } from '#lib/tz.ts';
 
 type DB = ReturnType<typeof drizzle<typeof schema>>;
 

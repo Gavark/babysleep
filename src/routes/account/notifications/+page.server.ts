@@ -1,8 +1,8 @@
 import { redirect, fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { getDb } from '$lib/server/db';
-import { listSubscriptionsForUser, revokeSubscription } from '$lib/server/push/subscribe';
-import * as m from '$paraglide/messages';
+import { getDb } from '#lib/server/db/index.ts';
+import { listSubscriptionsForUser, revokeSubscription } from '#lib/server/push/subscribe.ts';
+import * as m from '#paraglide/messages.js';
 
 export const load: PageServerLoad = ({ locals }) => {
   if (!locals.user) throw redirect(303, '/login');

@@ -2,7 +2,7 @@ import { eq, and, isNull, lte, gte, lt, or, isNotNull } from 'drizzle-orm';
 import type { BaseSQLiteDatabase } from 'drizzle-orm/sqlite-core';
 import * as schema from '../db/schema';
 import { sendOne, type PushPayload } from './send';
-import * as m from '$paraglide/messages';
+import * as m from '#paraglide/messages.js';
 
 type DB = BaseSQLiteDatabase<'sync', unknown, typeof schema>;
 
