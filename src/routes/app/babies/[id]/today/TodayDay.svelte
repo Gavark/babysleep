@@ -1,7 +1,7 @@
 <script lang="ts">
   import { applyAction, deserialize, type ActionResult } from '$app/forms';
   import { beforeNavigate, refreshAll } from '$app/navigation';
-  import { onMount, untrack } from 'svelte';
+  import { onMount, tick, untrack } from 'svelte';
   import { SvelteSet } from 'svelte/reactivity';
   import { computeDaySleepBudget, formatDuration } from '#lib/sleep-calc.ts';
   import { COMMON_TIMEZONES, todayISOInTZ } from '#lib/tz.ts';
@@ -25,6 +25,7 @@
   import ClearableInput from '#lib/components/timeline/ClearableInput.svelte';
   import BudgetRing from '#lib/components/timeline/BudgetRing.svelte';
   import EnablePushButton from '#lib/components/EnablePushButton.svelte';
+  import Moon from 'phosphor-svelte/lib/Moon';
   import * as m from '#paraglide/messages.js';
   import type { PageData } from './$types';
 
@@ -308,6 +309,17 @@
     openRow = null;
     autosave.flush();
   }
+  /**
+   * Opens a row and puts the cursor in its time field: the shortcut buttons
+   * under an empty wake-up or bedtime row.
+   */
+  async function openEntry(key: string, field: string) {
+    const closing = openRow !== null && openRow !== key;
+    openRow = key;
+    if (closing) autosave.flush();
+    await tick();
+    document.querySelector<HTMLInputElement>(`input[name="${field}"]`)?.focus();
+  }
   function addNap() {
     napCount = Math.min(MAX_NAPS, napCount + 1);
     const closing = openRow !== null;
@@ -390,6 +402,7 @@
             {onNapStart}
             {onNapEnd}
             {onAddPause}
+            onEnterWake={() => openEntry('wake', 'wake_time')}
           />
         </div>
       {:else if item.row.kind === 'wake'}
@@ -452,6 +465,10 @@
             <p class="hint">{m.today_nap_end_suggested_at()} <strong>{nap.suggestedEnd}</strong></p>
           {/if}
         </TimelineRow>
+        <!-- Right after the last nap, so it is not mistaken for the bedtime row's button. -->
+        {#if nap.n === napCount && napCount < MAX_NAPS}
+          <button type="button" class="btn btn-ghost btn-sm add-nap" onclick={addNap}>+ {m.today_add_nap()}</button>
+        {/if}
       {:else}
         {@const bed = item.row}
         <TimelineRow state={bed.state} tone="night" open={openRow === item.key} ontoggle={() => toggleRow(item.key)} {saveState} onsave={saveRow}>
@@ -488,12 +505,13 @@
             <span class="reminder-value">{bed.ideal || m.today_value_empty()}</span>
           </div>
         </TimelineRow>
+        {#if !fields.bedtime && openRow !== item.key}
+          <button type="button" class="btn btn-secondary btn-sm row-shortcut" onclick={() => openEntry('bedtime', 'bedtime')}>
+            <Moon size={14} /> {m.today_enter_bedtime_btn()}
+          </button>
+        {/if}
       {/if}
     {/each}
-
-    {#if napCount < MAX_NAPS}
-      <button type="button" class="btn btn-ghost btn-sm add-nap" onclick={addNap}>+ {m.today_add_nap()}</button>
-    {/if}
   </div>
 
   <div class="extras">
@@ -591,11 +609,12 @@
     transform: translateX(-50%);
   }
   .now { padding-left: var(--s-5); }
-  .add-nap {
+  .add-nap, .row-shortcut {
     justify-self: start;
     width: fit-content;
     margin-left: var(--s-5);
   }
+  .row-shortcut { display: inline-flex; align-items: center; gap: var(--s-1); }
 
   .nap-fields {
     display: grid;

@@ -26,8 +26,10 @@
     onNapStart: (slotIdx: number, hhmm: string) => void;
     onNapEnd: (slotIdx: number, hhmm: string) => void;
     onAddPause?: (slotIdx: number, deltaMin: number) => void;
+    /** Opens the wake-up field; without it the empty state is a plain hint. */
+    onEnterWake?: () => void;
   };
-  let { wakeTime, naps, bedtime, ageParams, effectiveTz, locale, onNapStart, onNapEnd, onAddPause }: Props = $props();
+  let { wakeTime, naps, bedtime, ageParams, effectiveTz, locale, onNapStart, onNapEnd, onAddPause, onEnterWake }: Props = $props();
 
   let now: Date = $state(new Date());
 
@@ -114,9 +116,15 @@
 
 <section class="wake-timer-card" aria-label={m.wake_timer_aria_label()}>
   {#if timerState.kind === 'empty'}
-    <p class="msg-empty">
-      {m.wake_timer_empty()}
-    </p>
+    {#if onEnterWake}
+      <button type="button" class="btn btn-secondary action-btn" onclick={onEnterWake}>
+        <Sun size={16} weight="regular" /> {m.today_enter_wake_btn()}
+      </button>
+    {:else}
+      <p class="msg-empty">
+        {m.wake_timer_empty()}
+      </p>
+    {/if}
   {:else if timerState.kind === 'awake'}
     <div class="row-label"><Sun size={18} weight="duotone" /> {m.wake_timer_awake_since()}</div>
     <div class="counter primary">{formatDuration(timerState.elapsedMin)}</div>

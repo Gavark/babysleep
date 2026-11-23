@@ -22,7 +22,7 @@ export type TimelineRow =
     }
   | { kind: 'bedtime'; state: 'done' | 'upcoming'; time: string; suggested: string; ideal: string };
 
-/** `nowAfter` is the index of the row the "now" card sits under; -1 = at the top. */
+/** `nowAfter` is the index of the row the "now" card sits under (0 = the wake row). */
 export type Timeline = { rows: TimelineRow[]; nowAfter: number };
 
 const DAY_MIN = 24 * 60;
@@ -83,7 +83,9 @@ export function buildTimeline(input: {
 }
 
 function nowAfterIndex(rows: TimelineRow[], wakeValid: boolean, bedtimeValid: boolean): number {
-  if (!wakeValid) return -1;
+  // No wake-up yet: the card (with its "enter wake-up time" button) goes right
+  // under the wake row it fills in.
+  if (!wakeValid) return 0;
   const bedIdx = rows.length - 1;
   if (bedtimeValid) return bedIdx;
   const progress = rows.findIndex((r) => r.kind === 'nap' && r.state === 'progress');

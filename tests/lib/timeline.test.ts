@@ -14,7 +14,9 @@ describe('buildTimeline', () => {
     const t = build();
     expect(t.rows.map((r) => r.kind)).toEqual(['wake', 'nap', 'nap', 'nap', 'bedtime']);
     expect(t.rows.every((r) => r.state === 'upcoming')).toBe(true);
-    expect(t.nowAfter).toBe(-1);
+    // Without a wake-up time the card (and its "enter wake-up" button) sits
+    // right under the wake row, not above the timeline.
+    expect(t.nowAfter).toBe(0);
     const nap1 = t.rows[1];
     if (nap1.kind !== 'nap') throw new Error('expected nap');
     expect(nap1.suggestedStart).toBe('');

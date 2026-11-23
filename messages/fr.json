@@ -163,6 +163,8 @@
   "today_nap_save_btn": "Sauvegarder",
   "today_nap_save_title": "Sauvegarder cette sieste",
   "today_add_nap": "Ajouter une sieste",
+  "today_enter_wake_btn": "Saisir l'heure de réveil",
+  "today_enter_bedtime_btn": "Saisir l'heure de coucher",
   "today_clear_field": "Effacer",
   "today_ideal_bedtime_label": "Coucher idéal",
   "today_ideal_bedtime_sub": "Pour réveil souhaité {time}",
