@@ -20,16 +20,28 @@ export type TimelineRow =
       suggestedStart: string;
       suggestedEnd: string;
     }
-  | { kind: 'bedtime'; state: 'done' | 'upcoming'; time: string; suggested: string; ideal: string };
+  | {
+      kind: 'bedtime';
+      state: 'done' | 'upcoming';
+      time: string;
+      suggested: string;
+      ideal: string;
+      /** Awake time from the end of the last finished nap to bedtime; null until both exist. */
+      awakeBeforeMin: number | null;
+    };
 
 /** `nowAfter` is the index of the row the "now" card sits under (0 = the wake row). */
 export type Timeline = { rows: TimelineRow[]; nowAfter: number };
 
 const DAY_MIN = 24 * 60;
 
+/** Minutes from `from` to `to`, wrapping past midnight. */
+function span(from: string, to: string): number {
+  return (((parseHHMM(to) - parseHHMM(from)) % DAY_MIN) + DAY_MIN) % DAY_MIN;
+}
+
 function napDuration(start: string, end: string, pauseMin: number): number {
-  const span = (((parseHHMM(end) - parseHHMM(start)) % DAY_MIN) + DAY_MIN) % DAY_MIN;
-  return Math.max(0, span - pauseMin);
+  return Math.max(0, span(start, end) - pauseMin);
 }
 
 export function buildTimeline(input: {
@@ -71,12 +83,18 @@ export function buildTimeline(input: {
   const bedtimeValid = isValidHHMM(bedtime);
   const desiredValid = desiredWakeTime !== null && isValidHHMM(desiredWakeTime);
   const idealSource = desiredValid ? desiredWakeTime : wakeValid ? wake : '';
+  const lastNapEnd = pairs
+    .slice(0, napCount)
+    .map((p) => p.end)
+    .filter(isValidHHMM)
+    .at(-1);
   rows.push({
     kind: 'bedtime',
     state: bedtimeValid ? 'done' : 'upcoming',
     time: bedtime,
     suggested: wakeValid ? (suggestedBedtime({ wake, naps: pairs }, ageParams) ?? '') : '',
-    ideal: idealSource ? idealBedtime(idealSource, ageParams.nightSleepH) : ''
+    ideal: idealSource ? idealBedtime(idealSource, ageParams.nightSleepH) : '',
+    awakeBeforeMin: bedtimeValid && lastNapEnd ? span(lastNapEnd, bedtime) : null
   });
 
   return { rows, nowAfter: nowAfterIndex(rows, wakeValid, bedtimeValid) };
