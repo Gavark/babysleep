@@ -473,7 +473,7 @@
         {@const bed = item.row}
         <TimelineRow state={bed.state} tone="night" open={openRow === item.key} ontoggle={() => toggleRow(item.key)} {saveState} onsave={saveRow}>
           {#snippet label()}
-            {m.today_bedtime_row_label()}{#if bed.awakeBeforeMin !== null}{' · '}{m.today_bedtime_awake_before({ duration: formatDuration(bed.awakeBeforeMin) })}{:else if bed.ideal}{' · '}{m.today_bedtime_ideal_short({ time: bed.ideal })}{/if}
+            {m.today_bedtime_row_label()}{#if bed.ideal}{' · '}{m.today_bedtime_ideal_short({ time: bed.ideal })}{/if}
           {/snippet}
           {#snippet value()}
             {#if bed.time}

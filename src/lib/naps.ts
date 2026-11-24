@@ -12,7 +12,7 @@ export type RankStat = { rank: number; avgMin: number; days: number };
 const HHMM = /^\d{2}:\d{2}$/;
 const SLOTS = 8;
 
-type Nap = { startMin: number; durationMin: number };
+type Nap = { startMin: number; endMin: number; durationMin: number };
 
 /**
  * Naps live in eight POSITIONAL slots; nothing guarantees slot N holds the
@@ -29,7 +29,7 @@ function collectNaps(e: NapEntry): Nap[] {
     const rawPause = e[`nap${i}PauseMin`];
     const pause = typeof rawPause === 'number' && Number.isFinite(rawPause) ? rawPause : 0;
     const span = (((parseHHMM(end) - parseHHMM(start)) % 1440) + 1440) % 1440;
-    naps.push({ startMin: parseHHMM(start), durationMin: Math.max(0, span - pause) });
+    naps.push({ startMin: parseHHMM(start), endMin: parseHHMM(end), durationMin: Math.max(0, span - pause) });
   }
   return naps.sort((a, b) => a.startMin - b.startMin);
 }
@@ -37,6 +37,18 @@ function collectNaps(e: NapEntry): Nap[] {
 /** Net nap durations for one day, ordered first-nap-first. */
 export function napDurationsByRank(e: NapEntry): number[] {
   return collectNaps(e).map((n) => n.durationMin);
+}
+
+/**
+ * Awake time from the end of the day's last nap (by start time) to bedtime,
+ * in minutes; null without a bedtime or a finished nap.
+ */
+export function awakeBeforeBedMinutes(e: NapEntry): number | null {
+  const bedtime = e.bedtime;
+  if (typeof bedtime !== 'string' || !HHMM.test(bedtime)) return null;
+  const last = collectNaps(e).at(-1);
+  if (!last) return null;
+  return (((parseHHMM(bedtime) - last.endMin) % 1440) + 1440) % 1440;
 }
 
 /** Total daytime sleep in minutes, or null if nothing was recorded. */

@@ -5,6 +5,8 @@ import { getBabyForUser } from '#lib/server/babies.ts';
 import { listEntriesInRange } from '#lib/server/sleep-entries.ts';
 import { resolveTimezone, todayISOInTZ } from '#lib/tz.ts';
 import { aggregateByMonthAndRank } from '#lib/naps.ts';
+import { ageInMonthsOnDate } from '#lib/sleep-calc.ts';
+import { paramsForAge } from '#lib/age-params.ts';
 
 function addDaysISO(iso: string, n: number): string {
   const [y, m, d] = iso.split('-').map(Number);
@@ -44,6 +46,11 @@ export const load: PageServerLoad = ({ locals, params, url }) => {
   const entries = listEntriesInRange(db, baby.id, from, to);
   // listEntriesInRange returns desc; we want ASC for time-series charts
   const asc = [...entries].reverse();
+  // Recommended last-nap → bedtime window for the baby's age ON each day, so
+  // the reference line steps up as the baby grows instead of using today's age.
+  const beforeBedTargetMin = asc.map(
+    (e) => paramsForAge(ageInMonthsOnDate(baby.birthDate, baby.ageOverrideMonths, e.date)).beforeBedWindowMin
+  );
 
   // The monthly chart deliberately ignores the period selector, so it needs
   // every entry — but only the aggregate is sent to the browser. Shipping the
@@ -58,6 +65,7 @@ export const load: PageServerLoad = ({ locals, params, url }) => {
     to,
     preset: preset ?? 'custom',
     entries: asc,
+    beforeBedTargetMin,
     effectiveTz: tz,
     monthlyNaps
   };

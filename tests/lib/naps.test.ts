@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import {
   napDurationsByRank, dayNapMinutes, napCount,
-  aggregateByRank, napSeriesByRank, maxNapRank, aggregateByMonthAndRank
+  aggregateByRank, napSeriesByRank, maxNapRank, aggregateByMonthAndRank,
+  awakeBeforeBedMinutes
 } from '../../src/lib/naps';
 
 // Slots are positional, NOT chronological — a parent may leave slot 1 empty.
@@ -66,6 +67,26 @@ describe('dayNapMinutes', () => {
 
   it('returns null — not 0 — when nothing was recorded', () => {
     expect(dayNapMinutes(day({}))).toBeNull();
+  });
+});
+
+describe('awakeBeforeBedMinutes', () => {
+  it('measures from the end of the chronologically last nap, whatever its slot', () => {
+    const e = day({
+      nap1Start: '14:00', nap1End: '15:10',
+      nap2Start: '09:00', nap2End: '10:00',
+      bedtime: '19:40'
+    });
+    expect(awakeBeforeBedMinutes(e)).toBe(270);
+  });
+
+  it('wraps a bedtime past midnight', () => {
+    expect(awakeBeforeBedMinutes(day({ nap1Start: '17:00', nap1End: '18:30', bedtime: '00:15' }))).toBe(345);
+  });
+
+  it('is null without a bedtime or without a finished nap', () => {
+    expect(awakeBeforeBedMinutes(day({ nap1Start: '09:00', nap1End: '10:00' }))).toBeNull();
+    expect(awakeBeforeBedMinutes(day({ nap1Start: '09:00', bedtime: '19:40' }))).toBeNull();
   });
 });
 

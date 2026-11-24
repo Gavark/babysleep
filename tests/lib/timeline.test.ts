@@ -98,22 +98,6 @@ describe('buildTimeline', () => {
     expect(bed2.ideal).toBe(idealBedtime('06:40', ageParams.nightSleepH));
   });
 
-  it('gives the awake time between the last finished nap and bedtime', () => {
-    const bedOf = (t: ReturnType<typeof build>) => {
-      const bed = t.rows[t.rows.length - 1];
-      if (bed.kind !== 'bedtime') throw new Error('expected bedtime');
-      return bed;
-    };
-    const naps = { wake_time: '06:40', nap1_start: '09:10', nap1_end: '10:25', nap2_start: '13:00', nap2_end: '14:30' };
-    // Last finished nap is nap 2 (nap 3 never taken): 14:30 → 20:10.
-    expect(bedOf(build({ ...naps, bedtime: '20:10' })).awakeBeforeMin).toBe(340);
-    // No bedtime yet, or no finished nap: nothing to show.
-    expect(bedOf(build(naps)).awakeBeforeMin).toBeNull();
-    expect(bedOf(build({ wake_time: '06:40', bedtime: '20:10' })).awakeBeforeMin).toBeNull();
-    // Bedtime after midnight.
-    expect(bedOf(build({ ...naps, nap2_end: '18:30', bedtime: '00:15' })).awakeBeforeMin).toBe(345);
-  });
-
   it('leaves bedtime suggestions empty without any wake', () => {
     const t = build();
     const bed = t.rows[t.rows.length - 1];

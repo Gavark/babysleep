@@ -1,12 +1,13 @@
 <script lang="ts">
   import ChartCanvas from '#lib/components/ChartCanvas.svelte';
   import { parseHHMM } from '#lib/time.ts';
-  import { dayNapMinutes, napCount, aggregateByRank, napSeriesByRank, maxNapRank } from '#lib/naps.ts';
+  import { dayNapMinutes, napCount, awakeBeforeBedMinutes, aggregateByRank, napSeriesByRank, maxNapRank } from '#lib/naps.ts';
   import Sun from 'phosphor-svelte/lib/Sun';
   import Moon from 'phosphor-svelte/lib/Moon';
   import Bed from 'phosphor-svelte/lib/Bed';
   import Cloud from 'phosphor-svelte/lib/Cloud';
   import Coffee from 'phosphor-svelte/lib/Coffee';
+  import Hourglass from 'phosphor-svelte/lib/Hourglass';
   import * as m from '#paraglide/messages.js';
   import {
     seriesStats, toNightHours, axisRange, tickStep, formatDayMonth, formatFullDate, rollingMean,
@@ -51,6 +52,13 @@
     return mins === null ? null : mins / 60;
   }));
   const napCountData = $derived(data.entries.map(napCount));
+  // A day whose afternoon naps were never logged would read as 10h+ awake.
+  // Beyond twice the age recommendation the gap is treated as missing data.
+  const beforeBedData = $derived(data.entries.map((e: any, i: number) => {
+    const mins = awakeBeforeBedMinutes(e);
+    return mins === null || mins > 2 * data.beforeBedTargetMin[i] ? null : mins / 60;
+  }));
+  const beforeBedTarget = $derived(data.beforeBedTargetMin.map((min: number) => min / 60));
   const rankAgg = $derived(aggregateByRank(data.entries));
   // The day count rides in the tick label: over a period spanning a rhythm
   // change, a rank averaged over 4 days must not read as a peer of one
@@ -184,6 +192,12 @@
         ticks: { callback: (v: any) => decimalToDuration(Number(v)) }
       }
     }
+  });
+
+  // Same as hourOpts, with a legend: the dashed line is the age recommendation.
+  const beforeBedOpts = $derived({
+    ...hourOpts,
+    plugins: { ...hourOpts.plugins, legend: { display: true, position: 'bottom' } }
   });
 
   const countOpts = $derived({
@@ -453,6 +467,19 @@
       data={{ labels, datasets: [line('bedtime', m.stats_chart_label_bedtime(), bedtimeNight)] }}
       options={bedtimeOpts}
       ariaLabel={ariaForTimeOfDay(m.stats_charts_bedtime(), bedtimeNight, decimalToHHMM)} />
+  </section>
+
+  <section class="card chart-section">
+    <h2><Hourglass size={18} /> {m.stats_charts_before_bed()}</h2>
+    <ChartCanvas type="line"
+      data={{ labels, datasets: [
+        line('bedtime', m.stats_chart_label_before_bed(), beforeBedData),
+        { label: m.stats_chart_label_before_bed_target(), token: 'night', data: beforeBedTarget,
+          borderWidth: 1.5, borderDash: [6, 4], pointRadius: 0, pointHoverRadius: 0, stepped: true }
+      ] }}
+      options={beforeBedOpts}
+      ariaLabel={ariaFor(m.stats_charts_before_bed(), beforeBedData, decimalToDuration)} />
+    <p class="chart-note">{m.stats_chart_before_bed_note()}</p>
   </section>
 
   <section class="card chart-section">
