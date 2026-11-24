@@ -1,7 +1,7 @@
 <script lang="ts">
   import ChartCanvas from '#lib/components/ChartCanvas.svelte';
   import { parseHHMM } from '#lib/time.ts';
-  import { dayNapMinutes, napCount, awakeBeforeBedMinutes, aggregateByRank, napSeriesByRank, maxNapRank } from '#lib/naps.ts';
+  import { dayNapMinutes, napCount, plausibleAwakeBeforeBed, aggregateByRank, napSeriesByRank, maxNapRank } from '#lib/naps.ts';
   import Sun from 'phosphor-svelte/lib/Sun';
   import Moon from 'phosphor-svelte/lib/Moon';
   import Bed from 'phosphor-svelte/lib/Bed';
@@ -52,11 +52,9 @@
     return mins === null ? null : mins / 60;
   }));
   const napCountData = $derived(data.entries.map(napCount));
-  // A day whose afternoon naps were never logged would read as 10h+ awake.
-  // Beyond twice the age recommendation the gap is treated as missing data.
   const beforeBedData = $derived(data.entries.map((e: any, i: number) => {
-    const mins = awakeBeforeBedMinutes(e);
-    return mins === null || mins > 2 * data.beforeBedTargetMin[i] ? null : mins / 60;
+    const mins = plausibleAwakeBeforeBed(e, data.beforeBedTargetMin[i]);
+    return mins === null ? null : mins / 60;
   }));
   const beforeBedTarget = $derived(data.beforeBedTargetMin.map((min: number) => min / 60));
   const rankAgg = $derived(aggregateByRank(data.entries));

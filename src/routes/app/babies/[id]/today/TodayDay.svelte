@@ -30,12 +30,12 @@
   import type { PageData } from './$types';
 
   type Entry = PageData['entry'];
-  type Props = Pick<PageData, 'baby' | 'entry' | 'ageMonths' | 'ageParams' | 'effectiveTz' | 'locale'> & {
+  type Props = Pick<PageData, 'baby' | 'entry' | 'ageMonths' | 'ageParams' | 'effectiveTz' | 'locale' | 'beforeBedAvgMin'> & {
     /** The day shown, `YYYY-MM-DD`. */
     date: string;
   };
 
-  let { baby, date, entry, ageMonths, ageParams, effectiveTz, locale }: Props = $props();
+  let { baby, date, entry, ageMonths, ageParams, effectiveTz, locale, beforeBedAvgMin }: Props = $props();
 
   // Captured once, on purpose: the parent keys this component on baby + date,
   // so every save, even one that finishes or chains after leaving the page,
@@ -473,7 +473,14 @@
         {@const bed = item.row}
         <TimelineRow state={bed.state} tone="night" open={openRow === item.key} ontoggle={() => toggleRow(item.key)} {saveState} onsave={saveRow}>
           {#snippet label()}
-            {m.today_bedtime_row_label()}{#if bed.ideal}{' · '}{m.today_bedtime_ideal_short({ time: bed.ideal })}{/if}
+            <!-- One flex item: the row label is an inline-flex, which would put the
+                 average beside the title instead of under it. -->
+            <span class="label-stack">
+              <span>{m.today_bedtime_row_label()}{#if bed.ideal}{' · '}{m.today_bedtime_ideal_short({ time: bed.ideal })}{/if}</span>
+              {#if beforeBedAvgMin !== null}
+                <span class="row-sub">{m.today_bedtime_avg_before({ duration: formatDuration(beforeBedAvgMin) })}</span>
+              {/if}
+            </span>
           {/snippet}
           {#snippet value()}
             {#if bed.time}
@@ -614,6 +621,8 @@
     width: fit-content;
     margin-left: var(--s-5);
   }
+  .label-stack { display: flex; flex-direction: column; align-items: flex-start; text-align: left; }
+  .row-sub { color: var(--c-text-muted); font-size: var(--fs-sm); font-weight: normal; }
   .row-shortcut { display: inline-flex; align-items: center; gap: var(--s-1); }
 
   .nap-fields {

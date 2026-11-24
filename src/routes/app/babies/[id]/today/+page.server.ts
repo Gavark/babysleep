@@ -2,8 +2,10 @@ import { error, fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { getDb } from '#lib/server/db/index.ts';
 import { getBabyForUser } from '#lib/server/babies.ts';
-import { getEntryForBabyDate, upsertEntry } from '#lib/server/sleep-entries.ts';
-import { ageInMonths } from '#lib/sleep-calc.ts';
+import { getEntryForBabyDate, listEntriesInRange, upsertEntry } from '#lib/server/sleep-entries.ts';
+import { ageInMonths, ageInMonthsOnDate } from '#lib/sleep-calc.ts';
+import { addDaysISO } from '#lib/calendar.ts';
+import { meanAwakeBeforeBed } from '#lib/naps.ts';
 import { paramsForAge } from '#lib/age-params.ts';
 import { todayISOInTZ, resolveTimezone } from '#lib/tz.ts';
 import * as m from '#paraglide/messages.js';
@@ -21,7 +23,13 @@ export const load: PageServerLoad = ({ locals, params }) => {
   const entry = getEntryForBabyDate(db, baby.id, today);
   const months = ageInMonths(baby.birthDate, baby.ageOverrideMonths ?? undefined);
   const params_ = paramsForAge(months);
-  return { baby, today, entry, ageMonths: months, ageParams: params_, effectiveTz, userTimezone };
+  // Last nap → bedtime, averaged over the 30 days before today (today is not
+  // over yet), each day judged against the recommendation for its own age.
+  const past = listEntriesInRange(db, baby.id, addDaysISO(today, -30), addDaysISO(today, -1));
+  const beforeBedAvgMin = meanAwakeBeforeBed(past, (e) =>
+    paramsForAge(ageInMonthsOnDate(baby.birthDate, baby.ageOverrideMonths, String(e.date))).beforeBedWindowMin
+  );
+  return { baby, today, entry, ageMonths: months, ageParams: params_, effectiveTz, userTimezone, beforeBedAvgMin };
 };
 
 export const actions: Actions = {

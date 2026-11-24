@@ -78,7 +78,7 @@ function isoDate(y: number, m1to12: number, d: number): string {
   return `${y}-${String(m1to12).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
 }
 
-function addDaysISO(iso: string, n: number): string {
+export function addDaysISO(iso: string, n: number): string {
   const [y, m, d] = iso.split('-').map(Number);
   const dt = new Date(Date.UTC(y, m - 1, d));
   dt.setUTCDate(dt.getUTCDate() + n);

@@ -51,6 +51,25 @@ export function awakeBeforeBedMinutes(e: NapEntry): number | null {
   return (((parseHHMM(bedtime) - last.endMin) % 1440) + 1440) % 1440;
 }
 
+/**
+ * awakeBeforeBedMinutes, treating a gap beyond twice the age recommendation as
+ * missing data: a day whose afternoon naps were never logged would otherwise
+ * read as 10h+ awake.
+ */
+export function plausibleAwakeBeforeBed(e: NapEntry, targetMin: number): number | null {
+  const mins = awakeBeforeBedMinutes(e);
+  return mins === null || mins > 2 * targetMin ? null : mins;
+}
+
+/** Mean of the plausible values, rounded to the minute; null when there are none. */
+export function meanAwakeBeforeBed(entries: NapEntry[], targetFor: (e: NapEntry) => number): number | null {
+  const values = entries
+    .map((e) => plausibleAwakeBeforeBed(e, targetFor(e)))
+    .filter((v): v is number => v !== null);
+  if (values.length === 0) return null;
+  return Math.round(values.reduce((a, b) => a + b, 0) / values.length);
+}
+
 /** Total daytime sleep in minutes, or null if nothing was recorded. */
 export function dayNapMinutes(e: NapEntry): number | null {
   const naps = collectNaps(e);

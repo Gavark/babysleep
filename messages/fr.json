@@ -187,6 +187,7 @@
   "today_row_nap_progress": "{start} – …",
   "today_row_range": "{start} – {end}",
   "today_bedtime_row_label": "Coucher",
+  "today_bedtime_avg_before": "{duration} après la dernière sieste en moyenne (30 j)",
   "today_bedtime_ideal_short": "idéal {time}",
   "today_note_add": "Ajouter une note",
   "today_tz_row": "Fuseau : {tz}",

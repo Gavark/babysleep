@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   napDurationsByRank, dayNapMinutes, napCount,
   aggregateByRank, napSeriesByRank, maxNapRank, aggregateByMonthAndRank,
-  awakeBeforeBedMinutes
+  awakeBeforeBedMinutes, plausibleAwakeBeforeBed, meanAwakeBeforeBed
 } from '../../src/lib/naps';
 
 // Slots are positional, NOT chronological — a parent may leave slot 1 empty.
@@ -87,6 +87,22 @@ describe('awakeBeforeBedMinutes', () => {
   it('is null without a bedtime or without a finished nap', () => {
     expect(awakeBeforeBedMinutes(day({ nap1Start: '09:00', nap1End: '10:00' }))).toBeNull();
     expect(awakeBeforeBedMinutes(day({ nap1Start: '09:00', bedtime: '19:40' }))).toBeNull();
+  });
+});
+
+describe('plausibleAwakeBeforeBed / meanAwakeBeforeBed', () => {
+  const ok1 = day({ nap1Start: '15:00', nap1End: '16:00', bedtime: '19:00' }); // 180
+  const ok2 = day({ nap1Start: '15:00', nap1End: '16:30', bedtime: '19:40' }); // 190
+  const forgotten = day({ nap1Start: '08:00', nap1End: '09:00', bedtime: '20:00' }); // 660
+
+  it('drops a gap beyond twice the recommendation', () => {
+    expect(plausibleAwakeBeforeBed(ok1, 180)).toBe(180);
+    expect(plausibleAwakeBeforeBed(forgotten, 180)).toBeNull();
+  });
+
+  it('averages the plausible days only, and is null without any', () => {
+    expect(meanAwakeBeforeBed([ok1, ok2, forgotten, day({})], () => 180)).toBe(185);
+    expect(meanAwakeBeforeBed([forgotten], () => 180)).toBeNull();
   });
 });
 

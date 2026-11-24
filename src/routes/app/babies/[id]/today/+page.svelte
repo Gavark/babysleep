@@ -13,6 +13,7 @@
     entry={data.entry}
     ageMonths={data.ageMonths}
     ageParams={data.ageParams}
+    beforeBedAvgMin={data.beforeBedAvgMin}
     effectiveTz={data.effectiveTz}
     locale={data.locale}
   />
